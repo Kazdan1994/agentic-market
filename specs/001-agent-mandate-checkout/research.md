@@ -7,7 +7,7 @@ Node v26.12.0, Docker 29.9.2, yarn 1.22.22 and pnpm 10.0.0.
 
 ## R1. Workspace layout and package manager
 
-- **Decision**: one repository with yarn (classic) workspaces and two apps, `apps/api`
+- **Decision**: one repository with Yarn 4 workspaces (`nodeLinker: node-modules`, pinned via `packageManager`) and two apps, `apps/api`
   (NestJS) and `apps/web` (Vite + React). There is no shared code package; the web client's
   types are generated from the API's OpenAPI document (R9).
 - **Rationale**: the constitution allows one backend and one frontend (Principle VI). Yarn
@@ -103,7 +103,8 @@ Node v26.12.0, Docker 29.9.2, yarn 1.22.22 and pnpm 10.0.0.
 - **Rationale**: the project owner asked for local AI. Ollama is already installed with
   models pulled. The native API supports JSON-schema constrained output, and plain `fetch`
   with `AbortSignal.timeout` gives a hard 10 s ceiling with no extra dependency
-  (Principle VI).
+  (Principle VI). Ollama runs natively on the host for GPU access, which constitution
+  1.1.0 allows for an optional AI runtime.
 - **Alternatives considered**:
   - `qwen3:8b`: better coverage, but ~20 s warm, which breaks the 10 s rule
   - `gemma3:12b`: larger than qwen3:8b, so slower still; not benchmarked
@@ -252,7 +253,8 @@ Node v26.12.0, Docker 29.9.2, yarn 1.22.22 and pnpm 10.0.0.
 
 - **Decision**:
   - `docker-compose.yml` runs Postgres 18 on port 5432
-  - `yarn dev` runs migrations, seeds idempotently, then starts the API (`:3000`) and the
+  - `yarn dev` (a small `scripts/dev.mjs`, no new dependency) starts the `db` container with
+    `docker compose up -d --wait`, runs migrations, seeds idempotently, then starts the API (`:3000`) and the
     web app (`:5173`, proxying `/v1` and `/mcp` to the API)
   - configuration comes from `.env.local` (untracked) with a tracked `.env.example`
 - **Rationale**: the constitution's "local only, one documented command".

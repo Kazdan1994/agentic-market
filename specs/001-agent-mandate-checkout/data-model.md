@@ -173,9 +173,9 @@ are explained in run logs.
 | id | uuid | PK |
 | mandate_id | uuid | FK → Mandate |
 | user_id | uuid | FK → User |
-| request | text | 3–500 chars after trim; refused with `Invalid request` otherwise |
+| request | text | 3–500 chars after trim, with at least one non-stop-word token (FR-006a); otherwise the start is refused with `INVALID_REQUEST` and no row is created |
 | status | enum `running` \| `completed` | |
-| outcome | enum null | `order_placed` \| `no_eligible_product` \| `refused_by_mandate` \| `payment_declined` \| `invalid_request` \| `interrupted` (FR-007; `interrupted` from R7) |
+| outcome | enum null | `order_placed` \| `no_eligible_product` \| `refused_by_mandate` \| `payment_declined` \| `interrupted` (FR-007). `PRICE_CHANGED` / `OUT_OF_STOCK` at checkout end as `no_eligible_product` |
 | strategy | enum null `ai` \| `rules` | the strategy that actually chose (FR-009b) |
 | fallback_reason | enum null | `not_configured` \| `forced_rules` \| `unavailable` \| `timeout` \| `api_error` \| `unusable_answer` \| `ineligible_choice` (research R5) |
 | order_id | uuid null | set when `outcome = order_placed` |

@@ -12,6 +12,8 @@ tags:
   - name: auth
   - name: user
     description: Called by the signed-in user (session cookie)
+  - name: ops
+    description: Unauthenticated operational endpoints (constitution 1.1.0 exemption)
   - name: agent
     description: Called by any agent, built-in or third-party (mandate key)
 
@@ -75,6 +77,7 @@ components:
                 - PAYMENT_DECLINED
                 - IDEMPOTENCY_KEY_REUSED
                 - RUN_ALREADY_IN_PROGRESS
+                - INTERNAL_ERROR
             message: { type: string, description: Plain-language explanation }
             details:
               type: object
@@ -169,7 +172,7 @@ components:
 
     RunOutcome:
       type: string
-      enum: [order_placed, no_eligible_product, refused_by_mandate, payment_declined, invalid_request, interrupted]
+      enum: [order_placed, no_eligible_product, refused_by_mandate, payment_declined, interrupted]
 
     Run:
       type: object
@@ -259,6 +262,25 @@ components:
       content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
 
 paths:
+  /health:
+    get:
+      tags: [ops]
+      operationId: getHealth
+      security: []
+      description: Liveness check. Exposes no user or business data.
+      responses:
+        "200":
+          description: Service status
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, db, ai]
+                properties:
+                  status: { type: string, enum: [ok] }
+                  db: { type: string, enum: [up, down] }
+                  ai: { type: string, enum: [disabled, cold, warm, unavailable] }
+
   /v1/auth/login:
     post:
       tags: [auth]

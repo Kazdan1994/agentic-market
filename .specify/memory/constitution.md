@@ -1,24 +1,3 @@
-<!--
-Sync Impact Report
-- Version change: (unversioned template) → 1.0.0
-- Principles defined (all new):
-  - I. Hexagonal Architecture with CQRS
-  - II. Test-First Development (NON-NEGOTIABLE)
-  - III. API & Agent-First Contracts
-  - IV. Security & Money Safety
-  - V. Observability
-  - VI. Simplicity & YAGNI
-- Added sections: Technology Stack & Constraints; Development Workflow & Quality Gates; Governance
-- Removed sections: none
-- Dependent templates: not modified by this command (plan/spec/tasks templates read the
-  constitution at runtime; the plan "Constitution Check" gate picks up principles I–VI)
-- Deferred TODOs: none
-- Assumptions to confirm:
-  - Demo scope: no real funds move; payment providers run in sandbox/simulated mode only
-  - Agent purchases are bounded by an explicit mandate (spend cap, scope, expiry)
-  - MCP tool surface is optional per feature; the HTTP API is the required contract
-  - Package manager not fixed by the constitution; chosen in the first /speckit-plan
--->
 # Agentic Market Constitution
 
 ## Core Principles
@@ -79,7 +58,9 @@ stable contract, the feature does not exist for the demo.
 ### IV. Security & Money Safety
 
 - Every endpoint enforces authentication and authorization. Callers are identified as a
-  human user or an agent acting on behalf of a principal.
+  human user or an agent acting on behalf of a principal. Exempt: an unauthenticated
+  liveness endpoint that exposes no user or business data, and the API documentation (the
+  OpenAPI document and its viewer).
 - An agent-initiated purchase MUST be covered by an explicit mandate from its principal
   (spend cap, allowed merchant or category scope, expiry). Actions outside the mandate are
   rejected, never clamped silently.
@@ -139,8 +120,11 @@ infrastructure.
   migrations; `synchronize: true` is forbidden outside throwaway test databases.
 - **Frontend**: Vite + React + TypeScript, styled with Tailwind CSS and shadcn/ui
   components. The frontend talks to the backend only through the public API (Principle III).
-- **Runtime**: local only. Postgres and any other dependency run via Docker Compose; the
-  whole stack starts from a documented, single command. Cloud deployment is out of scope.
+- **Runtime**: local only. Postgres and any other server dependency run via Docker Compose;
+  the whole stack starts from a documented, single command. Exception: an optional AI model
+  runtime that needs direct GPU access (e.g. Ollama on macOS, where containers get no GPU)
+  MAY run natively on the host, provided the stack works end to end without it and its
+  setup is documented. Cloud deployment is out of scope.
 - **Dependencies**: a new runtime dependency is added only when a spec or plan names the
   need it serves.
 
@@ -171,4 +155,4 @@ infrastructure.
 - Compliance is checked at three points: the plan's Constitution Check, task generation
   (test-first ordering), and code review before merge.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-22 | **Last Amended**: 2026-10-22
+**Version**: 1.1.0 | **Ratified**: 2026-10-22 | **Last Amended**: 2026-10-22
