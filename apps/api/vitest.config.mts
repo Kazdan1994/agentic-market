@@ -10,6 +10,19 @@ export default defineConfig({
         extends: true,
         test: { name: "unit", include: ["src/**/*.spec.ts"], environment: "node" },
       },
+      {
+        extends: true,
+        test: {
+          name: "integration",
+          include: ["test/**/*.spec.ts"],
+          globalSetup: ["test/support/global-setup.ts"],
+          environment: "node",
+          testTimeout: 60_000,
+          hookTimeout: 120_000,
+          pool: "forks",
+          maxWorkers: 1,
+        },
+      },
     ],
   },
 });
