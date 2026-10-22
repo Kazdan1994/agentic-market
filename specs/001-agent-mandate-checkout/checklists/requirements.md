@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain
+- [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -34,3 +34,8 @@
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`
 - Iteration 1: 2 open clarifications, FR-005 (mandate single-use vs reusable) and FR-009
   (language-model vs rule-based agent selection). Every other item passes.
+- Iteration 2 (2026-10-22): resolved. Q1 = C (reusable mandate with a per-purchase cap and
+  a total budget; FR-001–005, 008, 011, 024a). Q2 = C (AI selection by default, with a
+  rule-based fallback and a forced rule-based mode; FR-009–009d, SC-003a/b). All items pass.
+- "AI language model" is named as a product capability chosen by the user, not as an
+  implementation detail; the provider and model are left to `/speckit-plan`.

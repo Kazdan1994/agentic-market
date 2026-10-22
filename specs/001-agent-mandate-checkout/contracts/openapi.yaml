@@ -1,0 +1,616 @@
+openapi: 3.1.0
+info:
+  title: Agentic Market API
+  version: 1.0.0
+  description: >
+    Design contract for feature 001. The running API generates its own OpenAPI document from
+    DTOs (research R3); contract tests assert that it matches this file. Amounts are integer
+    minor units (cents) with an ISO 4217 currency.
+servers:
+  - url: http://localhost:3000
+tags:
+  - name: auth
+  - name: user
+    description: Called by the signed-in user (session cookie)
+  - name: agent
+    description: Called by any agent, built-in or third-party (mandate key)
+
+components:
+  securitySchemes:
+    session:
+      type: apiKey
+      in: cookie
+      name: am_session
+    mandateKey:
+      type: http
+      scheme: bearer
+      description: "Mandate access key, format amk_<43 base64url chars>"
+
+  parameters:
+    CorrelationId:
+      name: X-Correlation-Id
+      in: header
+      required: false
+      schema: { type: string, format: uuid }
+      description: Echoed on every response; generated when absent.
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: { type: string, minLength: 8, maxLength: 100 }
+
+  schemas:
+    Money:
+      type: object
+      required: [amountMinor, currency]
+      properties:
+        amountMinor: { type: integer, minimum: 0, examples: [8999] }
+        currency: { type: string, pattern: "^[A-Z]{3}$", examples: [EUR] }
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum:
+                - UNAUTHORIZED
+                - FORBIDDEN
+                - NOT_FOUND
+                - VALIDATION_FAILED
+                - INVALID_REQUEST
+                - MANDATE_EXPIRED
+                - MANDATE_REVOKED
+                - MANDATE_EXHAUSTED
+                - MANDATE_NOT_ACTIVE
+                - OVER_PER_PURCHASE_CAP
+                - OVER_REMAINING_BUDGET
+                - CATEGORY_NOT_ALLOWED
+                - OUT_OF_STOCK
+                - PRICE_CHANGED
+                - PAYMENT_DECLINED
+                - IDEMPOTENCY_KEY_REUSED
+                - RUN_ALREADY_IN_PROGRESS
+            message: { type: string, description: Plain-language explanation }
+            details:
+              type: object
+              additionalProperties: true
+              description: "Field errors for VALIDATION_FAILED, limits for budget codes"
+
+    Category:
+      type: object
+      required: [slug, name]
+      properties:
+        slug: { type: string }
+        name: { type: string }
+
+    Merchant:
+      type: object
+      required: [id, slug, name]
+      properties:
+        id: { type: string, format: uuid }
+        slug: { type: string }
+        name: { type: string }
+
+    Product:
+      type: object
+      required: [id, itemRef, name, description, category, merchant, price, stock, listedAt]
+      properties:
+        id: { type: string, format: uuid }
+        itemRef: { type: string, description: Same value for the same item across merchants }
+        name: { type: string }
+        description: { type: string }
+        category: { $ref: "#/components/schemas/Category" }
+        merchant: { $ref: "#/components/schemas/Merchant" }
+        price: { $ref: "#/components/schemas/Money" }
+        stock: { type: integer, minimum: 0 }
+        listedAt: { type: string, format: date-time }
+
+    MandateStatus:
+      type: string
+      enum: [active, exhausted, expired, revoked]
+
+    Mandate:
+      type: object
+      required: [id, status, perPurchaseCap, totalBudget, spent, remaining, categories, expiresAt, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        status: { $ref: "#/components/schemas/MandateStatus" }
+        perPurchaseCap: { $ref: "#/components/schemas/Money" }
+        totalBudget: { $ref: "#/components/schemas/Money" }
+        spent: { $ref: "#/components/schemas/Money" }
+        remaining: { $ref: "#/components/schemas/Money" }
+        categories: { type: array, items: { $ref: "#/components/schemas/Category" }, minItems: 1 }
+        expiresAt: { type: string, format: date-time }
+        revokedAt: { type: [string, "null"], format: date-time }
+        createdAt: { type: string, format: date-time }
+
+    Agent:
+      type: object
+      required: [id, name, mandate, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        mandate: { $ref: "#/components/schemas/Mandate" }
+        createdAt: { type: string, format: date-time }
+
+    CreateAgentRequest:
+      type: object
+      required: [name, perPurchaseCapMinor, totalBudgetMinor, categorySlugs, expiresAt]
+      additionalProperties: false
+      properties:
+        name: { type: string, minLength: 1, maxLength: 60 }
+        perPurchaseCapMinor: { type: integer, minimum: 1 }
+        totalBudgetMinor: { type: integer, minimum: 1 }
+        categorySlugs: { type: array, items: { type: string }, minItems: 1, uniqueItems: true }
+        expiresAt: { type: string, format: date-time }
+
+    MandateKey:
+      type: object
+      required: [id, hint, createdAt, status]
+      properties:
+        id: { type: string, format: uuid }
+        label: { type: [string, "null"] }
+        hint: { type: string, examples: ["amk_…x9Qa"] }
+        status: { type: string, enum: [active, revoked] }
+        createdAt: { type: string, format: date-time }
+
+    CreatedMandateKey:
+      allOf:
+        - $ref: "#/components/schemas/MandateKey"
+        - type: object
+          required: [secret]
+          properties:
+            secret: { type: string, description: Shown exactly once }
+
+    RunOutcome:
+      type: string
+      enum: [order_placed, no_eligible_product, refused_by_mandate, payment_declined, invalid_request, interrupted]
+
+    Run:
+      type: object
+      required: [id, mandateId, request, status, startedAt]
+      properties:
+        id: { type: string, format: uuid }
+        mandateId: { type: string, format: uuid }
+        request: { type: string }
+        status: { type: string, enum: [running, completed] }
+        outcome: { oneOf: [{ $ref: "#/components/schemas/RunOutcome" }, { type: "null" }] }
+        strategy: { type: [string, "null"], enum: [ai, rules, null] }
+        fallbackReason:
+          type: [string, "null"]
+          enum: [not_configured, forced_rules, unavailable, timeout, api_error, unusable_answer, ineligible_choice, null]
+        orderId: { type: [string, "null"], format: uuid }
+        startedAt: { type: string, format: date-time }
+        endedAt: { type: [string, "null"], format: date-time }
+
+    LogEntry:
+      type: object
+      required: [seq, at, step, message, data]
+      properties:
+        seq: { type: integer, minimum: 1 }
+        at: { type: string, format: date-time }
+        step: { type: string, enum: [search, evaluation, selection, mandate_check, payment, outcome] }
+        message: { type: string }
+        productId: { type: [string, "null"], format: uuid }
+        data:
+          type: object
+          additionalProperties: true
+          description: >
+            Evaluation entries hold verdict (kept|discarded), reasonCode (over_budget,
+            category_not_allowed, out_of_stock, weaker_match, cheaper_offer_elsewhere),
+            merchant and price.
+
+    ActivityEntry:
+      type: object
+      required: [id, at, keyId, keyKind, action, result, detail]
+      properties:
+        id: { type: string, format: uuid }
+        at: { type: string, format: date-time }
+        keyId: { type: string, format: uuid }
+        keyKind: { type: string, enum: [builtin, external] }
+        action: { type: string, enum: [search, view_product, view_mandate, checkout] }
+        result: { type: string, enum: [ok, refused, declined, error] }
+        detail: { type: object, additionalProperties: true }
+
+    Order:
+      type: object
+      required: [id, mandateId, product, merchant, unitPrice, quantity, total, status, placedAt, placedBy]
+      properties:
+        id: { type: string, format: uuid }
+        mandateId: { type: string, format: uuid }
+        runId: { type: [string, "null"], format: uuid }
+        product: { type: object, required: [id, name], properties: { id: { type: string, format: uuid }, name: { type: string } } }
+        merchant: { $ref: "#/components/schemas/Merchant" }
+        unitPrice: { $ref: "#/components/schemas/Money" }
+        quantity: { type: integer, const: 1 }
+        total: { $ref: "#/components/schemas/Money" }
+        status: { type: string, enum: [paid_simulated] }
+        placedAt: { type: string, format: date-time }
+        placedBy: { type: string, enum: [builtin_agent, third_party_agent] }
+
+    CheckoutRequest:
+      type: object
+      required: [productId, expectedPriceMinor]
+      additionalProperties: false
+      properties:
+        productId: { type: string, format: uuid }
+        expectedPriceMinor:
+          type: integer
+          minimum: 1
+          description: Price the agent saw; a different current price yields PRICE_CHANGED.
+
+  responses:
+    Unauthorized:
+      description: Missing, unknown or revoked credentials (never reveals which)
+      content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+    NotFound:
+      description: Not found, or not owned by the caller
+      content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+    ValidationFailed:
+      description: VALIDATION_FAILED with field-level details
+      content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+    MandateRefusal:
+      description: Mandate rule refused the action (MANDATE_*, OVER_*, CATEGORY_NOT_ALLOWED, OUT_OF_STOCK, PRICE_CHANGED)
+      content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+
+paths:
+  /v1/auth/login:
+    post:
+      tags: [auth]
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, minLength: 1 }
+      responses:
+        "204": { description: Session cookie set }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /v1/auth/logout:
+    post:
+      tags: [auth]
+      operationId: logout
+      security: [{ session: [] }]
+      responses:
+        "204": { description: Session cookie cleared }
+
+  /v1/me:
+    get:
+      tags: [auth]
+      operationId: getMe
+      security: [{ session: [] }]
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id, email, displayName]
+                properties:
+                  id: { type: string, format: uuid }
+                  email: { type: string }
+                  displayName: { type: string }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /v1/categories:
+    get:
+      tags: [user, agent]
+      operationId: listCategories
+      security: [{ session: [] }, { mandateKey: [] }]
+      responses:
+        "200":
+          description: All categories
+          content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Category" } } } }
+
+  /v1/agents:
+    get:
+      tags: [user]
+      operationId: listAgents
+      security: [{ session: [] }]
+      responses:
+        "200":
+          description: The caller's agents with mandate, spent, remaining, status (FR-004)
+          content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Agent" } } } }
+    post:
+      tags: [user]
+      operationId: createAgent
+      security: [{ session: [] }]
+      parameters: [{ $ref: "#/components/parameters/CorrelationId" }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: "#/components/schemas/CreateAgentRequest" } } }
+      responses:
+        "201":
+          description: Agent and active mandate created (FR-001)
+          content: { application/json: { schema: { $ref: "#/components/schemas/Agent" } } }
+        "400": { $ref: "#/components/responses/ValidationFailed" }
+
+  /v1/agents/{agentId}:
+    get:
+      tags: [user]
+      operationId: getAgent
+      security: [{ session: [] }]
+      parameters: [{ name: agentId, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses:
+        "200":
+          description: Agent
+          content: { application/json: { schema: { $ref: "#/components/schemas/Agent" } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/mandates/{mandateId}/revoke:
+    post:
+      tags: [user]
+      operationId: revokeMandate
+      security: [{ session: [] }]
+      parameters: [{ name: mandateId, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses:
+        "200":
+          description: Mandate revoked, along with all its keys (FR-004, FR-010c)
+          content: { application/json: { schema: { $ref: "#/components/schemas/Mandate" } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: MANDATE_NOT_ACTIVE (already revoked, expired or exhausted)
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+
+  /v1/mandates/{mandateId}/keys:
+    get:
+      tags: [user]
+      operationId: listMandateKeys
+      security: [{ session: [] }]
+      parameters: [{ name: mandateId, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses:
+        "200":
+          description: External keys only, masked
+          content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/MandateKey" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+    post:
+      tags: [user]
+      operationId: createMandateKey
+      security: [{ session: [] }]
+      parameters: [{ name: mandateId, in: path, required: true, schema: { type: string, format: uuid } }]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                label: { type: string, maxLength: 60 }
+      responses:
+        "201":
+          description: Key created; secret shown once (FR-010c)
+          content: { application/json: { schema: { $ref: "#/components/schemas/CreatedMandateKey" } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: MANDATE_NOT_ACTIVE
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+
+  /v1/mandates/{mandateId}/keys/{keyId}/revoke:
+    post:
+      tags: [user]
+      operationId: revokeMandateKey
+      security: [{ session: [] }]
+      parameters:
+        - { name: mandateId, in: path, required: true, schema: { type: string, format: uuid } }
+        - { name: keyId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "200":
+          description: Key revoked
+          content: { application/json: { schema: { $ref: "#/components/schemas/MandateKey" } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/mandates/{mandateId}/activity:
+    get:
+      tags: [user]
+      operationId: listMandateActivity
+      security: [{ session: [] }]
+      parameters:
+        - { name: mandateId, in: path, required: true, schema: { type: string, format: uuid } }
+        - { name: keyKind, in: query, required: false, schema: { type: string, enum: [builtin, external] } }
+      responses:
+        "200":
+          description: Activity log, oldest first (FR-010e)
+          content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/ActivityEntry" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/mandates/{mandateId}/runs:
+    post:
+      tags: [user]
+      operationId: startRun
+      security: [{ session: [] }]
+      parameters:
+        - { name: mandateId, in: path, required: true, schema: { type: string, format: uuid } }
+        - { $ref: "#/components/parameters/CorrelationId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [request]
+              additionalProperties: false
+              properties:
+                request: { type: string, description: "Plain-language shopping request, 3–500 chars after trim" }
+      responses:
+        "202":
+          description: Run started; follow /v1/runs/{runId}/events
+          content: { application/json: { schema: { $ref: "#/components/schemas/Run" } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: RUN_ALREADY_IN_PROGRESS, MANDATE_EXPIRED, MANDATE_REVOKED or MANDATE_EXHAUSTED
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+        "422":
+          description: INVALID_REQUEST (empty or unrecognizable request)
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+    get:
+      tags: [user]
+      operationId: listRuns
+      security: [{ session: [] }]
+      parameters: [{ name: mandateId, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses:
+        "200":
+          description: Runs, newest first
+          content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Run" } } } }
+
+  /v1/runs/{runId}:
+    get:
+      tags: [user]
+      operationId: getRun
+      security: [{ session: [] }]
+      parameters: [{ name: runId, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses:
+        "200":
+          description: Run
+          content: { application/json: { schema: { $ref: "#/components/schemas/Run" } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/runs/{runId}/log:
+    get:
+      tags: [user]
+      operationId: getRunLog
+      security: [{ session: [] }]
+      parameters: [{ name: runId, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses:
+        "200":
+          description: Full decision log in seq order (FR-017..FR-021)
+          content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/LogEntry" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/runs/{runId}/events:
+    get:
+      tags: [user]
+      operationId: streamRunEvents
+      security: [{ session: [] }]
+      description: Server-Sent Events stream. See contracts/run-events.md.
+      parameters:
+        - { name: runId, in: path, required: true, schema: { type: string, format: uuid } }
+        - { name: Last-Event-ID, in: header, required: false, schema: { type: string } }
+      responses:
+        "200":
+          description: text/event-stream
+          content: { text/event-stream: { schema: { type: string } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/orders:
+    get:
+      tags: [user]
+      operationId: listOrders
+      security: [{ session: [] }]
+      responses:
+        "200":
+          description: The caller's orders, newest first (FR-016)
+          content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Order" } } } }
+
+  /v1/orders/{orderId}:
+    get:
+      tags: [user]
+      operationId: getOrder
+      security: [{ session: [] }]
+      parameters: [{ name: orderId, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses:
+        "200":
+          description: Order, with runId linking to its decision log
+          content: { application/json: { schema: { $ref: "#/components/schemas/Order" } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/catalog/search:
+    get:
+      tags: [agent]
+      operationId: searchCatalog
+      security: [{ mandateKey: [] }]
+      description: >
+        Searches all merchants. Results are NOT pre-filtered by the mandate, so agents
+        can explain discards; each item carries an eligibility hint for the key's mandate.
+      parameters:
+        - { name: q, in: query, required: true, schema: { type: string, minLength: 1, maxLength: 200 } }
+        - { name: category, in: query, required: false, schema: { type: string } }
+        - { name: limit, in: query, required: false, schema: { type: integer, minimum: 1, maximum: 50, default: 20 } }
+      responses:
+        "200":
+          description: Matching products across merchants
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: "#/components/schemas/Product"
+                    - type: object
+                      required: [eligibility]
+                      properties:
+                        eligibility:
+                          type: object
+                          required: [eligible]
+                          properties:
+                            eligible: { type: boolean }
+                            reasonCode:
+                              type: [string, "null"]
+                              enum: [over_budget, category_not_allowed, out_of_stock, null]
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "409": { $ref: "#/components/responses/MandateRefusal" }
+
+  /v1/catalog/products/{productId}:
+    get:
+      tags: [agent]
+      operationId: getProduct
+      security: [{ mandateKey: [] }]
+      parameters: [{ name: productId, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses:
+        "200":
+          description: Product with current price and stock
+          content: { application/json: { schema: { $ref: "#/components/schemas/Product" } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /v1/mandate:
+    get:
+      tags: [agent]
+      operationId: getOwnMandate
+      security: [{ mandateKey: [] }]
+      responses:
+        "200":
+          description: The key's mandate (limits, remaining, status)
+          content: { application/json: { schema: { $ref: "#/components/schemas/Mandate" } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  /v1/checkout:
+    post:
+      tags: [agent]
+      operationId: checkout
+      security: [{ mandateKey: [] }]
+      parameters:
+        - { $ref: "#/components/parameters/IdempotencyKey" }
+        - { $ref: "#/components/parameters/CorrelationId" }
+        - name: X-Agent-Run-Id
+          in: header
+          required: false
+          schema: { type: string, format: uuid }
+          description: Set by the built-in agent only; ignored for external keys.
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: "#/components/schemas/CheckoutRequest" } } }
+      responses:
+        "201":
+          description: Approved; order created. A replay with the same key returns the same order.
+          content: { application/json: { schema: { $ref: "#/components/schemas/Order" } } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "402":
+          description: PAYMENT_DECLINED (simulated); no order, no budget used
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: Mandate refusal, PRICE_CHANGED, OUT_OF_STOCK or IDEMPOTENCY_KEY_REUSED
+          content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
