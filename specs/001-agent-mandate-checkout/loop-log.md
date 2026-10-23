@@ -396,3 +396,29 @@ Successfully compiled: 156 files with swc (56.78ms)
   and the server closed the stream. Reconnect with `Last-Event-ID: 5` started at 6. Bob: 404 JSON.
   AI not exercised: Ollama took 30–48 s for a 1-token warm-up, so both runs fell back to rules
   (`timeout`) and bought Kids Headphones.
+
+## 7e — polish after the user's decisions
+
+- Branch `feat/001-7e-polish`, stacked on `feat/001-7d-web-log`. 3 commits, 6 files, +79 −7.
+  - `f002622` Testing Library waits up to 5 s for `findBy*` (was 1 s). Fixes the one-off
+    `AgentsPage` failure when the API suite runs alongside.
+  - `1aadf25` selection and payment log data use `fallbackReason` and `orderId`. Rows already
+    stored keep the old keys; nothing reads them.
+  - `e1c6ac0` navigation bar in the protected layout: Agents, Orders, Log out. Written inline in
+    `routes.tsx`, no new shared component.
+- Review (self), non-blocking: log out clears the session client-side even if the logout call
+  fails, and a network error there is not shown to the user.
+- Gate in a clean worktree:
+
+```
+ Test Files  51 passed (51)
+      Tests  290 passed (290)
+ Test Files  11 passed (11)
+      Tests  44 passed (44)
+Successfully compiled: 156 files with swc (46.03ms)
+✓ built in 353ms
+```
+- Live AI check: not run. Another client kept `qwen3:8b` (6.3 GB) loaded the whole time; its
+  keep-alive stayed at "9 minutes from now" for 20 minutes, so it was still in use. On 16 GiB,
+  loading `gemma4:e2b` next to it could make Ollama unload `qwen3:8b`, so I left both alone.
+  Still to run: strategy, fallback reason and latency of one live run.
