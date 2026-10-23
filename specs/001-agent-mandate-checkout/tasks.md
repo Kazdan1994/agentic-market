@@ -208,18 +208,18 @@ one Audio order ≤ 100.00 EUR, and the remaining budget drops by its price.
 
 ### Local AI selection (Slice 8)
 
-- [ ] T093 [P] [US1] Write failing unit tests for the AI prompt and schema in `apps/api/src/agent/infrastructure/ai/ai-selection.schema.spec.ts`:
+- [X] T093 [P] [US1] Write failing unit tests for the AI prompt and schema in `apps/api/src/agent/infrastructure/ai/ai-selection.schema.spec.ts`:
   - the zod schema `{ chosenProductId: string | null, reason: string, evaluations: { productId, verdict: "kept" | "discarded", reason }[] }` converts with `z.toJSONSchema`
   - the prompt contains only the request and each kept candidate's id, merchant name, name, description, category and price; no stock, keys or user data
   - the prompt asks for reasons of at most 15 words
-- [ ] T094 [P] [US1] Write failing tests `apps/api/src/agent/infrastructure/ai/ollama-product-selector.spec.ts` against a stub HTTP server. It sends `POST /api/chat` with `stream: false`, `think: false`, `options.temperature: 0`, `keep_alive: "30m"` and `format` = the JSON schema. Expected fallbacks:
+- [X] T094 [P] [US1] Write failing tests `apps/api/src/agent/infrastructure/ai/ollama-product-selector.spec.ts` against a stub HTTP server. It sends `POST /api/chat` with `stream: false`, `think: false`, `options.temperature: 0`, `keep_alive: "30m"` and `format` = the JSON schema. Expected fallbacks:
   - connection refused: `unavailable`
   - no answer within `AI_TIMEOUT_MS` (100 ms in the test): `timeout`
   - HTTP 404: `api_error`
   - output that fails the schema: `unusable_answer`
   - a chosen id outside the candidates: `ineligible_choice`
   A valid answer returns `strategy: ai`. Candidates missing from `evaluations` get the rule-based verdict, marked `notEvaluatedByAi: true`
-- [ ] T095 [US1] Implement `apps/api/src/agent/infrastructure/ai/ai-selection.schema.ts`, `prompt.ts` and `ollama-product-selector.ts` (built-in `fetch`, `AbortSignal.timeout(AI_TIMEOUT_MS)`, no retries)
+- [X] T095 [US1] Implement `apps/api/src/agent/infrastructure/ai/ai-selection.schema.ts`, `prompt.ts` and `ollama-product-selector.ts` (built-in `fetch`, `AbortSignal.timeout(AI_TIMEOUT_MS)`, no retries)
 - [X] T096 [P] [US1] Write failing tests `apps/api/src/agent/application/selection.service.spec.ts`:
   - `AGENT_SELECTION_MODE=rules` gives rules with `forced_rules`
   - `OLLAMA_BASE_URL` or `AI_MODEL` unset gives rules with `not_configured`
