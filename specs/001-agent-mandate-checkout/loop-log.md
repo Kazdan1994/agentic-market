@@ -58,3 +58,23 @@ Successfully compiled: 73 files with swc (27.95ms)
 Successfully compiled: 81 files with swc (33.39ms)
 ✓ built in 277ms
 ```
+
+## 3b2 — mandate key guard (T052 rest, T055, T056)
+
+- Branch `feat/001-3b2-mandate-key-guard`, commit `d4dd0b6`, 8 files, +307 -2 (incl. tests).
+- Review: no blocking findings. Applied: failure path recorded before the success path (no
+  double activity row), 401 test asserts no activity row. Not done: transaction around
+  the guard's activity + audit writes on refusal, timing equalisation between a malformed
+  header and an unknown key (keys are high-entropy, looked up by hash).
+- Still open for slice 4: `GET /v1/categories` accepts a session only; the contract also
+  allows a mandate key.
+- Gate in a clean worktree:
+
+```
+ Test Files  22 passed (22)
+      Tests  123 passed (123)
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+Successfully compiled: 87 files with swc (29.33ms)
+✓ built in 294ms
+```
