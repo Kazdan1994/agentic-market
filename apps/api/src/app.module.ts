@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { CqrsModule } from "@nestjs/cqrs";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { entities } from "./database/entities";
+import { CatalogModule } from "./catalog/catalog.module";
 import { migrations } from "./database/migrations";
 import { IdentityModule } from "./identity/identity.module";
 import { APP_CONFIG, type AppConfig } from "./shared/config/app-config";
@@ -26,6 +27,7 @@ import { SharedModule } from "./shared/shared.module";
       }),
     }),
     IdentityModule,
+    CatalogModule,
   ],
 })
 export class AppModule {}

@@ -1,13 +1,17 @@
 import { loadLocalEnv } from "../../shared/config/load-env";
 import { Argon2PasswordHasher } from "../../identity/infrastructure/argon2-password-hasher";
 import { createDataSource } from "../data-source";
+import { seedCatalog } from "./seed-catalog";
 import { seedUsers } from "./seed-users";
 
 type SeedStep = { name: string; run: (ds: ReturnType<typeof createDataSource>) => Promise<void> };
 
 /** Idempotent seed steps, run in order. */
 function seedSteps(demoPassword: string): readonly SeedStep[] {
-  return [{ name: "users", run: (ds) => seedUsers(ds, new Argon2PasswordHasher(), demoPassword) }];
+  return [
+    { name: "users", run: (ds) => seedUsers(ds, new Argon2PasswordHasher(), demoPassword) },
+    { name: "catalog", run: seedCatalog },
+  ];
 }
 
 async function main(): Promise<void> {
