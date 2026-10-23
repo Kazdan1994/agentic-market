@@ -1,4 +1,5 @@
 import { Money } from "../../shared/domain/money";
+import type { FallbackReason, SelectionStrategy } from "./agent-run";
 import type { Candidate } from "./candidate";
 
 export interface MandateLimits {
@@ -9,6 +10,16 @@ export interface MandateLimits {
 
 const price = (c: Candidate) => Money.of(c.priceMinor, c.currency).format();
 const money = (amountMinor: number, currency: string) => Money.of(amountMinor, currency).format();
+const FALLBACK_CAUSES: Record<FallbackReason, string> = {
+  not_configured: "the local AI is not configured",
+  forced_rules: "rule-based selection is forced by configuration",
+  unavailable: "the local AI could not be reached",
+  timeout: "the local AI did not answer in time",
+  api_error: "the local AI returned an error",
+  unusable_answer: "the local AI's answer could not be used",
+  ineligible_choice: "the local AI chose a product outside the eligible candidates",
+};
+
 const offer = (c: Candidate) => `"${c.name}" from ${c.merchantName}`;
 
 /** Plain-language decision-log messages (FR-018, FR-019). */
@@ -49,5 +60,10 @@ export const LogMessages = {
 
   noEligibleProduct(): string {
     return "No product fits the request within the mandate.";
+  },
+
+  strategy(strategy: SelectionStrategy, fallbackReason: FallbackReason | null): string {
+    if (strategy === "ai") return "Chosen by the local AI.";
+    return fallbackReason ? `Chosen by the rule-based selector: ${FALLBACK_CAUSES[fallbackReason]}.` : "Chosen by the rule-based selector.";
   },
 };

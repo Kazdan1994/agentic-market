@@ -3,9 +3,11 @@ import { FixedClock } from "../../../test/support/fixed-clock";
 import { InMemoryRuns } from "../../../test/support/in-memory-runs";
 import { InMemoryStore, type StoreProduct } from "../../../test/support/in-memory-store";
 import { AUDIO_CATEGORY, KITCHEN_CATEGORY, testMandate } from "../../../test/support/mandates";
+import type { ProductSelectorPort } from "../domain/product-selector.port";
 import { RuleBasedSelector } from "../domain/rule-based-selector";
 import type { RunStep } from "../domain/run-log-entry";
 import { RunExecutor } from "./run-executor";
+import { SelectionService } from "./selection.service";
 
 const NOW = new Date("2026-10-23T12:00:00Z");
 const RUN_ID = "00000000-0000-7000-8000-000000000101";
@@ -47,12 +49,12 @@ function setup(products: StoreProduct[]) {
   });
 }
 
-function executor() {
+function executor(selector: ProductSelectorPort = new RuleBasedSelector()) {
   return new RunExecutor(
     runs,
     store,
     { keyFor: () => "amk_builtin" },
-    new RuleBasedSelector(),
+    selector,
     new FixedClock(NOW),
     { info: (obj: object) => void logs.push(obj as Record<string, unknown>), error: (obj: object) => void logs.push(obj as Record<string, unknown>) },
   );
@@ -72,6 +74,14 @@ describe("RunExecutor", () => {
     expect(run).toMatchObject({ status: "completed", outcome: "order_placed", strategy: "rules", orderId: store.orders[0]?.orderId });
     expect(store.calls.every((c) => c.context.key === "amk_builtin" && c.context.runId === RUN_ID)).toBe(true);
     expect(logs.at(-1)).toMatchObject({ runId: RUN_ID, outcome: "order_placed", correlationId: "00000000-0000-7000-8000-0000000000cc" });
+  });
+
+  it("persists the fallback reason and states it in the selection entry", async () => {
+    const forced = new SelectionService({ AGENT_SELECTION_MODE: "rules", OLLAMA_BASE_URL: undefined, AI_MODEL: undefined }, new RuleBasedSelector());
+    await executor(forced).execute(RUN_ID);
+    expect(await runs.findById(RUN_ID)).toMatchObject({ strategy: "rules", fallbackReason: "forced_rules" });
+    const selection = runs.entriesOf(RUN_ID).find((e) => e.step === "selection");
+    expect(selection?.message).toMatch(/rule-based selection is forced by configuration\.$/);
   });
 
   it("ends with no_eligible_product when nothing is kept, saying why", async () => {

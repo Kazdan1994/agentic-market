@@ -7,12 +7,14 @@ import { InterruptedRunsRecovery } from "./application/interrupted-runs.recovery
 import { ListRunsHandler } from "./application/list-runs.handler";
 import { BUILTIN_KEYS, RUN_LOGGER } from "./application/ports";
 import { RunExecutor } from "./application/run-executor";
+import { SelectionService } from "./application/selection.service";
 import { StartRunHandler } from "./application/start-run.handler";
 import { AGENT_RUN_REPOSITORY } from "./domain/agent-run-repository";
 import { PRODUCT_SELECTOR } from "./domain/product-selector.port";
 import { RuleBasedSelector } from "./domain/rule-based-selector";
 import { STORE } from "./domain/store.port";
 import { BuiltinKeyProvider } from "./infrastructure/builtin-key.provider";
+import { AiModule } from "./infrastructure/ai/ai.module";
 import { HttpStoreAdapter } from "./infrastructure/http-store.adapter";
 import { RunsController } from "./infrastructure/http/runs.controller";
 import { TypeOrmAgentRunRepository } from "./infrastructure/typeorm-agent-run-repository";
@@ -22,7 +24,7 @@ import { TypeOrmAgentRunRepository } from "./infrastructure/typeorm-agent-run-re
  * through STORE, an HTTP client of the public API (research R8).
  */
 @Module({
-  imports: [IdentityModule, MandatesModule],
+  imports: [IdentityModule, MandatesModule, AiModule],
   controllers: [RunsController],
   providers: [
     StartRunHandler,
@@ -33,8 +35,8 @@ import { TypeOrmAgentRunRepository } from "./infrastructure/typeorm-agent-run-re
     { provide: AGENT_RUN_REPOSITORY, useClass: TypeOrmAgentRunRepository },
     { provide: STORE, useClass: HttpStoreAdapter },
     { provide: BUILTIN_KEYS, useClass: BuiltinKeyProvider },
-    // Slice 8 replaces this with the AI selector and its rule-based fallback.
-    { provide: PRODUCT_SELECTOR, useClass: RuleBasedSelector },
+    RuleBasedSelector,
+    { provide: PRODUCT_SELECTOR, useClass: SelectionService },
     {
       provide: RUN_LOGGER,
       inject: [PinoLogger],

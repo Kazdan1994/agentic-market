@@ -33,4 +33,13 @@ describe("LogMessages", () => {
   ] as const)("explains %s", (reason, text) => {
     expect(LogMessages.discarded(candidate({ productId: "p" }), reason, limits)).toContain(text);
   });
+
+  it.each([
+    ["ai", null, "Chosen by the local AI."],
+    ["rules", null, "Chosen by the rule-based selector."],
+    ["rules", "forced_rules", "Chosen by the rule-based selector: rule-based selection is forced by configuration."],
+    ["rules", "timeout", "Chosen by the rule-based selector: the local AI did not answer in time."],
+  ] as const)("states the %s strategy and fallback %s", (strategy, fallbackReason, expected) => {
+    expect(LogMessages.strategy(strategy, fallbackReason)).toBe(expected);
+  });
 });

@@ -220,14 +220,14 @@ one Audio order ≤ 100.00 EUR, and the remaining budget drops by its price.
   - a chosen id outside the candidates: `ineligible_choice`
   A valid answer returns `strategy: ai`. Candidates missing from `evaluations` get the rule-based verdict, marked `notEvaluatedByAi: true`
 - [ ] T095 [US1] Implement `apps/api/src/agent/infrastructure/ai/ai-selection.schema.ts`, `prompt.ts` and `ollama-product-selector.ts` (built-in `fetch`, `AbortSignal.timeout(AI_TIMEOUT_MS)`, no retries)
-- [ ] T096 [P] [US1] Write failing tests `apps/api/src/agent/application/selection.service.spec.ts`:
+- [X] T096 [P] [US1] Write failing tests `apps/api/src/agent/application/selection.service.spec.ts`:
   - `AGENT_SELECTION_MODE=rules` gives rules with `forced_rules`
   - `OLLAMA_BASE_URL` or `AI_MODEL` unset gives rules with `not_configured`
   - otherwise the AI is used, and any AI fallback runs the rules selector with that fallback reason
   - the run's `strategy` and `fallback_reason` are persisted (FR-009b)
-- [ ] T097 [US1] Implement `apps/api/src/agent/application/selection.service.ts` and wire it into `run-executor.ts`; the selection log entry states the strategy and, on fallback, its cause
-- [ ] T098 [P] [US1] Write failing tests `apps/api/src/agent/infrastructure/ai/ollama-warmup.spec.ts`: at boot it sends one background request with `keep_alive: "30m"` (never blocks startup); `AiStatusPort` reports `warm` when `GET /api/ps` lists `AI_MODEL`, `cold` when not, `unavailable` on connection error, `disabled` when not configured
-- [ ] T099 [US1] Implement `apps/api/src/agent/infrastructure/ai/ollama-warmup.ts` and `ollama-ai-status.adapter.ts`, bound to `AiStatusPort` so `/health` reports the AI state
+- [X] T097 [US1] Implement `apps/api/src/agent/application/selection.service.ts` and wire it into `run-executor.ts`; the selection log entry states the strategy and, on fallback, its cause
+- [X] T098 [P] [US1] Write failing tests `apps/api/src/agent/infrastructure/ai/ollama-warmup.spec.ts`: at boot it sends one background request with `keep_alive: "30m"` (never blocks startup); `AiStatusPort` reports `warm` when `GET /api/ps` lists `AI_MODEL`, `cold` when not, `unavailable` on connection error, `disabled` when not configured
+- [X] T099 [US1] Implement `apps/api/src/agent/infrastructure/ai/ollama-warmup.ts` and `ollama-ai-status.adapter.ts`, bound to `AiStatusPort` so `/health` reports the AI state
 
 ### Web: agents, runs and orders (Slice 9)
 

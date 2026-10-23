@@ -155,7 +155,9 @@ export class RunExecutor implements IEventHandler<RunStartedEvent> {
     const chosen = kept.find((c) => c.productId === selection.productId);
     await writer.write({
       step: "selection",
-      message: chosen ? selection.reason : LogMessages.noEligibleProduct(),
+      message: chosen
+        ? `${selection.reason} ${LogMessages.strategy(selection.strategy, selection.fallbackReason)}`
+        : LogMessages.noEligibleProduct(),
       productId: chosen?.productId ?? null,
       data: { strategy: selection.strategy, fallback_reason: selection.fallbackReason, evaluations: selection.evaluations },
     });
