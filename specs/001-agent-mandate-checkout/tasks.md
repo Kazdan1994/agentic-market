@@ -239,8 +239,8 @@ one Audio order ≤ 100.00 EUR, and the remaining budget drops by its price.
 - [X] T105 [P] [US1] Write failing tests `apps/web/src/features/runs/StartRunForm.test.tsx`: the request field (3–500 chars) starts a run and navigates to `/runs/{id}`; `RUN_ALREADY_IN_PROGRESS`, `MANDATE_*` (exhausted shown as "Budget used up") and `INVALID_REQUEST` show plain-language messages
 - [X] T106 [P] [US1] Write failing tests `apps/web/src/features/runs/RunPage.test.tsx`. While running it polls `GET /v1/runs/{id}` every 1 s. When completed it shows the outcome label, the strategy (AI or rules, plus the fallback reason) and, for `order_placed`, the order summary with product, merchant, price and a link to the order
 - [X] T107 [US1] Implement `apps/web/src/features/runs/StartRunForm.tsx`, `RunPage.tsx` and `useRun.ts`
-- [ ] T108 [P] [US1] Write failing tests `apps/web/src/features/orders/OrdersPage.test.tsx` and `OrderDetailPage.test.tsx`: the list shows product, merchant, total, status "Paid (simulated)", time and who placed it; the detail links to its run
-- [ ] T109 [US1] Implement `apps/web/src/features/orders/OrdersPage.tsx`, `OrderDetailPage.tsx` and `useOrders.ts`, and add the routes in `apps/web/src/routes.tsx`
+- [X] T108 [P] [US1] Write failing tests `apps/web/src/features/orders/OrdersPage.test.tsx` and `OrderDetailPage.test.tsx`: the list shows product, merchant, total, status "Paid (simulated)", time and who placed it; the detail links to its run
+- [X] T109 [US1] Implement `apps/web/src/features/orders/OrdersPage.tsx`, `OrderDetailPage.tsx` and `useOrders.ts`, and add the routes in `apps/web/src/routes.tsx`
 
 **Checkpoint**: US1 is fully functional on its own. Validate with quickstart S1, S3, S4 and
 S6 and the full gate.

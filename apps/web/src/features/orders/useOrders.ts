@@ -5,6 +5,26 @@ import { toApiError } from "@/features/agents/useAgents";
 
 export type Order = components["schemas"]["OrderResponse"];
 
+export const ORDER_STATUS_LABEL = "Paid (simulated)";
+
+export const PLACED_BY_LABELS: Record<Order["placedBy"], string> = {
+  builtin_agent: "Built-in agent",
+  third_party_agent: "External agent",
+};
+
+export const placedAt = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short" });
+
+export function useOrders() {
+  return useQuery({
+    queryKey: ["orders"],
+    queryFn: async (): Promise<Order[]> => {
+      const { data, error } = await api.GET("/v1/orders");
+      if (!data) throw toApiError(error);
+      return data;
+    },
+  });
+}
+
 export function useOrder(orderId: string | null) {
   return useQuery({
     queryKey: ["orders", orderId],
