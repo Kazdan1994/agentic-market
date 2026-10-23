@@ -247,3 +247,36 @@ Successfully compiled: 132 files with swc (35.74ms)
 Successfully compiled: 137 files with swc (40.14ms)
 ✓ built in 325ms
 ```
+
+## 6b3 — run endpoints and wiring (T091–T092)
+
+- Branch `feat/001-6b3-run-endpoints`, commit `ed6f92c`, 13 files, +345 -3 (incl. tests).
+- Seed change: RunBuds Pro is named "RunBuds Pro Running Earbuds" and described as running
+  headphones. Before, the demo request matched a cheaper, weaker product or the declined
+  one. Existing local databases keep the old rows (the seed never updates).
+- Review: no blocking findings. Noted: `agent/domain` imports catalog's pure scoring and
+  eligibility types (no runtime dependency on the catalog module).
+- Gate in a clean worktree:
+
+```
+ Test Files  43 passed (43)
+      Tests  237 passed (237)
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+Successfully compiled: 143 files with swc (38.69ms)
+✓ built in 320ms
+```
+
+- Checkpoint 2: full rule-based run through the API (`curl` against `yarn dev`, local
+  database seeded before the rename). Mandate 100.00 / 150.00, Audio, request
+  "wireless headphones for running":
+
+```
+POST /runs -> HTTP 202, status running
+run completed: outcome=order_placed strategy=rules fallback=null
+start to outcome: 318 ms
+order: Kids Headphones from SoundHub, 29 EUR, placedBy builtin_agent
+mandate: active, spent 2900, remaining 12100
+decision log: 17 entries: search, 12 evaluations (cap, category, stock, cheaper offer
+elsewhere), selection, mandate_check, payment, outcome
+```
