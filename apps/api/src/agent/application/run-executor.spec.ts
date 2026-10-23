@@ -94,6 +94,15 @@ describe("RunExecutor", () => {
     expect(steps().at(-1)).toBe("outcome");
   });
 
+  it("records no_eligible_candidates and says the AI was not asked when nothing is kept", async () => {
+    setup([product("e1", { priceMinor: 12_000 })]);
+    const service = new SelectionService({ AGENT_SELECTION_MODE: "auto", OLLAMA_BASE_URL: undefined, AI_MODEL: undefined }, new RuleBasedSelector());
+    await executor(service).execute(RUN_ID);
+    expect(await runs.findById(RUN_ID)).toMatchObject({ strategy: "rules", fallbackReason: "no_eligible_candidates" });
+    const selection = runs.entriesOf(RUN_ID).find((e) => e.step === "selection");
+    expect(selection?.message).toBe("No product fits the request within the mandate, so the local AI was not asked.");
+  });
+
   it.each([
     ["OVER_REMAINING_BUDGET", "refused_by_mandate"],
     ["MANDATE_REVOKED", "refused_by_mandate"],

@@ -25,7 +25,7 @@ export class AgentRunEntity {
   @Column({
     name: "fallback_reason",
     type: "enum",
-    enum: ["not_configured", "forced_rules", "unavailable", "timeout", "api_error", "unusable_answer", "ineligible_choice"],
+    enum: ["not_configured", "forced_rules", "unavailable", "timeout", "api_error", "unusable_answer", "ineligible_choice", "no_eligible_candidates"],
     enumName: "run_fallback_reason",
     nullable: true,
   })

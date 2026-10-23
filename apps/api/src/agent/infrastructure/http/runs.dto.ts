@@ -29,7 +29,7 @@ export class RunResponse implements RunView {
   @ApiProperty({ enum: ["ai", "rules"], nullable: true, type: String })
   strategy!: SelectionStrategy | null;
   @ApiProperty({
-    enum: ["not_configured", "forced_rules", "unavailable", "timeout", "api_error", "unusable_answer", "ineligible_choice"],
+    enum: ["not_configured", "forced_rules", "unavailable", "timeout", "api_error", "unusable_answer", "ineligible_choice", "no_eligible_candidates"],
     nullable: true,
     type: String,
   })

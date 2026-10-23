@@ -18,6 +18,7 @@ const FALLBACK_CAUSES: Record<FallbackReason, string> = {
   api_error: "the local AI returned an error",
   unusable_answer: "the local AI's answer could not be used",
   ineligible_choice: "the local AI chose a product outside the eligible candidates",
+  no_eligible_candidates: "no product was eligible",
 };
 
 const offer = (c: Candidate) => `"${c.name}" from ${c.merchantName}`;
@@ -58,7 +59,8 @@ export const LogMessages = {
     return `Chose ${offer(c)} at ${price(c)}: best match for the request, then lowest price.`;
   },
 
-  noEligibleProduct(): string {
+  noEligibleProduct(fallbackReason: FallbackReason | null = null): string {
+    if (fallbackReason === "no_eligible_candidates") return "No product fits the request within the mandate, so the local AI was not asked.";
     return "No product fits the request within the mandate.";
   },
 

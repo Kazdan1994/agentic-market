@@ -186,7 +186,7 @@ components:
         strategy: { type: [string, "null"], enum: [ai, rules, null] }
         fallbackReason:
           type: [string, "null"]
-          enum: [not_configured, forced_rules, unavailable, timeout, api_error, unusable_answer, ineligible_choice, null]
+          enum: [not_configured, forced_rules, unavailable, timeout, api_error, unusable_answer, ineligible_choice, no_eligible_candidates, null]
         orderId: { type: [string, "null"], format: uuid }
         startedAt: { type: string, format: date-time }
         endedAt: { type: [string, "null"], format: date-time }

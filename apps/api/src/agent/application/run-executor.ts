@@ -157,7 +157,7 @@ export class RunExecutor implements IEventHandler<RunStartedEvent> {
       step: "selection",
       message: chosen
         ? `${selection.reason} ${LogMessages.strategy(selection.strategy, selection.fallbackReason)}`
-        : LogMessages.noEligibleProduct(),
+        : LogMessages.noEligibleProduct(selection.fallbackReason),
       productId: chosen?.productId ?? null,
       data: { strategy: selection.strategy, fallback_reason: selection.fallbackReason, evaluations: selection.evaluations },
     });

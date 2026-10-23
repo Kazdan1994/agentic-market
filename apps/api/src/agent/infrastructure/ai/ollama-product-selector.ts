@@ -8,6 +8,8 @@ import { AI_SELECTION_JSON_SCHEMA, AiSelectionAnswer } from "./ai-selection.sche
 import { KEEP_ALIVE, type OllamaConfig, ollamaTarget } from "./ollama-config";
 import { selectionPrompt } from "./prompt";
 
+const NOT_EVALUATED_DISCARDED = "Not evaluated by the local AI, which chose another product.";
+
 class AiFallback extends Error {
   constructor(readonly reason: AiFallbackReason) {
     super(reason);
@@ -72,14 +74,25 @@ export class OllamaProductSelector implements AiSelectorPort {
     return parseAnswer(body);
   }
 
-  /** The AI's verdicts for known candidates, with the rule-based verdict for any it left out. */
+  /**
+   * The AI's verdicts for known candidates. A candidate it left out is discarded when it chose
+   * another product, and otherwise gets the rule-based verdict (research R5).
+   */
   private async evaluations(request: string, kept: readonly Candidate[], answer: AiSelectionAnswer): Promise<SelectionEvaluation[]> {
     const byAi = new Map(answer.evaluations.map((e) => [e.productId, e]));
     const missing = kept.some((c) => !byAi.has(c.productId));
-    const byRules = missing ? new Map((await this.rules.select(request, kept)).evaluations.map((e) => [e.productId, e])) : new Map();
+    const byRules =
+      missing && answer.chosenProductId === null
+        ? new Map((await this.rules.select(request, kept)).evaluations.map((e) => [e.productId, e]))
+        : new Map<string, SelectionEvaluation>();
     return kept.flatMap((c): SelectionEvaluation[] => {
       const ai = byAi.get(c.productId);
       if (ai) return [{ productId: ai.productId, verdict: ai.verdict, reason: ai.reason }];
+      if (answer.chosenProductId !== null) {
+        return c.productId === answer.chosenProductId
+          ? [{ productId: c.productId, verdict: "kept", reason: answer.reason, notEvaluatedByAi: true }]
+          : [{ productId: c.productId, verdict: "discarded", reason: NOT_EVALUATED_DISCARDED, notEvaluatedByAi: true }];
+      }
       const rule = byRules.get(c.productId);
       return rule ? [{ ...rule, notEvaluatedByAi: true }] : [];
     });

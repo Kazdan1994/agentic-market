@@ -71,8 +71,10 @@ Node v26.12.0, Docker 29.9.2, yarn 1.22.22 and pnpm 10.0.0.
 - **Output schema**: `{ chosenProductId: string | null, reason: string, evaluations:
   { productId, verdict: "kept" | "discarded", reason }[] }`. The response is parsed with the
   same zod schema. The prompt asks for reasons of 15 words or fewer to keep output short.
-- **Missing evaluations**: a candidate the model left out gets the rule-based verdict in
-  the log, marked as "not evaluated by AI". A valid `chosenProductId` is still accepted.
+- **Missing evaluations**: a candidate the model left out is marked "not evaluated by AI".
+  When the model chose another product, it is shown as discarded; when the model chose
+  nothing, it gets the rule-based verdict. A valid `chosenProductId` is still accepted.
+  (Amended 2026-10-23: a rule-based "kept" next to the AI's different choice was misleading.)
 - **Fallback triggers** (FR-009a), each mapped to a `fallback_reason` value:
   - `not_configured`: `AI_MODEL` or `OLLAMA_BASE_URL` unset
   - `forced_rules`: `AGENT_SELECTION_MODE=rules`

@@ -15,7 +15,8 @@ export type FallbackReason =
   | "timeout"
   | "api_error"
   | "unusable_answer"
-  | "ineligible_choice";
+  | "ineligible_choice"
+  | "no_eligible_candidates";
 
 export interface AgentRunProps {
   id: string;

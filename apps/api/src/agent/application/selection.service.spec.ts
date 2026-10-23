@@ -52,10 +52,10 @@ describe("SelectionService", () => {
     },
   );
 
-  it("does not ask the AI when nothing is kept", async () => {
+  it("does not ask the AI when nothing is kept, recording no_eligible_candidates", async () => {
     const model = ai(aiChoice);
     const result = await new SelectionService(CONFIGURED, new RuleBasedSelector(), model).select("earbuds", []);
-    expect(result).toMatchObject({ productId: null, strategy: "rules", fallbackReason: null });
+    expect(result).toMatchObject({ productId: null, strategy: "rules", fallbackReason: "no_eligible_candidates" });
     expect(model.calls).toBe(0);
   });
 });

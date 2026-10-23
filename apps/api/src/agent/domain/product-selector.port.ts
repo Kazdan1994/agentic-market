@@ -5,7 +5,7 @@ export interface SelectionEvaluation {
   productId: string;
   verdict: "kept" | "discarded";
   reason: string;
-  /** Set when the AI left this candidate out and the rule-based verdict stands in (research R5). */
+  /** Set when the AI left this candidate out: discarded if it chose another product, else the rule-based verdict (research R5). */
   notEvaluatedByAi?: boolean;
 }
 

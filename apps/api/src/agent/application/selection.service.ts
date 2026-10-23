@@ -20,7 +20,7 @@ export class SelectionService implements ProductSelectorPort {
   ) {}
 
   async select(request: string, kept: readonly Candidate[]): Promise<Selection> {
-    if (kept.length === 0) return this.rules.select(request, kept);
+    if (kept.length === 0) return this.fallback(request, kept, "no_eligible_candidates");
     if (this.config.AGENT_SELECTION_MODE === "rules") return this.fallback(request, kept, "forced_rules");
     if (!this.ai || !this.config.OLLAMA_BASE_URL || !this.config.AI_MODEL) return this.fallback(request, kept, "not_configured");
 

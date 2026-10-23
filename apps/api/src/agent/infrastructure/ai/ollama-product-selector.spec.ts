@@ -94,9 +94,20 @@ describe("OllamaProductSelector", () => {
     });
   });
 
-  it("gives candidates the AI left out the rule-based verdict, marked notEvaluatedByAi", async () => {
-    // The rules would keep the cheaper p2, so its stand-in verdict is the rules' own.
+  it("discards candidates the AI left out when it chose another product, marked notEvaluatedByAi", async () => {
     reply = { content: answer({ evaluations: [{ productId: "p1", verdict: "kept", reason: "Made for running." }] }) };
+    const result = await selector().select("earbuds for running", KEPT);
+    expect("selection" in result && result.selection.evaluations[1]).toMatchObject({
+      productId: "p2",
+      verdict: "discarded",
+      reason: "Not evaluated by the local AI, which chose another product.",
+      notEvaluatedByAi: true,
+    });
+  });
+
+  it("gives candidates the AI left out the rule-based verdict when it chose nothing", async () => {
+    // The rules would keep the cheaper p2, so its stand-in verdict is the rules' own.
+    reply = { content: answer({ chosenProductId: null, evaluations: [{ productId: "p1", verdict: "discarded", reason: "Not for running." }] }) };
     const result = await selector().select("earbuds for running", KEPT);
     expect("selection" in result && result.selection.evaluations[1]).toMatchObject({ productId: "p2", verdict: "kept", notEvaluatedByAi: true });
   });
