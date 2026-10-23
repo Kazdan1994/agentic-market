@@ -280,3 +280,18 @@ mandate: active, spent 2900, remaining 12100
 decision log: 17 entries: search, 12 evaluations (cap, category, stock, cheaper offer
 elsewhere), selection, mandate_check, payment, outcome
 ```
+
+## 8a — selection strategy, warm-up and AI status (T096–T099)
+
+- Branch `feat/001-8-ai-selection`, commit `928adc7`, 15 files, +367 -20 (incl. tests).
+- `SelectionService` (bound to `PRODUCT_SELECTOR`) picks AI or rules and records
+  `forced_rules`, `not_configured` or the AI failure; the selection log entry states it.
+  With no kept candidate it skips the AI (strategy rules, no fallback reason).
+- `AI_STATUS` moved from `SharedModule` to a global `AiModule` (agent/infrastructure/ai);
+  `DisabledAiStatus` removed. `/health` waits at most 2 s on Ollama.
+- Review: done inline (fork cannot spawn reviewers). No blockers found.
+- Gate in a clean worktree: 45 files / 262 tests API, 3 web, build OK.
+- Live: `yarn dev` with gemma4:e2b → `/health` = `{"status":"ok","db":"up","ai":"warm"}`.
+- **Blocked:** T093–T095 (Ollama selector) need `zod` 4, which the plan lists but
+  `apps/api/package.json` does not declare (only hoisted). Waiting for approval to add it.
+  Until then runs log `not_configured` even with Ollama set.
