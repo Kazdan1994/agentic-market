@@ -78,3 +78,21 @@ Successfully compiled: 81 files with swc (33.39ms)
 Successfully compiled: 87 files with swc (29.33ms)
 ✓ built in 294ms
 ```
+
+## 4a — search domain (T057–T059)
+
+- Branch `feat/001-4a-search-domain`, commit `585804e`, 6 files, +210 -0 (incl. tests).
+- Slice 4 split into 4a (pure scoring and eligibility) and 4b (repository, handlers, HTTP).
+- Review: no blocking findings. Applied: "-es" plural folding, "can", "will", "get" removed
+  from stop words, code-point id comparison. Kept: ASCII-only tokens (catalog is English);
+  eligibility reason order category → stock → budget (matches MandatePolicy).
+- Gate in a clean worktree:
+
+```
+ Test Files  25 passed (25)
+      Tests  134 passed (134)
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+Successfully compiled: 90 files with swc (31.1ms)
+✓ built in 228ms
+```
