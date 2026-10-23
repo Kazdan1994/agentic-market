@@ -98,8 +98,8 @@ needs these.
 - [X] T039 Implement `apps/api/src/database/seed/seed-catalog.ts` (3 merchants: SoundHub, TechCorner, HomeGoods), including the item refs used by quickstart S2, and document them in `apps/api/src/database/seed/README.md`
 - [X] T040 [P] Write a failing contract test `apps/api/test/contract/categories.contract.spec.ts`: `GET /v1/categories` with a session returns every category (`Category` schema); without credentials returns 401
 - [X] T041 Implement `apps/api/src/catalog/application/list-categories.handler.ts`, `apps/api/src/catalog/infrastructure/http/categories.controller.ts` and `apps/api/src/catalog/catalog.module.ts`
-- [ ] T042 [P] Write failing web tests `apps/web/src/features/auth/LoginPage.test.tsx`: submitting credentials calls `POST /v1/auth/login` and navigates to `/agents`; a 401 shows "Email or password is incorrect"; protected routes redirect to `/login` when `GET /v1/me` returns 401
-- [ ] T043 Implement `apps/web/src/main.tsx`, `apps/web/src/routes.tsx` (protected layout), `apps/web/src/features/auth/LoginPage.tsx` and `apps/web/src/features/auth/useMe.ts`
+- [X] T042 [P] Write failing web tests `apps/web/src/features/auth/LoginPage.test.tsx`: submitting credentials calls `POST /v1/auth/login` and navigates to `/agents`; a 401 shows "Email or password is incorrect"; protected routes redirect to `/login` when `GET /v1/me` returns 401
+- [X] T043 Implement `apps/web/src/main.tsx`, `apps/web/src/routes.tsx` (protected layout), `apps/web/src/features/auth/LoginPage.tsx` and `apps/web/src/features/auth/useMe.ts`
 
 **Checkpoint**: `yarn test` passes; `yarn dev` alone starts the database, migrates, seeds and serves
 the login page, and Alice can sign in.
