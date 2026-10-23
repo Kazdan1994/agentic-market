@@ -295,3 +295,19 @@ elsewhere), selection, mandate_check, payment, outcome
 - **Blocked:** T093–T095 (Ollama selector) need `zod` 4, which the plan lists but
   `apps/api/package.json` does not declare (only hoisted). Waiting for approval to add it.
   Until then runs log `not_configured` even with Ollama set.
+
+## 8b — Ollama AI selector (T093–T095)
+
+- Branch `feat/001-8-ai-selection`, commit `660aac2`, 8 files, +340 -3 (incl. tests), plus zod 4.6.5
+  in `apps/api/package.json` and `yarn.lock` (approved by the user; 4.6.5 picked over 4.6.7
+  because it is more than two weeks old).
+- Gate in a clean worktree: api 47 files / 278 tests passed, web 3 passed, build OK.
+- Self-review, no blockers. Non-blocking: a candidate the model leaves out gets the
+  rule-based verdict as written in R5, so it can read "kept" next to the AI's different choice.
+- Checkpoint 3 (`yarn dev`, gemma4:e2b warm, mandate 100.00 / 150.00, Audio, "wireless
+  headphones for running"): HTTP 202, `order_placed`, `strategy: ai`, no fallback, 4.4 s from
+  start to completion. Order: RunBuds Pro from TechCorner, 79.00 EUR (the rules picked Kids
+  Headphones on the same data).
+- Not done: recording a fallback reason when no product is eligible. It needs a new
+  `fallback_reason` value, so the OpenAPI enum and a migration on `run_fallback_reason` change.
+  Waiting for approval of the contract change.
