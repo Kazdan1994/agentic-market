@@ -32,8 +32,8 @@ type Row = [MerchantSlug, CategorySlug, string, string, string, number, number];
 
 const PRODUCTS: readonly Row[] = [
   // Audio. Items sold by two merchants are listed together; see README.md.
-  ["soundhub", "audio", "audio-runbuds-pro", "RunBuds Pro", "Wireless running earbuds, sweat-proof, 8 h battery", 8900, 12],
-  ["techcorner", "audio", "audio-runbuds-pro", "RunBuds Pro", "Wireless running earbuds, sweat-proof, 8 h battery", 7900, 5],
+  ["soundhub", "audio", "audio-runbuds-pro", "RunBuds Pro Running Earbuds", "Wireless running headphones, in-ear, sweat-proof, 8 h battery", 8900, 12],
+  ["techcorner", "audio", "audio-runbuds-pro", "RunBuds Pro Running Earbuds", "Wireless running headphones, in-ear, sweat-proof, 8 h battery", 7900, 5],
   ["soundhub", "audio", "audio-studio-max", "Studio Max Headphones", "Wireless over-ear headphones with noise cancelling", 24900, 6],
   ["techcorner", "audio", "audio-studio-max", "Studio Max Headphones", "Wireless over-ear headphones with noise cancelling", 22900, 3],
   ["soundhub", "audio", "audio-bassbox-mini", "BassBox Mini", "Portable bluetooth speaker, waterproof", 4900, 20],

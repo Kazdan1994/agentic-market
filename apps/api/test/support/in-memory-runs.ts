@@ -28,6 +28,12 @@ export class InMemoryRuns implements AgentRunRepository {
     return [...this.runs.values()].filter((r) => r.status === "running");
   }
 
+  async listByMandate(mandateId: string): Promise<AgentRun[]> {
+    return [...this.runs.values()]
+      .filter((r) => r.mandateId === mandateId)
+      .sort((a, b) => b.startedAt.getTime() - a.startedAt.getTime() || (a.id < b.id ? 1 : -1));
+  }
+
   async appendLog(entry: RunLogEntry): Promise<void> {
     if (this.log.some((e) => e.runId === entry.runId && e.seq === entry.seq)) throw new Error("duplicate seq");
     this.log.push(entry);

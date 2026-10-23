@@ -28,7 +28,8 @@ Use these for quickstart S2 (comparison). The cheaper offer should win.
 | `books-agentic-guide` | TechCorner 22.00 | HomeGoods 24.00 |
 | `kitchen-chef-knife` | HomeGoods 39.00 | TechCorner 45.00 |
 
-A request such as "wireless running earbuds" matches `audio-runbuds-pro`.
+Requests such as "wireless running earbuds" or "wireless headphones for running" rank
+`audio-runbuds-pro` first, so the rule-based agent buys it from TechCorner (79.00).
 
 ### Edge cases
 

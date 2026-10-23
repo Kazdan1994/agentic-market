@@ -8,6 +8,8 @@ export interface AgentRunRepository {
   complete(run: AgentRun): Promise<void>;
   findById(runId: string): Promise<AgentRun | null>;
   findRunning(): Promise<AgentRun[]>;
+  /** Newest first. */
+  listByMandate(mandateId: string): Promise<AgentRun[]>;
   appendLog(entry: RunLogEntry): Promise<void>;
   /** Entries in seq order, optionally only those after `afterSeq` (SSE replay). */
   listLog(runId: string, afterSeq?: number): Promise<RunLogEntry[]>;

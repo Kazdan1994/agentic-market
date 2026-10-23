@@ -226,3 +226,24 @@ Successfully compiled: 129 files with swc (35.47ms)
 Successfully compiled: 132 files with swc (35.74ms)
 ✓ built in 207ms
 ```
+
+## 6b2 — start handler, executor, recovery (T086–T090)
+
+- Branch `feat/001-6b2-run-executor`, commit `c016eb5`, 10 files, +691 -0 (incl. tests).
+- Decision: an unexpected error ends the run as `interrupted` (closest of the five spec
+  outcomes); the outcome entry explains it was an error, not a restart.
+- Review: two blocking findings, both fixed. The background `execute` had no `.catch`
+  (unhandled rejection); a failure while writing the outcome left the run `running`,
+  blocking its mandate until restart. Now the run is always completed (3 attempts), even
+  if the outcome entry cannot be written. Also: recovery isolates each run; a checkout that
+  times out is retried once with the same idempotency key, so a paid order is found.
+- Gate in a clean worktree:
+
+```
+ Test Files  42 passed (42)
+      Tests  232 passed (232)
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+Successfully compiled: 137 files with swc (40.14ms)
+✓ built in 325ms
+```

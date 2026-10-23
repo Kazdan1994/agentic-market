@@ -203,8 +203,8 @@ one Audio order ≤ 100.00 EUR, and the remaining budget drops by its price.
 - [X] T088 [US1] Implement `apps/api/src/agent/application/start-run.handler.ts` and `apps/api/src/agent/application/run-executor.ts` (a `RunStartedEvent` handler, not awaited by the HTTP request; it logs agent id, mandate id, principal and outcome with the correlation id)
 - [X] T089 [P] [US1] Write a failing test `apps/api/src/agent/application/interrupted-runs.recovery.spec.ts`: on boot, every `running` run becomes `completed` with outcome `interrupted`, a final `outcome` log entry and audit `run.interrupted`
 - [X] T090 [US1] Implement `apps/api/src/agent/application/interrupted-runs.recovery.ts` (`OnApplicationBootstrap`)
-- [ ] T091 [P] [US1] Write failing contract tests `apps/api/test/contract/runs.contract.spec.ts`. `POST /v1/mandates/{id}/runs` returns 202 `Run` (`status: running`), then polling `GET /v1/runs/{id}` reaches `completed` with `order_placed` within 30 s (SC-002). Errors: 409 `RUN_ALREADY_IN_PROGRESS`, 409 `MANDATE_EXHAUSTED`, 422 `INVALID_REQUEST`. `GET /v1/mandates/{id}/runs` lists newest first. Bob gets 404 on Alice's run
-- [ ] T092 [US1] Implement `apps/api/src/agent/infrastructure/http/runs.controller.ts`, `get-run.handler.ts`, `list-runs.handler.ts` and `apps/api/src/agent/agent.module.ts`
+- [X] T091 [P] [US1] Write failing contract tests `apps/api/test/contract/runs.contract.spec.ts`. `POST /v1/mandates/{id}/runs` returns 202 `Run` (`status: running`), then polling `GET /v1/runs/{id}` reaches `completed` with `order_placed` within 30 s (SC-002). Errors: 409 `RUN_ALREADY_IN_PROGRESS`, 409 `MANDATE_EXHAUSTED`, 422 `INVALID_REQUEST`. `GET /v1/mandates/{id}/runs` lists newest first. Bob gets 404 on Alice's run
+- [X] T092 [US1] Implement `apps/api/src/agent/infrastructure/http/runs.controller.ts`, `get-run.handler.ts`, `list-runs.handler.ts` and `apps/api/src/agent/agent.module.ts`
 
 ### Local AI selection (Slice 8)
 

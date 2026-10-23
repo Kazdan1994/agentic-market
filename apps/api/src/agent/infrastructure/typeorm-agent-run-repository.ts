@@ -73,6 +73,13 @@ export class TypeOrmAgentRunRepository implements AgentRunRepository {
     return rows.map((row) => AgentRun.restore(row));
   }
 
+  async listByMandate(mandateId: string): Promise<AgentRun[]> {
+    const rows = await this.dataSource
+      .getRepository(AgentRunEntity)
+      .find({ where: { mandateId }, order: { startedAt: "DESC", id: "DESC" } });
+    return rows.map((row) => AgentRun.restore(row));
+  }
+
   async appendLog(entry: RunLogEntry): Promise<void> {
     await this.dataSource.getRepository(RunLogEntryEntity).insert({ ...entry, data: { ...entry.data } });
   }
