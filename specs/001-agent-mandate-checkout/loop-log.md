@@ -116,3 +116,23 @@ Successfully compiled: 90 files with swc (31.1ms)
 Successfully compiled: 98 files with swc (33.43ms)
 ✓ built in 319ms
 ```
+
+## 5a — checkout transaction (T064–T070)
+
+- Branch `feat/001-5a-checkout-tx`, commit `f4c2193`, 13 files, +857 -0 (incl. tests, excl. migration).
+- `CheckoutCommand` also carries `keyKind`, for the per-attempt log line.
+- `orders.run_id` has no foreign key yet; slice 6a adds it with `agent_runs`.
+- Review: no blocking findings. Applied: a replay must come from the same key, an approved
+  payment without an order now throws, concurrent same-key test added.
+- Kept as designed (R12): refused attempts store no payment row, so retrying the same key
+  later re-evaluates; replays return the stored result even if the mandate was revoked since.
+- Gate in a clean worktree:
+
+```
+ Test Files  30 passed (30)
+      Tests  160 passed (160)
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+Successfully compiled: 108 files with swc (33.6ms)
+✓ built in 209ms
+```

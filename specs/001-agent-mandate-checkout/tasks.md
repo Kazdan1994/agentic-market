@@ -170,10 +170,10 @@ one Audio order ≤ 100.00 EUR, and the remaining budget drops by its price.
 - [X] T070 [US1] Implement `apps/api/src/checkout/infrastructure/typeorm-checkout-unit-of-work.ts`: one transaction that `SELECT … FOR UPDATE` locks the mandate, then the product, runs `MandatePolicy.authorize`, looks up the idempotency key, charges the gateway, inserts the payment, order and audit rows, updates `spent_minor` and `stock`, and commits (research R12)
 ### Checkout: HTTP and orders (Slice 5b)
 
-- [ ] T071 [P] [US1] Write failing contract tests `apps/api/test/contract/checkout.contract.spec.ts`: `POST /v1/checkout` with a key and `Idempotency-Key` (8–100 chars) returns 201 `Order` with `placedBy: builtin_agent | third_party_agent`; a missing header returns 400; a decline returns 402 `PAYMENT_DECLINED`; refusals return 409 with their codes; `X-Agent-Run-Id` is stored only for `builtin` keys
-- [ ] T072 [US1] Implement `apps/api/src/checkout/infrastructure/http/checkout.controller.ts` (DTO `checkout.dto.ts`: `productId` uuid, `expectedPriceMinor` integer ≥ 1) and `apps/api/src/checkout/checkout.module.ts`
-- [ ] T073 [P] [US1] Write failing contract tests `apps/api/test/contract/orders.contract.spec.ts`: `GET /v1/orders` returns the caller's orders newest first; `GET /v1/orders/{id}` returns `Order` with `runId`; another user's order returns 404
-- [ ] T074 [US1] Implement `apps/api/src/checkout/application/list-orders.handler.ts`, `get-order.handler.ts` and `apps/api/src/checkout/infrastructure/http/orders.controller.ts`
+- [X] T071 [P] [US1] Write failing contract tests `apps/api/test/contract/checkout.contract.spec.ts`: `POST /v1/checkout` with a key and `Idempotency-Key` (8–100 chars) returns 201 `Order` with `placedBy: builtin_agent | third_party_agent`; a missing header returns 400; a decline returns 402 `PAYMENT_DECLINED`; refusals return 409 with their codes; `X-Agent-Run-Id` is stored only for `builtin` keys
+- [X] T072 [US1] Implement `apps/api/src/checkout/infrastructure/http/checkout.controller.ts` (DTO `checkout.dto.ts`: `productId` uuid, `expectedPriceMinor` integer ≥ 1) and `apps/api/src/checkout/checkout.module.ts`
+- [X] T073 [P] [US1] Write failing contract tests `apps/api/test/contract/orders.contract.spec.ts`: `GET /v1/orders` returns the caller's orders newest first; `GET /v1/orders/{id}` returns `Order` with `runId`; another user's order returns 404
+- [X] T074 [US1] Implement `apps/api/src/checkout/application/list-orders.handler.ts`, `get-order.handler.ts` and `apps/api/src/checkout/infrastructure/http/orders.controller.ts`
 
 ### Agent run: domain and persistence (Slice 6a)
 
