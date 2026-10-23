@@ -185,3 +185,23 @@ Successfully compiled: 117 files with swc (33.84ms)
 Successfully compiled: 124 files with swc (34.67ms)
 ✓ built in 216ms
 ```
+
+## 6a2 — run persistence (T080–T082)
+
+- Branch `feat/001-6a2-run-persistence`, commit `3850184`, 13 files, +337 -7 (incl. tests, excl. migration).
+- Migration 0007 also adds the `orders.run_id` foreign key deferred from 5a.
+- Change to slice 5 code: a built-in checkout's `X-Agent-Run-Id` must name a running
+  run of the same mandate, else 400 `VALIDATION_FAILED` (it was a 500 with the new FK).
+  Replays are unaffected: the idempotency lookup comes first.
+- Review: no blocking findings. Noted: gap-free `seq` is guaranteed by callers using
+  `lastSeq + 1`, not by the database.
+- Gate in a clean worktree:
+
+```
+ Test Files  38 passed (38)
+      Tests  200 passed (200)
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+Successfully compiled: 129 files with swc (35.47ms)
+✓ built in 206ms
+```
