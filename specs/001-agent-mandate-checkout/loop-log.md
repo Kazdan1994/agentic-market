@@ -36,3 +36,25 @@ Successfully compiled: 65 files with swc (36.15ms)
 Successfully compiled: 73 files with swc (27.95ms)
 ✓ built in 210ms
 ```
+
+## 3b1 — agent endpoints (T051, T053, T054; T052 partly)
+
+- Branch `feat/001-3b1-agents-http`, commit `27e785b`, 15 files, +613 -2 (incl. tests).
+- Slice 3b split into 3b1 (agents) and 3b2 (key guard, `GET /v1/mandate`).
+- T052 stays open: `get-mandate.handler.ts` lands in 3b2 with the endpoint that uses it.
+- Review: one real blocking finding, fixed (amounts above int32 gave a 500; now 400). Also
+  `expiresAt` must include a time and offset. Two reported blockers were wrong (the
+  400 and cross-user 404 tests already existed).
+- **Contract change proposed, not applied**: `GET /v1/mandate` (`getOwnMandate`) declares
+  only 200 and 401, but T055 needs 409 (`MandateRefusal`) for an expired, revoked or
+  exhausted mandate. Suggest adding `"409": { $ref: "#/components/responses/MandateRefusal" }`.
+- Gate in a clean worktree:
+
+```
+ Test Files  21 passed (21)
+      Tests  118 passed (118)
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+Successfully compiled: 81 files with swc (33.39ms)
+✓ built in 277ms
+```
