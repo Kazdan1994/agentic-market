@@ -18,6 +18,7 @@ import { BuiltinKeyProvider } from "./infrastructure/builtin-key.provider";
 import { AiModule } from "./infrastructure/ai/ai.module";
 import { HttpStoreAdapter } from "./infrastructure/http-store.adapter";
 import { RunsController } from "./infrastructure/http/runs.controller";
+import { RunLogPublisher } from "./infrastructure/run-log.publisher";
 import { TypeOrmAgentRunRepository } from "./infrastructure/typeorm-agent-run-repository";
 
 /**
@@ -34,6 +35,7 @@ import { TypeOrmAgentRunRepository } from "./infrastructure/typeorm-agent-run-re
     GetRunHandler,
     GetRunLogHandler,
     ListRunsHandler,
+    RunLogPublisher,
     { provide: AGENT_RUN_REPOSITORY, useClass: TypeOrmAgentRunRepository },
     { provide: STORE, useClass: HttpStoreAdapter },
     { provide: BUILTIN_KEYS, useClass: BuiltinKeyProvider },

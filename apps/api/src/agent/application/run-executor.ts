@@ -1,5 +1,5 @@
 import { Inject } from "@nestjs/common";
-import { EventsHandler, type IEventHandler } from "@nestjs/cqrs";
+import { EventBus, EventsHandler, type IEventHandler } from "@nestjs/cqrs";
 import { CorrelationContext } from "../../shared/correlation/correlation-context";
 import { CLOCK, type Clock } from "../../shared/domain/clock";
 import { Money } from "../../shared/domain/money";
@@ -11,7 +11,8 @@ import { LogMessages } from "../domain/log-messages";
 import { PRODUCT_SELECTOR, type ProductSelectorPort, type Selection } from "../domain/product-selector.port";
 import { RunLog, type RunLogInput } from "../domain/run-log-entry";
 import { STORE, type StoreContext, StoreError, type StorePort } from "../domain/store.port";
-import { BUILTIN_KEYS, type BuiltinKeys, RUN_LOGGER, type RunLogger } from "./ports";
+import { RunCompletedEvent, RunLogAppendedEvent } from "./run-log-events";
+import { BUILTIN_KEYS, type BuiltinKeys, RUN_LOGGER, type RunEventPublisher, type RunLogger } from "./ports";
 import { RunStartedEvent } from "./run-started.event";
 
 const SEARCH_LIMIT = 20;
@@ -29,6 +30,7 @@ class LogWriter {
     runId: string,
     private readonly runs: AgentRunRepository,
     private readonly clock: Clock,
+    private readonly events: RunEventPublisher,
   ) {
     this.log = RunLog.empty(runId);
   }
@@ -37,6 +39,8 @@ class LogWriter {
     const { log, entry } = this.log.append(input, this.clock.now());
     await this.runs.appendLog(entry);
     this.log = log;
+    // Only after the insert has committed, so live subscribers never get ahead of a replay.
+    this.events.publish(new RunLogAppendedEvent(entry));
   }
 }
 
@@ -54,6 +58,7 @@ export class RunExecutor implements IEventHandler<RunStartedEvent> {
     @Inject(PRODUCT_SELECTOR) private readonly selector: ProductSelectorPort,
     @Inject(CLOCK) private readonly clock: Clock,
     @Inject(RUN_LOGGER) private readonly logger: RunLogger,
+    @Inject(EventBus) private readonly events: RunEventPublisher,
   ) {}
 
   handle(event: RunStartedEvent): void {
@@ -70,7 +75,7 @@ export class RunExecutor implements IEventHandler<RunStartedEvent> {
   }
 
   private async executeRun(run: AgentRun): Promise<void> {
-    const writer = new LogWriter(run.id, this.runs, this.clock);
+    const writer = new LogWriter(run.id, this.runs, this.clock, this.events);
     const context: StoreContext = { key: this.keys.keyFor(run.mandateId), runId: run.id, correlationId: run.correlationId };
     let result: Result;
     try {
@@ -116,6 +121,7 @@ export class RunExecutor implements IEventHandler<RunStartedEvent> {
     for (let attempt = 1; attempt <= COMPLETE_ATTEMPTS; attempt += 1) {
       try {
         await this.runs.complete(completed);
+        this.events.publish(new RunCompletedEvent(completed));
         return;
       } catch (error) {
         if (attempt === COMPLETE_ATTEMPTS) throw error;

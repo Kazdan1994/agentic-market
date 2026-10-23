@@ -260,8 +260,8 @@ and reason, entries appear live, and a reload mid-run resumes without duplicates
 
 - [X] T110 [P] [US2] Write failing contract tests `apps/api/test/contract/run-log.contract.spec.ts`: `GET /v1/runs/{id}/log` returns `LogEntry[]` in `seq` order with `step`, `message` and `data` (`verdict`, `reasonCode`, `merchant`, `priceMinor` on evaluation entries); a run without an order still has a full log ending in `outcome` (FR-017); another user's run returns 404
 - [X] T111 [US2] Implement `apps/api/src/agent/application/get-run-log.handler.ts` and the route in `runs.controller.ts`
-- [ ] T112 [P] [US2] Write failing unit tests `apps/api/src/agent/infrastructure/run-log.publisher.spec.ts`: an entry is published to per-run subscribers only after its transaction commits; subscribers to other runs receive nothing
-- [ ] T113 [US2] Implement `apps/api/src/agent/infrastructure/run-log.publisher.ts` (in-process, on the CQRS event bus) and publish from `run-executor.ts` after each append and at completion
+- [X] T112 [P] [US2] Write failing unit tests `apps/api/src/agent/infrastructure/run-log.publisher.spec.ts`: an entry is published to per-run subscribers only after its transaction commits; subscribers to other runs receive nothing
+- [X] T113 [US2] Implement `apps/api/src/agent/infrastructure/run-log.publisher.ts` (in-process, on the CQRS event bus) and publish from `run-executor.ts` after each append and at completion
 - [ ] T114 [P] [US2] Write failing contract tests `apps/api/test/contract/run-events.contract.spec.ts` per `contracts/run-events.md`:
   - a fresh connect during a run gets `log` events 1…n in order, then `run.completed`
   - a reconnect with `Last-Event-ID: k` gets exactly k+1…n

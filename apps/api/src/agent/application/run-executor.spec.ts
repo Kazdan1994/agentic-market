@@ -57,6 +57,7 @@ function executor(selector: ProductSelectorPort = new RuleBasedSelector()) {
     selector,
     new FixedClock(NOW),
     { info: (obj: object) => void logs.push(obj as Record<string, unknown>), error: (obj: object) => void logs.push(obj as Record<string, unknown>) },
+    { publish: () => undefined },
   );
 }
 
