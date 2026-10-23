@@ -5,11 +5,12 @@ import { CurrentUser } from "../../../identity/infrastructure/http/current-user.
 import { type AuthenticatedUser, UserAuthGuard } from "../../../identity/infrastructure/http/user-auth.guard";
 import { CorrelationContext } from "../../../shared/correlation/correlation-context";
 import { GetRunQuery } from "../../application/get-run.handler";
+import { GetRunLogQuery, type LogEntryView } from "../../application/get-run-log.handler";
 import { ListRunsQuery } from "../../application/list-runs.handler";
 import { type RunView, toRunView } from "../../application/run-view";
 import { StartRunCommand } from "../../application/start-run.handler";
 import type { AgentRun } from "../../domain/agent-run";
-import { RunResponse, StartRunDto } from "./runs.dto";
+import { LogEntryResponse, RunResponse, StartRunDto } from "./runs.dto";
 
 @ApiTags("user")
 @ApiCookieAuth()
@@ -49,5 +50,12 @@ export class RunsController {
   @ApiOkResponse({ type: RunResponse })
   get(@CurrentUser() user: AuthenticatedUser, @Param("runId", new ParseUUIDPipe()) runId: string): Promise<RunView> {
     return this.queries.execute<GetRunQuery, RunView>(new GetRunQuery(user.userId, runId));
+  }
+
+  @Get("runs/:runId/log")
+  @ApiOperation({ operationId: "getRunLog" })
+  @ApiOkResponse({ type: LogEntryResponse, isArray: true })
+  log(@CurrentUser() user: AuthenticatedUser, @Param("runId", new ParseUUIDPipe()) runId: string): Promise<LogEntryView[]> {
+    return this.queries.execute<GetRunLogQuery, LogEntryView[]>(new GetRunLogQuery(user.userId, runId));
   }
 }

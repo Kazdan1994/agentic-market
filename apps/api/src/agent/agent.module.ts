@@ -3,6 +3,7 @@ import { PinoLogger } from "nestjs-pino";
 import { IdentityModule } from "../identity/identity.module";
 import { MandatesModule } from "../mandates/mandates.module";
 import { GetRunHandler } from "./application/get-run.handler";
+import { GetRunLogHandler } from "./application/get-run-log.handler";
 import { InterruptedRunsRecovery } from "./application/interrupted-runs.recovery";
 import { ListRunsHandler } from "./application/list-runs.handler";
 import { BUILTIN_KEYS, RUN_LOGGER } from "./application/ports";
@@ -31,6 +32,7 @@ import { TypeOrmAgentRunRepository } from "./infrastructure/typeorm-agent-run-re
     RunExecutor,
     InterruptedRunsRecovery,
     GetRunHandler,
+    GetRunLogHandler,
     ListRunsHandler,
     { provide: AGENT_RUN_REPOSITORY, useClass: TypeOrmAgentRunRepository },
     { provide: STORE, useClass: HttpStoreAdapter },

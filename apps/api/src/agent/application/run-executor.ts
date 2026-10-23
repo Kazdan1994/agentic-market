@@ -146,7 +146,7 @@ export class RunExecutor implements IEventHandler<RunStartedEvent> {
         step: "evaluation",
         message,
         productId: c.productId,
-        data: { verdict: e.verdict, reason_code: e.reasonCode, merchant: c.merchantName, price_minor: c.priceMinor },
+        data: { verdict: e.verdict, reasonCode: e.reasonCode, merchant: c.merchantName, priceMinor: c.priceMinor },
       });
     }
 
@@ -168,7 +168,7 @@ export class RunExecutor implements IEventHandler<RunStartedEvent> {
       step: "mandate_check",
       message: `Checked the mandate: ${this.price(chosen)} is within the ${Money.of(limit, limits.currency).format()} limit.`,
       productId: chosen.productId,
-      data: { price_minor: chosen.priceMinor, limit_minor: limit },
+      data: { priceMinor: chosen.priceMinor, limitMinor: limit },
     });
     return this.checkout(context, chosen, selection, writer);
   }

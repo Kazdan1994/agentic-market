@@ -206,11 +206,11 @@ are explained in run logs.
 | step | enum | `search` \| `evaluation` \| `selection` \| `mandate_check` \| `payment` \| `outcome` (FR-018) |
 | message | text | plain-language explanation |
 | product_id | uuid null | the product concerned, if any |
-| data | jsonb | structured detail for software clients (FR-021), e.g. `{verdict, reason_code, merchant, price_minor, strategy}` |
+| data | jsonb | structured detail for software clients (FR-021), e.g. `{verdict, reasonCode, merchant, priceMinor, strategy}` (camelCase, as in contracts/run-events.md) |
 
 - Append-only (R14).
 - `evaluation` entries carry `verdict ∈ {kept, discarded}` and
-  `reason_code ∈ {over_budget, category_not_allowed, out_of_stock, weaker_match,
+  `reasonCode ∈ {over_budget, category_not_allowed, out_of_stock, weaker_match,
   cheaper_offer_elsewhere}` (FR-019).
 
 ## Context: checkout
