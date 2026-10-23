@@ -4,7 +4,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { seedCatalog } from "../../src/database/seed/seed-catalog";
 import { seedUsers } from "../../src/database/seed/seed-users";
 import { Argon2PasswordHasher } from "../../src/identity/infrastructure/argon2-password-hasher";
-import { createAgent, productId } from "../support/agents";
+import { createAgent, insertRunningRun, productId } from "../support/agents";
 import { createTestApp, type TestApp } from "../support/app";
 import { expectResponse } from "../support/openapi-contract";
 import { getTestDataSource, truncateAll } from "../support/postgres";
@@ -15,7 +15,7 @@ describe("orders (contract)", () => {
   let alice: string;
   let bob: string;
   const orderIds: string[] = [];
-  const runId = randomUUID();
+  let runId: string;
 
   async function buy(key: string, itemRef: string, merchant: string, headers: Record<string, string> = {}) {
     const p = await productId(itemRef, merchant);
@@ -36,7 +36,8 @@ describe("orders (contract)", () => {
     testApp = await createTestApp();
     alice = await loginAs(testApp.baseUrl, "alice@demo.local");
     bob = await loginAs(testApp.baseUrl, "bob@demo.local");
-    const { builtinKey } = await createAgent(testApp.baseUrl, alice);
+    const { builtinKey, mandateId } = await createAgent(testApp.baseUrl, alice);
+    runId = await insertRunningRun(mandateId);
     orderIds.push(await buy(builtinKey, "audio-bassbox-mini", "soundhub"));
     orderIds.push(await buy(builtinKey, "audio-wired-classic", "soundhub", { "X-Agent-Run-Id": runId }));
   });

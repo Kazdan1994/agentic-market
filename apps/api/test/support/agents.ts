@@ -50,6 +50,18 @@ export async function insertExternalKey(mandateId: string): Promise<string> {
   return material.secret;
 }
 
+/** Inserts a running run, as the run executor does before it calls checkout. */
+export async function insertRunningRun(mandateId: string): Promise<string> {
+  const ds = await getTestDataSource();
+  const runId = randomUUID();
+  await ds.query(
+    `INSERT INTO agent_runs (id, mandate_id, user_id, request, status, started_at, correlation_id)
+     SELECT $1, id, user_id, 'test request', 'running', now(), $1 FROM mandates WHERE id = $2`,
+    [runId, mandateId],
+  );
+  return runId;
+}
+
 export async function productId(itemRef: string, merchantSlug: string): Promise<{ id: string; priceMinor: number }> {
   const ds = await getTestDataSource();
   const [row] = await ds.query(

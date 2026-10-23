@@ -52,6 +52,13 @@ export class TypeOrmCheckoutUnitOfWork implements CheckoutUnitOfWork {
     return {
       lockMandate: (mandateId) => this.lockMandate(manager, mandateId),
       lockProduct: (productId) => this.lockProduct(manager, productId),
+      isRunningRun: async (runId, mandateId) => {
+        const rows: unknown[] = await manager.query(
+          "SELECT 1 FROM agent_runs WHERE id = $1 AND mandate_id = $2 AND status = 'running'",
+          [runId, mandateId],
+        );
+        return rows.length === 1;
+      },
       findPayment: async (mandateId, idempotencyKey) => {
         const row = await manager.findOneBy(PaymentEntity, { mandateId, idempotencyKey });
         return row ? toPayment(row) : null;

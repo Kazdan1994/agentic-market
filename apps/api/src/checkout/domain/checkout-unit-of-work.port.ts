@@ -8,6 +8,8 @@ import type { PaymentRecord } from "./payment";
 export interface CheckoutTx {
   lockMandate(mandateId: string): Promise<Mandate | null>;
   lockProduct(productId: string): Promise<ProductRecord | null>;
+  /** True when the run exists, belongs to the mandate and is still running. */
+  isRunningRun(runId: string, mandateId: string): Promise<boolean>;
   findPayment(mandateId: string, idempotencyKey: string): Promise<PaymentRecord | null>;
   findOrderByPayment(paymentId: string): Promise<OrderRecord | null>;
   insertPayment(payment: PaymentRecord): Promise<void>;

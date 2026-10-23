@@ -4,7 +4,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { seedCatalog } from "../../src/database/seed/seed-catalog";
 import { seedUsers } from "../../src/database/seed/seed-users";
 import { Argon2PasswordHasher } from "../../src/identity/infrastructure/argon2-password-hasher";
-import { createAgent, insertExternalKey, productId } from "../support/agents";
+import { createAgent, insertExternalKey, insertRunningRun, productId } from "../support/agents";
 import { createTestApp, type TestApp } from "../support/app";
 import { expectResponse } from "../support/openapi-contract";
 import { getTestDataSource, truncateAll } from "../support/postgres";
@@ -31,9 +31,9 @@ describe("POST /v1/checkout (contract)", () => {
   afterAll(async () => testApp.close());
 
   it("places an order with the built-in key and stores the run id", async () => {
-    const { builtinKey } = await createAgent(testApp.baseUrl, cookie);
+    const { builtinKey, mandateId } = await createAgent(testApp.baseUrl, cookie);
     const p = await productId("audio-runbuds-pro", "techcorner");
-    const runId = randomUUID();
+    const runId = await insertRunningRun(mandateId);
     const res = await post(builtinKey, { productId: p.id, expectedPriceMinor: p.priceMinor }, {
       "Idempotency-Key": "run-step-0001",
       "X-Agent-Run-Id": runId,
@@ -47,6 +47,16 @@ describe("POST /v1/checkout (contract)", () => {
       "X-Agent-Run-Id": runId,
     }).expect(201);
     expect(replay.body.id).toBe(res.body.id);
+  });
+
+  it("refuses a built-in checkout naming a run that is not running on this mandate", async () => {
+    const { builtinKey } = await createAgent(testApp.baseUrl, cookie);
+    const p = await productId("audio-runbuds-pro", "techcorner");
+    const res = await post(builtinKey, { productId: p.id, expectedPriceMinor: p.priceMinor }, {
+      "Idempotency-Key": randomUUID(),
+      "X-Agent-Run-Id": randomUUID(),
+    }).expect(400);
+    expect(res.body.error.code).toBe("VALIDATION_FAILED");
   });
 
   it("ignores X-Agent-Run-Id for external keys", async () => {

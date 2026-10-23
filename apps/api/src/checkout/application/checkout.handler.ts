@@ -32,10 +32,15 @@ export const CHECKOUT_LOGGER = Symbol("CheckoutLogger");
 type Outcome =
   | { kind: "order"; order: OrderRecord; amountMinor: number }
   | { kind: "declined"; amountMinor: number }
-  | { kind: "refused"; code: RefusalCode | "IDEMPOTENCY_KEY_REUSED" | "NOT_FOUND"; amountMinor: number | null };
+  | {
+      kind: "refused";
+      code: RefusalCode | "IDEMPOTENCY_KEY_REUSED" | "NOT_FOUND" | "VALIDATION_FAILED";
+      amountMinor: number | null;
+    };
 
 const REFUSAL_MESSAGES: Record<string, string> = {
   NOT_FOUND: "Product not found.",
+  VALIDATION_FAILED: "X-Agent-Run-Id does not match a running run of this mandate.",
   IDEMPOTENCY_KEY_REUSED: "This Idempotency-Key was already used for a different purchase.",
   MANDATE_REVOKED: "This mandate has been revoked.",
   MANDATE_EXPIRED: "This mandate has expired.",
@@ -102,6 +107,10 @@ export class CheckoutHandler implements ICommandHandler<CheckoutCommand, OrderRe
       const order = await tx.findOrderByPayment(previous.id);
       if (!order) throw new Error(`Approved payment ${previous.id} has no order`);
       return { kind: "order", order, amountMinor: previous.amountMinor };
+    }
+
+    if (command.runId !== null && !(await tx.isRunningRun(command.runId, mandate.id))) {
+      return { kind: "refused", code: "VALIDATION_FAILED", amountMinor: null };
     }
 
     const record = await tx.lockProduct(command.productId);

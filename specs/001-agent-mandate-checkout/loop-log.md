@@ -166,3 +166,22 @@ Successfully compiled: 117 files with swc (33.84ms)
 5. GET /v1/mandate with the key:           HTTP 409 MANDATE_EXHAUSTED
 6. agent as Alice sees it:                 exhausted, spent 12800, remaining 0
 ```
+
+## 6a1 — agent run domain (T075–T079)
+
+- Branch `feat/001-6a1-run-domain`, commit `2ed2c4f`, 13 files, +579 -0 (incl. tests).
+- Slice 6a split into 6a1 (domain) and 6a2 (migration, repository).
+- The selector scores every kept candidate, including zero-score ones (all are eligible);
+  search drops zero scores. Both use the same score and tie-break order.
+- Review: no blocking findings. Applied: ineligible result without reason throws, tie
+  losers get their own message, `RunLog.resume` validates `lastSeq`.
+- Gate in a clean worktree:
+
+```
+ Test Files  37 passed (37)
+      Tests  195 passed (195)
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+Successfully compiled: 124 files with swc (34.67ms)
+✓ built in 216ms
+```

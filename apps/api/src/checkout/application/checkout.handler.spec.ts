@@ -58,6 +58,7 @@ class InMemoryCheckout implements CheckoutUnitOfWork {
         merchant: { id: "00000000-0000-7000-8000-0000000000f1", slug: "techcorner", name: "TechCorner" },
         category: { id: AUDIO, slug: "audio", name: "Audio" },
       }),
+      isRunningRun: async () => true,
       findPayment: async (_m, key) => this.payments.find((p) => p.idempotencyKey === key) ?? null,
       findOrderByPayment: async (paymentId) => this.orders.find((o) => o.paymentId === paymentId) ?? null,
       insertPayment: async (payment) => void this.payments.push(payment),

@@ -1,3 +1,5 @@
+import { AgentRunEntity } from "../agent/infrastructure/agent-run.entity";
+import { RunLogEntryEntity } from "../agent/infrastructure/run-log-entry.entity";
 import { CategoryEntity, MerchantEntity, ProductEntity } from "../catalog/infrastructure/catalog.entities";
 import { OrderEntity, PaymentEntity } from "../checkout/infrastructure/checkout.entities";
 import { UserEntity } from "../identity/infrastructure/user.entity";
@@ -21,4 +23,6 @@ export const entities = [
   MandateActivityEntity,
   PaymentEntity,
   OrderEntity,
+  AgentRunEntity,
+  RunLogEntryEntity,
 ];
