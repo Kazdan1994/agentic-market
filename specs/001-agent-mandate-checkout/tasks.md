@@ -273,10 +273,10 @@ and reason, entries appear live, and a reload mid-run resumes without duplicates
 
 ### Web: live decision log (Slice 7)
 
-- [ ] T116 [P] [US2] Write failing tests `apps/web/src/features/runs/useRunEvents.test.ts` with a mocked `EventSource`: entries are added in `seq` order; a duplicate `seq` after a reconnect is ignored; `run.completed` updates the run and closes the source
-- [ ] T117 [P] [US2] Write failing tests `apps/web/src/features/runs/DecisionLog.test.tsx`. Each entry shows time, a step label (Search, Evaluation, Selection, Mandate check, Payment, Outcome) and the message. Evaluation entries show a Kept or Discarded badge with merchant and price. Entries marked `notEvaluatedByAi` show "rule-based verdict"
-- [ ] T118 [US2] Implement `apps/web/src/features/runs/useRunEvents.ts` and `DecisionLog.tsx`; in `RunPage.tsx`, replace polling with the live stream and show the log under the outcome
-- [ ] T119 [US2] Add a "Decision log" link on `apps/web/src/features/orders/OrderDetailPage.tsx` that opens `/runs/{runId}` (US2 scenario 1)
+- [X] T116 [P] [US2] Write failing tests `apps/web/src/features/runs/useRunEvents.test.ts` with a mocked `EventSource`: entries are added in `seq` order; a duplicate `seq` after a reconnect is ignored; `run.completed` updates the run and closes the source
+- [X] T117 [P] [US2] Write failing tests `apps/web/src/features/runs/DecisionLog.test.tsx`. Each entry shows time, a step label (Search, Evaluation, Selection, Mandate check, Payment, Outcome) and the message. Evaluation entries show a Kept or Discarded badge with merchant and price. Entries marked `notEvaluatedByAi` show "rule-based verdict"
+- [X] T118 [US2] Implement `apps/web/src/features/runs/useRunEvents.ts` and `DecisionLog.tsx`; in `RunPage.tsx`, replace polling with the live stream and show the log under the outcome
+- [X] T119 [US2] Add a "Decision log" link on `apps/web/src/features/orders/OrderDetailPage.tsx` that opens `/runs/{runId}` (US2 scenario 1)
 
 **Checkpoint**: US1 and US2 both work. Validate with quickstart S2.
 

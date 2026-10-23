@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { vi } from "vitest";
+import type { LogEntry } from "@/features/runs/useRunEvents";
 import { routes } from "@/routes";
 
 export type Route = (request: Request, body: unknown) => Response | undefined;
@@ -99,6 +100,57 @@ export function makeOrder(overrides: Partial<{ id: string; runId: string | null;
     status: "paid_simulated",
     placedAt: "2026-10-23T10:00:04.000Z",
     placedBy: "builtin_agent",
+    ...overrides,
+  };
+}
+
+/** Stand-in for the browser's EventSource; tests push server events with `emit`. */
+export class FakeEventSource {
+  static instances: FakeEventSource[] = [];
+  readonly listeners = new Map<string, ((event: MessageEvent) => void)[]>();
+  closed = false;
+
+  constructor(readonly url: string, readonly init?: EventSourceInit) {
+    FakeEventSource.instances.push(this);
+  }
+
+  addEventListener(type: string, listener: (event: MessageEvent) => void) {
+    this.listeners.set(type, [...(this.listeners.get(type) ?? []), listener]);
+  }
+
+  removeEventListener(type: string, listener: (event: MessageEvent) => void) {
+    this.listeners.set(type, (this.listeners.get(type) ?? []).filter((l) => l !== listener));
+  }
+
+  close() {
+    this.closed = true;
+  }
+
+  emit(type: string, data: unknown, id?: string) {
+    const event = new MessageEvent(type, { data: JSON.stringify(data), lastEventId: id ?? "" });
+    for (const listener of this.listeners.get(type) ?? []) listener(event);
+  }
+
+  static install() {
+    FakeEventSource.instances = [];
+    vi.stubGlobal("EventSource", FakeEventSource);
+  }
+
+  static last(): FakeEventSource {
+    const source = FakeEventSource.instances.at(-1);
+    if (!source) throw new Error("no EventSource was opened");
+    return source;
+  }
+}
+
+export function makeLogEntry(seq: number, overrides: Partial<Omit<LogEntry, "seq" | "at">> = {}): LogEntry {
+  return {
+    seq,
+    at: `2026-10-23T10:00:0${seq % 10}.000Z`,
+    step: "search",
+    message: `Entry ${seq}`,
+    productId: null,
+    data: {},
     ...overrides,
   };
 }

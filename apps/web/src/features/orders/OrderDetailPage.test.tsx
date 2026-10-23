@@ -7,13 +7,13 @@ const ORDER_PATH = "/orders/01900000-0000-7000-8000-0000000a0d01";
 describe("OrderDetailPage", () => {
   afterEach(() => vi.unstubAllGlobals());
 
-  it("shows the order and links to the run that placed it", async () => {
+  it("shows the order and links to the decision log of the run that placed it", async () => {
     stubApi((request) => (new URL(request.url).pathname.startsWith("/v1/orders/") ? json(200, makeOrder()) : undefined));
     renderAt(ORDER_PATH);
 
     expect(await screen.findByText("RunBuds Pro Running Earbuds")).toBeInTheDocument();
     expect(screen.getByText("Paid (simulated)")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "View the run" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Decision log" })).toHaveAttribute(
       "href",
       "/runs/01900000-0000-7000-8000-0000000a7001",
     );
@@ -28,7 +28,7 @@ describe("OrderDetailPage", () => {
     renderAt(ORDER_PATH);
 
     expect(await screen.findByText("External agent")).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "View the run" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Decision log" })).not.toBeInTheDocument();
   });
 
   it("shows not found for an unknown order", async () => {

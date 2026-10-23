@@ -5,8 +5,6 @@ import { toApiError } from "@/features/agents/useAgents";
 
 export type Run = components["schemas"]["RunResponse"];
 
-const POLL_INTERVAL_MS = 1000;
-
 export function useRun(runId: string) {
   return useQuery({
     queryKey: ["runs", runId],
@@ -15,7 +13,6 @@ export function useRun(runId: string) {
       if (!data) throw toApiError(error);
       return data;
     },
-    refetchInterval: (query) => (query.state.data?.status === "completed" ? false : POLL_INTERVAL_MS),
   });
 }
 

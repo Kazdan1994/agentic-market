@@ -31,7 +31,7 @@ export function OrderDetailPage() {
             </dl>
             {order.data.runId && (
               <Link to={`/runs/${order.data.runId}`} className="mt-4 inline-block text-sm underline">
-                View the run
+                Decision log
               </Link>
             )}
           </CardContent>

@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { apiError, json, makeAgent, makeRun, renderAt, stubApi } from "@/test-utils";
+import { apiError, FakeEventSource, json, makeAgent, makeRun, renderAt, stubApi } from "@/test-utils";
 
 let startResponse: () => Response;
 
@@ -14,6 +14,8 @@ async function startRun(request: string) {
 
 describe("StartRunForm", () => {
   beforeEach(() => {
+    // The run page opens the live stream once the form navigates there.
+    FakeEventSource.install();
     startResponse = () => json(202, makeRun());
     stubApi((request) => {
       const path = new URL(request.url).pathname;

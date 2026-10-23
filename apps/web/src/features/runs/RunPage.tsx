@@ -3,18 +3,30 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatMoney } from "@/features/agents/money";
 import { useOrder } from "@/features/orders/useOrders";
+import { DecisionLog } from "./DecisionLog";
 import { OUTCOME_LABELS, strategyLabel } from "./run-labels";
 import { type Run, useRun } from "./useRun";
+import { useRunEvents } from "./useRunEvents";
 
 export function RunPage() {
   const { runId = "" } = useParams();
   const run = useRun(runId);
+  // The stream replaces polling: it carries every log entry, then the completed run.
+  const { entries } = useRunEvents(runId);
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8">
       <h1 className="text-2xl font-semibold">Run</h1>
       {run.isError && <p role="alert">This run could not be loaded.</p>}
       {run.data && <RunSummary run={run.data} />}
+      {run.data && (
+        <section aria-labelledby="decision-log" className="flex flex-col gap-3">
+          <h2 id="decision-log" className="text-lg font-semibold">
+            Decision log
+          </h2>
+          <DecisionLog entries={entries} />
+        </section>
+      )}
     </main>
   );
 }
