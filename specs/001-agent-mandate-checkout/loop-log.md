@@ -333,3 +333,33 @@ elsewhere), selection, mandate_check, payment, outcome
 - Stopped before T102: the tasks call for shadcn/ui `Form`, `Input`, `Select`, `Card` and
   `Badge`, which need new dependencies (Radix packages, react-hook-form) and a new
   `src/components/ui` folder. Waiting for approval; Slice 7 waits on Slice 9.
+
+## 9b–9f and 7a: web for agents, runs and orders; run log read (T102–T111)
+
+- Branches, stacked on `feat/001-9a-web-foundation`:
+  - `feat/001-9b-ui-kit` `a4e70b3`: react-hook-form 7.89.0, zod 4.6.5, Radix slot/label/select/checkbox,
+    and hand-written shadcn/ui primitives in `apps/web/src/components/ui/`. No cva or lucide.
+  - `feat/001-9c-agents-page` `50b6612`: agents list (T103). Test setup now registers
+    Testing Library cleanup (Vitest runs without globals) and stubs ResizeObserver.
+  - `feat/001-9d-create-agent` `c22049a`: create-agent form (T102, T104). Categories are
+    checkboxes, since Radix Select is single-choice; `select.tsx` is unused for now.
+  - `feat/001-9e-runs` `a63466a`: start a run, run page polling every second (T105–T107).
+  - `feat/001-9f-orders` `8cc14cd`: orders list and detail (T108–T109).
+  - `feat/001-7a-run-log` `fa182fd`: `GET /v1/runs/{id}/log` (T110–T111). Evaluation data keys
+    switched to camelCase to match contracts/run-events.md; data-model.md updated.
+- Gate in a clean worktree at `fa182fd`:
+
+```
+ Test Files  48 passed (48)
+      Tests  283 passed (283)
+ Test Files  8 passed (8)
+      Tests  33 passed (33)
+Successfully compiled: 153 files with swc (49.84ms)
+✓ built in 259ms
+```
+
+- Checkpoint (HTTP through the Vite proxy on :5173, `yarn dev`): login 204, /agents and
+  /orders pages 200, create agent, start run, poll to completed: order_placed, strategy rules,
+  fallback timeout (the model was cold), Kids Headphones / SoundHub / 29.00 EUR, run linked.
+- Open: `notEvaluatedByAi` is not written into evaluation log data yet (needed by T117).
+  No nav links between /agents and /orders (not in tasks).
