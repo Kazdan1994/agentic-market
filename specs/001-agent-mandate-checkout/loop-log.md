@@ -324,3 +324,12 @@ elsewhere), selection, mandate_check, payment, outcome
 - Earlier decisions kept at their defaults: the contract gaps stay as logged, the
   out-of-spec changes stay, the local database is not reset, commit-size overruns stay logged.
 - Gate in a clean worktree: 47 files / 280 tests (api), 1 / 3 (web), build OK.
+
+## 9a — web types and money helpers (T100–T101)
+
+- Branch `feat/001-9a-web-foundation` (stacked on `feat/001-8-ai-selection`), commit `bac39d1`.
+  Regenerated `schema.d.ts` (generated, outside the PR budget) plus `money.ts` and its test.
+- Gate in a clean worktree: 47 / 280 (api), 2 / 14 (web), build OK.
+- Stopped before T102: the tasks call for shadcn/ui `Form`, `Input`, `Select`, `Card` and
+  `Badge`, which need new dependencies (Radix packages, react-hook-form) and a new
+  `src/components/ui` folder. Waiting for approval; Slice 7 waits on Slice 9.
