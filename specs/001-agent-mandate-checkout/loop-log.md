@@ -363,3 +363,36 @@ Successfully compiled: 153 files with swc (49.84ms)
   fallback timeout (the model was cold), Kids Headphones / SoundHub / 29.00 EUR, run linked.
 - Open: `notEvaluatedByAi` is not written into evaluation log data yet (needed by T117).
   No nav links between /agents and /orders (not in tasks).
+
+## 7b–7d — live decision log (T112–T119)
+
+- `feat/001-7b-run-publisher` `ed4eff3`: 6 files, +136 −3. Executor publishes each entry on
+  the CQRS bus after its insert, and the completed run after storing it; `RunLogPublisher`
+  filters per run.
+- `feat/001-7c-run-events` `7cd72ef`: 4 files, +294 −1. `GET /v1/runs/{id}/events` (raw
+  Express SSE: subscribe first, then replay `seq > Last-Event-ID`, then live, deduped by seq;
+  `: ping` every 15 s; 404 as JSON before the stream opens). Ping is covered by a unit test with
+  fake timers, not by the contract test.
+- `feat/001-7d-web-log` `f3b0f44`: 11 files, +355 −42. `useRunEvents` + `DecisionLog`; the
+  run page uses the stream instead of polling; order page link renamed "Decision log".
+  "rule-based verdict" reads `notEvaluatedByAi` from the selection entry's `data.evaluations`,
+  which the API already wrote, so no API change was needed.
+- Gate in a clean worktree after `f3b0f44`:
+
+```
+ Test Files  51 passed (51)
+      Tests  290 passed (290)
+ Test Files  10 passed (10)
+      Tests  42 passed (42)
+Successfully compiled: 156 files with swc (56.78ms)
+✓ built in 297ms
+```
+
+- Flake: the first gate after `7cd72ef` failed `AgentsPage.test.tsx` (`findByRole` 1 s default
+  timeout while API integration tests ran in parallel). Passed 3/3 alone and on the re-run.
+  Not fixed (outside slice 7).
+- Checkpoint (API from the running `yarn dev`, Vite on :5199 as proxy): run streamed live,
+  17 `log` events in order, lag from row write to client 0–40 ms, then `run.completed`
+  and the server closed the stream. Reconnect with `Last-Event-ID: 5` started at 6. Bob: 404 JSON.
+  AI not exercised: Ollama took 30–48 s for a 1-token warm-up, so both runs fell back to rules
+  (`timeout`) and bought Kids Headphones.
