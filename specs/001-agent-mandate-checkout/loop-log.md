@@ -205,3 +205,24 @@ Successfully compiled: 124 files with swc (34.67ms)
 Successfully compiled: 129 files with swc (35.47ms)
 ✓ built in 206ms
 ```
+
+## 6b1 — store port and HTTP adapter (T083–T085)
+
+- Branch `feat/001-6b1-store-adapter`, commit `44754db`, 5 files, +418 -0 (incl. tests).
+- Slice 6b split into 6b1 (store adapter), 6b2 (start handler, executor, recovery) and
+  6b3 (run endpoints, module).
+- Review: two blocking findings, both fixed. Store calls had no timeout (a stalled API
+  would hold the run, and the mandate's one-run slot, for minutes): now 10 s,
+  `STORE_UNAVAILABLE`. A 2xx answer without JSON became a raw TypeError: now
+  `STORE_BAD_RESPONSE`. Also: product ids must be UUIDs, the in-memory store honours
+  the run's idempotency key.
+- Gate in a clean worktree:
+
+```
+ Test Files  39 passed (39)
+      Tests  209 passed (209)
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+Successfully compiled: 132 files with swc (35.74ms)
+✓ built in 207ms
+```
