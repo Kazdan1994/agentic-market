@@ -136,3 +136,33 @@ Successfully compiled: 98 files with swc (33.43ms)
 Successfully compiled: 108 files with swc (33.6ms)
 ✓ built in 209ms
 ```
+
+## 5b — checkout endpoint and orders (T071–T074)
+
+- Branch `feat/001-5b-checkout-http`, commit `e0b79a8`, 13 files, +567 lines (incl. tests).
+- Review: no blocking findings. Applied: test helper fails fast without
+  `BUILTIN_KEY_SECRET`, `X-Agent-Run-Id` documented as a uuid. Open: a malformed
+  `orderId` returns 400 while the contract lists only 200/404 for `getOrder`.
+- Gate in a clean worktree:
+
+```
+ Test Files  32 passed (32)
+      Tests  174 passed (174)
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+Successfully compiled: 117 files with swc (33.84ms)
+✓ built in 297ms
+```
+
+- Checkpoint S3 (budget limits), API level with `curl` against `yarn dev`. The run-based
+  version (log reasons, "Budget used up" on run start) needs slice 6. Mandate cap 79.00,
+  total 128.00, Audio:
+
+```
+1. Studio Max 229.00 (over cap):           HTTP 409 OVER_PER_PURCHASE_CAP
+2. RunBuds Pro 79.00 (exactly the cap):    HTTP 201 order: RunBuds Pro 7900 placedBy builtin_agent
+3. Podcast mic 69.00 (remaining is 49.00): HTTP 409 OVER_REMAINING_BUDGET
+4. BassBox 49.00 (exactly the remaining):  HTTP 201 order: BassBox Mini 4900 placedBy builtin_agent
+5. GET /v1/mandate with the key:           HTTP 409 MANDATE_EXHAUSTED
+6. agent as Alice sees it:                 exhausted, spent 12800, remaining 0
+```
