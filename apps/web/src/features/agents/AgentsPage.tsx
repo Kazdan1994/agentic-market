@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { StartRunForm } from "@/features/runs/StartRunForm";
 import { CreateAgentForm } from "./CreateAgentForm";
 import { formatMoney } from "./money";
 import { type Agent, useAgents, useCategories } from "./useAgents";
@@ -74,6 +75,7 @@ function AgentCard({ agent }: { agent: Agent }) {
               </Badge>
             ))}
           </div>
+          {mandate.status === "active" && <StartRunForm mandateId={mandate.id} />}
         </CardContent>
       </article>
     </Card>

@@ -2,6 +2,7 @@ import { Navigate, Outlet, type RouteObject } from "react-router";
 import { AgentsPage } from "@/features/agents/AgentsPage";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { useMe } from "@/features/auth/useMe";
+import { RunPage } from "@/features/runs/RunPage";
 
 function ProtectedLayout() {
   const me = useMe();
@@ -18,6 +19,7 @@ export const routes: RouteObject[] = [
     children: [
       { index: true, element: <Navigate to="/agents" replace /> },
       { path: "/agents", element: <AgentsPage /> },
+      { path: "/runs/:runId", element: <RunPage /> },
     ],
   },
 ];

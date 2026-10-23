@@ -1,0 +1,19 @@
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/api/client";
+import type { components } from "@/api/schema";
+import { toApiError } from "@/features/agents/useAgents";
+
+export type Order = components["schemas"]["OrderResponse"];
+
+export function useOrder(orderId: string | null) {
+  return useQuery({
+    queryKey: ["orders", orderId],
+    enabled: orderId !== null,
+    queryFn: async (): Promise<Order> => {
+      if (!orderId) throw new Error("orderId is required");
+      const { data, error } = await api.GET("/v1/orders/{orderId}", { params: { path: { orderId } } });
+      if (!data) throw toApiError(error);
+      return data;
+    },
+  });
+}

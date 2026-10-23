@@ -69,3 +69,36 @@ export function makeAgent(overrides: { id?: string; name?: string; status?: stri
     },
   };
 }
+
+export function makeRun(overrides: Partial<{ id: string; status: string; outcome: string | null; strategy: string | null; fallbackReason: string | null; orderId: string | null }> = {}) {
+  return {
+    id: "01900000-0000-7000-8000-0000000a7001",
+    mandateId: "01900000-0000-7000-8000-00000000aa01",
+    request: "wireless headphones for running",
+    status: "running",
+    outcome: null,
+    strategy: null,
+    fallbackReason: null,
+    orderId: null,
+    startedAt: "2026-10-23T10:00:00.000Z",
+    endedAt: null,
+    ...overrides,
+  };
+}
+
+export function makeOrder(overrides: Partial<{ id: string; runId: string | null; placedBy: string }> = {}) {
+  return {
+    id: "01900000-0000-7000-8000-0000000a0d01",
+    mandateId: "01900000-0000-7000-8000-00000000aa01",
+    runId: "01900000-0000-7000-8000-0000000a7001",
+    product: { id: "01900000-0000-7000-8000-0000000a0901", name: "RunBuds Pro Running Earbuds" },
+    merchant: { id: "01900000-0000-7000-8000-0000000a0801", slug: "techcorner", name: "TechCorner" },
+    unitPrice: eur(7900),
+    quantity: 1,
+    total: eur(7900),
+    status: "paid_simulated",
+    placedAt: "2026-10-23T10:00:04.000Z",
+    placedBy: "builtin_agent",
+    ...overrides,
+  };
+}
