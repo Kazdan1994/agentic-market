@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { DataSource, type EntityManager } from "typeorm";
+import { DataSource, type EntityManager, In } from "typeorm";
 import type { Agent } from "../domain/agent";
 import type { Mandate } from "../domain/mandate";
 import type { MandateKey } from "../domain/mandate-key";
-import type { MandateRepository, MandateWithKey } from "../domain/mandate-repository";
+import type { AgentWithMandate, MandateRepository, MandateWithKey } from "../domain/mandate-repository";
 import { AgentEntity } from "./agent.entity";
 import { MandateCategoryEntity, MandateEntity } from "./mandate.entity";
 import { MandateKeyEntity } from "./mandate-key.entity";
@@ -35,6 +35,36 @@ export class TypeOrmMandateRepository implements MandateRepository {
     const mandate = await this.load(this.dataSource.manager, keyRow.mandateId);
     if (!mandate) return null;
     return { mandate, key: MandateMapper.keyToDomain(keyRow) };
+  }
+
+  async listByUser(userId: string): Promise<AgentWithMandate[]> {
+    const agents = await this.dataSource
+      .getRepository(AgentEntity)
+      .find({ where: { userId }, order: { createdAt: "DESC", id: "DESC" } });
+    return this.withMandates(agents);
+  }
+
+  async findAgentById(agentId: string): Promise<AgentWithMandate | null> {
+    const agent = await this.dataSource.getRepository(AgentEntity).findOneBy({ id: agentId });
+    if (!agent) return null;
+    const [found] = await this.withMandates([agent]);
+    return found ?? null;
+  }
+
+  private async withMandates(agents: AgentEntity[]): Promise<AgentWithMandate[]> {
+    if (agents.length === 0) return [];
+    const manager = this.dataSource.manager;
+    const mandates = await manager.findBy(MandateEntity, { agentId: In(agents.map((a) => a.id)) });
+    const categories = await manager.findBy(MandateCategoryEntity, { mandateId: In(mandates.map((m) => m.id)) });
+    const mandateByAgent = new Map(mandates.map((m) => [m.agentId, m]));
+    return agents.flatMap((agentRow) => {
+      const mandateRow = mandateByAgent.get(agentRow.id);
+      if (!mandateRow) return [];
+      const categoryIds = categories.filter((c) => c.mandateId === mandateRow.id).map((c) => c.categoryId);
+      return [
+        { agent: MandateMapper.agentToDomain(agentRow), mandate: MandateMapper.toDomain(mandateRow, categoryIds) },
+      ];
+    });
   }
 
   private async load(manager: EntityManager, mandateId: string): Promise<Mandate | null> {

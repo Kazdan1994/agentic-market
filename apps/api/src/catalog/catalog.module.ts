@@ -9,5 +9,6 @@ import { TypeOrmCategoryRepository } from "./infrastructure/typeorm-category-rep
   imports: [IdentityModule],
   controllers: [CategoriesController],
   providers: [ListCategoriesHandler, { provide: CATEGORY_REPOSITORY, useClass: TypeOrmCategoryRepository }],
+  exports: [CATEGORY_REPOSITORY],
 })
 export class CatalogModule {}

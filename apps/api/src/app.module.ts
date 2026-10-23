@@ -5,6 +5,7 @@ import { entities } from "./database/entities";
 import { CatalogModule } from "./catalog/catalog.module";
 import { migrations } from "./database/migrations";
 import { IdentityModule } from "./identity/identity.module";
+import { MandatesModule } from "./mandates/mandates.module";
 import { APP_CONFIG, type AppConfig } from "./shared/config/app-config";
 import { LoggerModule } from "./shared/logging/logger.module";
 import { SharedModule } from "./shared/shared.module";
@@ -28,6 +29,7 @@ import { SharedModule } from "./shared/shared.module";
     }),
     IdentityModule,
     CatalogModule,
+    MandatesModule,
   ],
 })
 export class AppModule {}
