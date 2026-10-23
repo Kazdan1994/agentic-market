@@ -231,8 +231,8 @@ one Audio order ≤ 100.00 EUR, and the remaining budget drops by its price.
 
 ### Web: agents, runs and orders (Slice 9)
 
-- [ ] T100 [US1] Run `yarn workspace api export:openapi && yarn workspace web generate:api` and commit the updated `apps/web/src/api/schema.d.ts` (generated, outside the PR budget)
-- [ ] T101 [P] [US1] Write failing tests `apps/web/src/features/agents/money.test.ts`: euro input strings convert to integer cents exactly (`"89.99"` → `8999`, `"100"` → `10000`; `"1.234"` and `"-1"` are rejected); formatting gives `"89.99 EUR"`
+- [X] T100 [US1] Run `yarn workspace api export:openapi && yarn workspace web generate:api` and commit the updated `apps/web/src/api/schema.d.ts` (generated, outside the PR budget)
+- [X] T101 [P] [US1] Write failing tests `apps/web/src/features/agents/money.test.ts`: euro input strings convert to integer cents exactly (`"89.99"` → `8999`, `"100"` → `10000`; `"1.234"` and `"-1"` are rejected); formatting gives `"89.99 EUR"`
 - [ ] T102 [P] [US1] Write failing tests `apps/web/src/features/agents/CreateAgentForm.test.tsx`. Fields: name, per-purchase cap (EUR), total budget (EUR), categories (multi-select from `GET /v1/categories`), expiry (date-time). Client-side errors cover a cap ≤ 0, per-purchase above total, no category and an expiry in the past. Server `VALIDATION_FAILED` details show on the matching field, and success adds the agent to the list
 - [ ] T103 [P] [US1] Write failing tests `apps/web/src/features/agents/AgentsPage.test.tsx`: each agent shows status (active, exhausted, expired, revoked), per-purchase cap, total, spent, remaining, categories and expiry
 - [ ] T104 [US1] Implement `apps/web/src/features/agents/money.ts`, `CreateAgentForm.tsx`, `AgentsPage.tsx` and `useAgents.ts` with shadcn/ui `Form`, `Input`, `Select`, `Card` and `Badge`

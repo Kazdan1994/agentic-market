@@ -84,6 +84,166 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/catalog/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["searchCatalog"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/catalog/products/{productId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getProduct"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listAgents"];
+        put?: never;
+        post: operations["createAgent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/agents/{agentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAgent"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mandate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getOwnMandate"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/checkout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["checkout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listOrders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/orders/{orderId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getOrder"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/mandates/{mandateId}/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listRuns"];
+        put?: never;
+        post: operations["startRun"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/runs/{runId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getRun"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -110,6 +270,159 @@ export interface components {
         CategoryResponse: {
             slug: string;
             name: string;
+        };
+        NamedRef: {
+            slug: string;
+            name: string;
+        };
+        MerchantRefResponse: {
+            slug: string;
+            name: string;
+            /** Format: uuid */
+            id: string;
+        };
+        PriceResponse: {
+            amountMinor: number;
+            currency: string;
+        };
+        EligibilityResponse: {
+            eligible: boolean;
+            /** @enum {string|null} */
+            reasonCode: "over_budget" | "category_not_allowed" | "out_of_stock" | null;
+        };
+        SearchResultResponse: {
+            /** Format: uuid */
+            id: string;
+            itemRef: string;
+            name: string;
+            description: string;
+            category: components["schemas"]["NamedRef"];
+            merchant: components["schemas"]["MerchantRefResponse"];
+            price: components["schemas"]["PriceResponse"];
+            stock: number;
+            /** Format: date-time */
+            listedAt: string;
+            eligibility: components["schemas"]["EligibilityResponse"];
+        };
+        ProductResponse: {
+            /** Format: uuid */
+            id: string;
+            itemRef: string;
+            name: string;
+            description: string;
+            category: components["schemas"]["NamedRef"];
+            merchant: components["schemas"]["MerchantRefResponse"];
+            price: components["schemas"]["PriceResponse"];
+            stock: number;
+            /** Format: date-time */
+            listedAt: string;
+        };
+        CreateAgentDto: {
+            name: string;
+            perPurchaseCapMinor: number;
+            totalBudgetMinor: number;
+            categorySlugs: string[];
+            /** Format: date-time */
+            expiresAt: string;
+        };
+        MoneyResponse: {
+            amountMinor: number;
+            currency: string;
+        };
+        MandateCategoryResponse: {
+            slug: string;
+            name: string;
+        };
+        MandateResponse: {
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            status: "active" | "exhausted" | "expired" | "revoked";
+            perPurchaseCap: components["schemas"]["MoneyResponse"];
+            totalBudget: components["schemas"]["MoneyResponse"];
+            spent: components["schemas"]["MoneyResponse"];
+            remaining: components["schemas"]["MoneyResponse"];
+            categories: components["schemas"]["MandateCategoryResponse"][];
+            /** Format: date-time */
+            expiresAt: string;
+            /** Format: date-time */
+            revokedAt: string | null;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        AgentResponse: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            mandate: components["schemas"]["MandateResponse"];
+            /** Format: date-time */
+            createdAt: string;
+        };
+        CheckoutDto: {
+            /** Format: uuid */
+            productId: string;
+            /** @description Price the agent saw; a different current price yields PRICE_CHANGED. */
+            expectedPriceMinor: number;
+        };
+        OrderProductRef: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+        };
+        OrderMerchantRef: {
+            /** Format: uuid */
+            id: string;
+            slug: string;
+            name: string;
+        };
+        OrderMoney: {
+            amountMinor: number;
+            currency: string;
+        };
+        OrderResponse: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            mandateId: string;
+            /** Format: uuid */
+            runId: string | null;
+            product: components["schemas"]["OrderProductRef"];
+            merchant: components["schemas"]["OrderMerchantRef"];
+            unitPrice: components["schemas"]["OrderMoney"];
+            /** @enum {number} */
+            quantity: 1;
+            total: components["schemas"]["OrderMoney"];
+            /** @enum {string} */
+            status: "paid_simulated";
+            /** Format: date-time */
+            placedAt: string;
+            /** @enum {string} */
+            placedBy: "builtin_agent" | "third_party_agent";
+        };
+        StartRunDto: {
+            /** @description Plain-language shopping request, 3–500 chars after trim */
+            request: string;
+        };
+        RunResponse: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            mandateId: string;
+            request: string;
+            /** @enum {string} */
+            status: "running" | "completed";
+            /** @enum {string|null} */
+            outcome: "order_placed" | "no_eligible_product" | "refused_by_mandate" | "payment_declined" | "interrupted" | null;
+            /** @enum {string|null} */
+            strategy: "ai" | "rules" | null;
+            /** @enum {string|null} */
+            fallbackReason: "not_configured" | "forced_rules" | "unavailable" | "timeout" | "api_error" | "unusable_answer" | "ineligible_choice" | "no_eligible_candidates" | null;
+            /** Format: uuid */
+            orderId: string | null;
+            /** Format: date-time */
+            startedAt: string;
+            /** Format: date-time */
+            endedAt: string | null;
         };
     };
     responses: never;
@@ -213,6 +526,266 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CategoryResponse"][];
+                };
+            };
+        };
+    };
+    searchCatalog: {
+        parameters: {
+            query: {
+                q: string;
+                category?: string;
+                limit?: unknown;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchResultResponse"][];
+                };
+            };
+        };
+    };
+    getProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                productId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductResponse"];
+                };
+            };
+        };
+    };
+    listAgents: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentResponse"][];
+                };
+            };
+        };
+    };
+    createAgent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAgentDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentResponse"];
+                };
+            };
+        };
+    };
+    getAgent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                agentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentResponse"];
+                };
+            };
+        };
+    };
+    getOwnMandate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MandateResponse"];
+                };
+            };
+        };
+    };
+    checkout: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Set by the built-in agent only; ignored for external keys. */
+                "X-Agent-Run-Id"?: string;
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckoutDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderResponse"];
+                };
+            };
+        };
+    };
+    listOrders: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderResponse"][];
+                };
+            };
+        };
+    };
+    getOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orderId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderResponse"];
+                };
+            };
+        };
+    };
+    listRuns: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mandateId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunResponse"][];
+                };
+            };
+        };
+    };
+    startRun: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mandateId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartRunDto"];
+            };
+        };
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunResponse"];
+                };
+            };
+        };
+    };
+    getRun: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                runId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunResponse"];
                 };
             };
         };
