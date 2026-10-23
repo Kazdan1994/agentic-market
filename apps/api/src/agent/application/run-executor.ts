@@ -165,7 +165,7 @@ export class RunExecutor implements IEventHandler<RunStartedEvent> {
         ? `${selection.reason} ${LogMessages.strategy(selection.strategy, selection.fallbackReason)}`
         : LogMessages.noEligibleProduct(selection.fallbackReason),
       productId: chosen?.productId ?? null,
-      data: { strategy: selection.strategy, fallback_reason: selection.fallbackReason, evaluations: selection.evaluations },
+      data: { strategy: selection.strategy, fallbackReason: selection.fallbackReason, evaluations: selection.evaluations },
     });
     if (!chosen) return this.ended(selection, "no_eligible_product", LogMessages.noEligibleProduct());
 
@@ -193,7 +193,7 @@ export class RunExecutor implements IEventHandler<RunStartedEvent> {
         step: "payment",
         message: `Paid ${this.price(chosen)} to ${chosen.merchantName} (simulated payment approved).`,
         productId: chosen.productId,
-        data: { outcome: "approved", order_id: orderId },
+        data: { outcome: "approved", orderId },
       });
       return { ...this.ended(selection, "order_placed", `Order placed: "${chosen.name}" from ${chosen.merchantName} for ${this.price(chosen)}.`), orderId };
     } catch (error) {

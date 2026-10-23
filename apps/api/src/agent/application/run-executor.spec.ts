@@ -75,6 +75,9 @@ describe("RunExecutor", () => {
     expect(run).toMatchObject({ status: "completed", outcome: "order_placed", strategy: "rules", orderId: store.orders[0]?.orderId });
     expect(store.calls.every((c) => c.context.key === "amk_builtin" && c.context.runId === RUN_ID)).toBe(true);
     expect(logs.at(-1)).toMatchObject({ runId: RUN_ID, outcome: "order_placed", correlationId: "00000000-0000-7000-8000-0000000000cc" });
+    const dataOf = (step: RunStep) => runs.entriesOf(RUN_ID).find((e) => e.step === step)?.data;
+    expect(dataOf("selection")).toMatchObject({ strategy: "rules", fallbackReason: null });
+    expect(dataOf("payment")).toEqual({ outcome: "approved", orderId: store.orders[0]?.orderId });
   });
 
   it("persists the fallback reason and states it in the selection entry", async () => {

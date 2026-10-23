@@ -206,7 +206,7 @@ are explained in run logs.
 | step | enum | `search` \| `evaluation` \| `selection` \| `mandate_check` \| `payment` \| `outcome` (FR-018) |
 | message | text | plain-language explanation |
 | product_id | uuid null | the product concerned, if any |
-| data | jsonb | structured detail for software clients (FR-021), e.g. `{verdict, reasonCode, merchant, priceMinor, strategy}` (camelCase, as in contracts/run-events.md) |
+| data | jsonb | structured detail for software clients (FR-021), e.g. `{verdict, reasonCode, merchant, priceMinor, strategy, fallbackReason, orderId}` (camelCase, as in contracts/run-events.md) |
 
 - Append-only (R14).
 - `evaluation` entries carry `verdict ∈ {kept, discarded}` and
