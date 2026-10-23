@@ -262,14 +262,14 @@ and reason, entries appear live, and a reload mid-run resumes without duplicates
 - [X] T111 [US2] Implement `apps/api/src/agent/application/get-run-log.handler.ts` and the route in `runs.controller.ts`
 - [X] T112 [P] [US2] Write failing unit tests `apps/api/src/agent/infrastructure/run-log.publisher.spec.ts`: an entry is published to per-run subscribers only after its transaction commits; subscribers to other runs receive nothing
 - [X] T113 [US2] Implement `apps/api/src/agent/infrastructure/run-log.publisher.ts` (in-process, on the CQRS event bus) and publish from `run-executor.ts` after each append and at completion
-- [ ] T114 [P] [US2] Write failing contract tests `apps/api/test/contract/run-events.contract.spec.ts` per `contracts/run-events.md`:
+- [X] T114 [P] [US2] Write failing contract tests `apps/api/test/contract/run-events.contract.spec.ts` per `contracts/run-events.md`:
   - a fresh connect during a run gets `log` events 1…n in order, then `run.completed`
   - a reconnect with `Last-Event-ID: k` gets exactly k+1…n
   - a completed run gives the full replay, then `run.completed`, then the stream closes
   - `: ping` arrives every 15 s
   - another user's run returns 404 before the stream opens
   - each live event arrives less than 1 s after its row is written (SC-002a)
-- [ ] T115 [US2] Implement `apps/api/src/agent/infrastructure/http/run-events.controller.ts` (`@Sse()` on `GET /v1/runs/{id}/events`: replay `seq > Last-Event-ID`, then live, with no gap or duplicate)
+- [X] T115 [US2] Implement `apps/api/src/agent/infrastructure/http/run-events.controller.ts` (`@Sse()` on `GET /v1/runs/{id}/events`: replay `seq > Last-Event-ID`, then live, with no gap or duplicate)
 
 ### Web: live decision log (Slice 7)
 

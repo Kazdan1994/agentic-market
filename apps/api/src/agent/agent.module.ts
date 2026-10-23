@@ -17,6 +17,7 @@ import { STORE } from "./domain/store.port";
 import { BuiltinKeyProvider } from "./infrastructure/builtin-key.provider";
 import { AiModule } from "./infrastructure/ai/ai.module";
 import { HttpStoreAdapter } from "./infrastructure/http-store.adapter";
+import { RunEventsController } from "./infrastructure/http/run-events.controller";
 import { RunsController } from "./infrastructure/http/runs.controller";
 import { RunLogPublisher } from "./infrastructure/run-log.publisher";
 import { TypeOrmAgentRunRepository } from "./infrastructure/typeorm-agent-run-repository";
@@ -27,7 +28,7 @@ import { TypeOrmAgentRunRepository } from "./infrastructure/typeorm-agent-run-re
  */
 @Module({
   imports: [IdentityModule, MandatesModule, AiModule],
-  controllers: [RunsController],
+  controllers: [RunsController, RunEventsController],
   providers: [
     StartRunHandler,
     RunExecutor,
