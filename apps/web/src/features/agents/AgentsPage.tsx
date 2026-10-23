@@ -1,7 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CreateAgentForm } from "./CreateAgentForm";
 import { formatMoney } from "./money";
-import { type Agent, useAgents } from "./useAgents";
+import { type Agent, useAgents, useCategories } from "./useAgents";
 
 type MandateStatus = Agent["mandate"]["status"];
 
@@ -16,10 +17,20 @@ const dateTime = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeSty
 
 export function AgentsPage() {
   const agents = useAgents();
+  const categories = useCategories();
 
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-8">
       <h1 className="text-2xl font-semibold">Agents</h1>
+      <Card>
+        <CardHeader>
+          <CardTitle>New agent</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {categories.data && <CreateAgentForm categories={categories.data} />}
+          {categories.isError && <p role="alert">Categories could not be loaded. Please reload.</p>}
+        </CardContent>
+      </Card>
       <AgentList agents={agents.data} isError={agents.isError} />
     </main>
   );
@@ -28,7 +39,7 @@ export function AgentsPage() {
 function AgentList({ agents, isError }: { agents: Agent[] | undefined; isError: boolean }) {
   if (isError) return <p role="alert">Agents could not be loaded. Please reload.</p>;
   if (!agents) return null;
-  if (agents.length === 0) return <p className="text-neutral-600">No agent yet.</p>;
+  if (agents.length === 0) return <p className="text-neutral-600">No agent yet. Create one above.</p>;
   return (
     <section className="grid gap-4 sm:grid-cols-2">
       {agents.map((agent) => (
