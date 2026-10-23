@@ -311,3 +311,16 @@ elsewhere), selection, mandate_check, payment, outcome
 - Not done: recording a fallback reason when no product is eligible. It needs a new
   `fallback_reason` value, so the OpenAPI enum and a migration on `run_fallback_reason` change.
   Waiting for approval of the contract change.
+
+## 8c — no-eligible reason and AI-skipped products
+
+- Branch `feat/001-8-ai-selection`, commit `697a3c1`, 16 files, +70 -17 (incl. tests).
+- Approved contract change: `fallbackReason` gains `no_eligible_candidates` (openapi.yaml,
+  entity, DTO, migration `0008` adding the Postgres enum value). Recorded when nothing is
+  eligible; the selection log reads "No product fits the request within the mandate, so the
+  local AI was not asked."
+- Approved R5 departure: a product the AI left out is shown as discarded when the AI chose
+  another product. When the AI chose nothing, the rules' verdict still stands in.
+- Earlier decisions kept at their defaults: the contract gaps stay as logged, the
+  out-of-spec changes stay, the local database is not reset, commit-size overruns stay logged.
+- Gate in a clean worktree: 47 files / 280 tests (api), 1 / 3 (web), build OK.
