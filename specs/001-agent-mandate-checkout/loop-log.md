@@ -96,3 +96,23 @@ Successfully compiled: 87 files with swc (29.33ms)
 Successfully compiled: 90 files with swc (31.1ms)
 ✓ built in 228ms
 ```
+
+## 4b — catalog endpoints for agents (T060–T063)
+
+- Branch `feat/001-4b-catalog-http`, commit `81ca516`, 13 files, +517 -12 (incl. tests).
+- `CatalogModule` and `MandatesModule` reference each other (`forwardRef`): mandates
+  needs categories, catalog needs the key guard and mandates for eligibility hints.
+- Search ranks the whole (category-filtered) catalog in memory; fine for 35 products.
+- Review: no blocking findings. Applied: empty `category` rejected, 400 tests for bad
+  `limit` and missing `q`. Not done: activity rows for key-authenticated
+  `GET /v1/categories` (no matching activity action in the data model).
+- Gate in a clean worktree:
+
+```
+ Test Files  27 passed (27)
+      Tests  146 passed (146)
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+Successfully compiled: 98 files with swc (33.43ms)
+✓ built in 319ms
+```

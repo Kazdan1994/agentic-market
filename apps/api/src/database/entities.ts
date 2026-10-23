@@ -1,4 +1,5 @@
 import { CategoryEntity, MerchantEntity, ProductEntity } from "../catalog/infrastructure/catalog.entities";
+import { OrderEntity, PaymentEntity } from "../checkout/infrastructure/checkout.entities";
 import { UserEntity } from "../identity/infrastructure/user.entity";
 import { AgentEntity } from "../mandates/infrastructure/agent.entity";
 import { MandateActivityEntity } from "../mandates/infrastructure/mandate-activity.entity";
@@ -18,4 +19,6 @@ export const entities = [
   MandateCategoryEntity,
   MandateKeyEntity,
   MandateActivityEntity,
+  PaymentEntity,
+  OrderEntity,
 ];

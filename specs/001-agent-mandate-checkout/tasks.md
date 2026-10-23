@@ -151,23 +151,23 @@ one Audio order ≤ 100.00 EUR, and the remaining budget drops by its price.
 
 ### Checkout: payment and transaction (Slice 5a)
 
-- [ ] T064 [P] [US1] Write failing unit tests for `SimulatedPaymentGateway` in `apps/api/src/checkout/infrastructure/simulated-payment-gateway.spec.ts`: it declines when `amount_minor % 100 === SIMULATED_DECLINE_CENTS`, approves otherwise, and returns a unique `sim_` reference
-- [ ] T065 [US1] Implement the `PaymentGatewayPort` `apps/api/src/checkout/domain/payment-gateway.port.ts` and `apps/api/src/checkout/infrastructure/simulated-payment-gateway.ts`
-- [ ] T066 [US1] Create migration `apps/api/src/database/migrations/0006-checkout.ts` per data-model:
+- [X] T064 [P] [US1] Write failing unit tests for `SimulatedPaymentGateway` in `apps/api/src/checkout/infrastructure/simulated-payment-gateway.spec.ts`: it declines when `amount_minor % 100 === SIMULATED_DECLINE_CENTS`, approves otherwise, and returns a unique `sim_` reference
+- [X] T065 [US1] Implement the `PaymentGatewayPort` `apps/api/src/checkout/domain/payment-gateway.port.ts` and `apps/api/src/checkout/infrastructure/simulated-payment-gateway.ts`
+- [X] T066 [US1] Create migration `apps/api/src/database/migrations/0006-checkout.ts` per data-model:
   - `payments(id, mandate_id, key_id, idempotency_key text, request_hash bytea, product_id, amount_minor integer > 0, currency char(3), outcome enum approved|declined, reference text unique, created_at)`, unique `(mandate_id, idempotency_key)`
   - `orders(id, user_id, mandate_id, merchant_id, product_id, run_id null, key_id, payment_id unique, product_name, merchant_name, unit_price_minor, quantity integer check = 1, total_minor, currency, status enum paid_simulated, placed_at)`
-- [ ] T067 [P] [US1] Write failing handler tests `apps/api/src/checkout/application/checkout.handler.spec.ts` (in-memory unit of work):
+- [X] T067 [P] [US1] Write failing handler tests `apps/api/src/checkout/application/checkout.handler.spec.ts` (in-memory unit of work):
   - an approved checkout creates one order (product, merchant, prices snapshotted; `quantity = 1`; `total = unit price`), increments `spent_minor` and decrements `stock`, and records `checkout.attempted`, `mandate.check.allowed`, `payment.approved` and `order.placed`
   - a decline creates no order, consumes no budget or stock, records `payment.declined` and raises `PAYMENT_DECLINED`
   - a policy refusal raises its code and records `mandate.check.refused`
   - a replay with the same `Idempotency-Key` and body returns the same order; the same key with a different body raises `IDEMPOTENCY_KEY_REUSED`
   - every attempt emits one structured log line with mandate id, key id (principal), key kind, run id if any, product id, amount, outcome and correlation id (Principle V)
-- [ ] T068 [US1] Implement `apps/api/src/checkout/application/checkout.handler.ts` (`CheckoutCommand { mandateId, keyId, productId, expectedPriceMinor, idempotencyKey, runId? }`) and `apps/api/src/checkout/domain/checkout-unit-of-work.port.ts`
-- [ ] T069 [P] [US1] Write failing integration tests `apps/api/test/integration/checkout-transaction.spec.ts` against Postgres:
+- [X] T068 [US1] Implement `apps/api/src/checkout/application/checkout.handler.ts` (`CheckoutCommand { mandateId, keyId, productId, expectedPriceMinor, idempotencyKey, runId? }`) and `apps/api/src/checkout/domain/checkout-unit-of-work.port.ts`
+- [X] T069 [P] [US1] Write failing integration tests `apps/api/test/integration/checkout-transaction.spec.ts` against Postgres:
   - two concurrent checkouts whose sum exceeds the total budget: exactly one succeeds and the other gets `OVER_REMAINING_BUDGET` (FR-024a)
   - two concurrent checkouts of the last unit in stock: one succeeds, one gets `OUT_OF_STOCK`
   - 10 sequential replays of one idempotency key give 1 payment row and 1 order (SC-004)
-- [ ] T070 [US1] Implement `apps/api/src/checkout/infrastructure/typeorm-checkout-unit-of-work.ts`: one transaction that `SELECT … FOR UPDATE` locks the mandate, then the product, runs `MandatePolicy.authorize`, looks up the idempotency key, charges the gateway, inserts the payment, order and audit rows, updates `spent_minor` and `stock`, and commits (research R12)
+- [X] T070 [US1] Implement `apps/api/src/checkout/infrastructure/typeorm-checkout-unit-of-work.ts`: one transaction that `SELECT … FOR UPDATE` locks the mandate, then the product, runs `MandatePolicy.authorize`, looks up the idempotency key, charges the gateway, inserts the payment, order and audit rows, updates `spent_minor` and `stock`, and commits (research R12)
 ### Checkout: HTTP and orders (Slice 5b)
 
 - [ ] T071 [P] [US1] Write failing contract tests `apps/api/test/contract/checkout.contract.spec.ts`: `POST /v1/checkout` with a key and `Idempotency-Key` (8–100 chars) returns 201 `Order` with `placedBy: builtin_agent | third_party_agent`; a missing header returns 400; a decline returns 402 `PAYMENT_DECLINED`; refusals return 409 with their codes; `X-Agent-Run-Id` is stored only for `builtin` keys
