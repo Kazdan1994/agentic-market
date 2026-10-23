@@ -26,6 +26,11 @@ export class Agent {
     return new Agent({ ...props, name });
   }
 
+  /** Rebuilds a stored agent. The name check is also enforced by the database. */
+  static restore(props: AgentProps): Agent {
+    return new Agent({ ...props });
+  }
+
   get id(): string {
     return this.props.id;
   }
