@@ -1,8 +1,14 @@
 import { loadLocalEnv } from "../../shared/config/load-env";
+import { Argon2PasswordHasher } from "../../identity/infrastructure/argon2-password-hasher";
 import { createDataSource } from "../data-source";
+import { seedUsers } from "./seed-users";
 
-/** Idempotent seed runner. Seed steps are registered here as they land (T035, T039). */
-const seedSteps: ReadonlyArray<{ name: string; run: (ds: ReturnType<typeof createDataSource>) => Promise<void> }> = [];
+type SeedStep = { name: string; run: (ds: ReturnType<typeof createDataSource>) => Promise<void> };
+
+/** Idempotent seed steps, run in order. */
+function seedSteps(demoPassword: string): readonly SeedStep[] {
+  return [{ name: "users", run: (ds) => seedUsers(ds, new Argon2PasswordHasher(), demoPassword) }];
+}
 
 async function main(): Promise<void> {
   loadLocalEnv();
@@ -10,14 +16,19 @@ async function main(): Promise<void> {
   if (!databaseUrl) {
     throw new Error("DATABASE_URL is not set (see .env.example)");
   }
+  const demoPassword = process.env.SEED_DEMO_PASSWORD;
+  if (!demoPassword) {
+    throw new Error("SEED_DEMO_PASSWORD is not set (see .env.example)");
+  }
+  const steps = seedSteps(demoPassword);
   const dataSource = createDataSource(databaseUrl);
   await dataSource.initialize();
   try {
-    for (const step of seedSteps) {
+    for (const step of steps) {
       await step.run(dataSource);
       console.log(`Seeded ${step.name}`);
     }
-    console.log(`Seed complete (${seedSteps.length} step(s))`);
+    console.log(`Seed complete (${steps.length} step(s))`);
   } finally {
     await dataSource.destroy();
   }

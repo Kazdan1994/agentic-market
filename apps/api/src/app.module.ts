@@ -3,6 +3,7 @@ import { CqrsModule } from "@nestjs/cqrs";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { entities } from "./database/entities";
 import { migrations } from "./database/migrations";
+import { IdentityModule } from "./identity/identity.module";
 import { APP_CONFIG, type AppConfig } from "./shared/config/app-config";
 import { LoggerModule } from "./shared/logging/logger.module";
 import { SharedModule } from "./shared/shared.module";
@@ -24,6 +25,7 @@ import { SharedModule } from "./shared/shared.module";
         manualInitialization: process.env.OPENAPI_EXPORT === "1",
       }),
     }),
+    IdentityModule,
   ],
 })
 export class AppModule {}

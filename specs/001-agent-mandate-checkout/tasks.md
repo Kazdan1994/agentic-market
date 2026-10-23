@@ -81,14 +81,14 @@ needs these.
 
 ### Identity: demo users and sign-in (Slice 2)
 
-- [ ] T028 [P] Write failing unit tests for `User` in `apps/api/src/identity/domain/user.spec.ts`: email is lower-cased and trimmed, `display_name` is 1–80 chars
-- [ ] T029 [P] Write a failing integration test `apps/api/test/integration/user-repository.spec.ts`: `findByEmail` is case-insensitive; `email` is unique
-- [ ] T030 Implement `apps/api/src/identity/domain/user.ts`, migration `0003-users.ts` (`id uuid pk`, `email text unique`, `display_name text`, `password_hash text`, `created_at timestamptz`), entity `apps/api/src/identity/infrastructure/user.entity.ts` and `typeorm-user-repository.ts`
-- [ ] T031 [P] Write failing handler tests `apps/api/src/identity/application/login.handler.spec.ts`: a correct password returns the user id; an unknown email and a wrong password both raise `UNAUTHORIZED` with the same message
-- [ ] T032 Implement the `PasswordHasher` port `apps/api/src/identity/domain/password-hasher.ts`, the argon2id adapter `apps/api/src/identity/infrastructure/argon2-password-hasher.ts` and `apps/api/src/identity/application/login.handler.ts` (`LoginCommand`)
-- [ ] T033 [P] Write failing contract tests `apps/api/test/contract/auth.contract.spec.ts`: `POST /v1/auth/login` returns 204 and sets cookie `am_session` (httpOnly, SameSite=Lax, 8 h); bad credentials return 401; `GET /v1/me` returns 200 with the cookie and 401 without; `POST /v1/auth/logout` clears the cookie
-- [ ] T034 Implement `apps/api/src/identity/infrastructure/http/auth.controller.ts`, `session.service.ts` (`@nestjs/jwt`, 8 h), `user-auth.guard.ts`, the `@CurrentUser()` decorator, `apps/api/src/identity/application/get-me.handler.ts` and `apps/api/src/identity/identity.module.ts`
-- [ ] T035 Implement the idempotent seed runner `apps/api/src/database/seed/run-seed.ts` and `seed-users.ts` (`alice@demo.local` "Alice", `bob@demo.local` "Bob", both with the `SEED_DEMO_PASSWORD` hash); add yarn script `seed`
+- [X] T028 [P] Write failing unit tests for `User` in `apps/api/src/identity/domain/user.spec.ts`: email is lower-cased and trimmed, `display_name` is 1–80 chars
+- [X] T029 [P] Write a failing integration test `apps/api/test/integration/user-repository.spec.ts`: `findByEmail` is case-insensitive; `email` is unique
+- [X] T030 Implement `apps/api/src/identity/domain/user.ts`, migration `0003-users.ts` (`id uuid pk`, `email text unique`, `display_name text`, `password_hash text`, `created_at timestamptz`), entity `apps/api/src/identity/infrastructure/user.entity.ts` and `typeorm-user-repository.ts`
+- [X] T031 [P] Write failing handler tests `apps/api/src/identity/application/login.handler.spec.ts`: a correct password returns the user id; an unknown email and a wrong password both raise `UNAUTHORIZED` with the same message
+- [X] T032 Implement the `PasswordHasher` port `apps/api/src/identity/domain/password-hasher.ts`, the argon2id adapter `apps/api/src/identity/infrastructure/argon2-password-hasher.ts` and `apps/api/src/identity/application/login.handler.ts` (`LoginCommand`)
+- [X] T033 [P] Write failing contract tests `apps/api/test/contract/auth.contract.spec.ts`: `POST /v1/auth/login` returns 204 and sets cookie `am_session` (httpOnly, SameSite=Lax, 8 h); bad credentials return 401; `GET /v1/me` returns 200 with the cookie and 401 without; `POST /v1/auth/logout` clears the cookie
+- [X] T034 Implement `apps/api/src/identity/infrastructure/http/auth.controller.ts`, `session.service.ts` (`@nestjs/jwt`, 8 h), `user-auth.guard.ts`, the `@CurrentUser()` decorator, `apps/api/src/identity/application/get-me.handler.ts` and `apps/api/src/identity/identity.module.ts`
+- [X] T035 Implement the idempotent seed runner `apps/api/src/database/seed/run-seed.ts` and `seed-users.ts` (`alice@demo.local` "Alice", `bob@demo.local` "Bob", both with the `SEED_DEMO_PASSWORD` hash); add yarn script `seed`
 
 ### Catalog data and seed (Slice 2)
 
