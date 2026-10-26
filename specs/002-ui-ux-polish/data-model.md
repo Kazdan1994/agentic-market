@@ -20,7 +20,7 @@ No persisted data changes. The models below are client-side design and view-stat
 | `paper` | `#fcfcfa` | slips, till roll, tables |
 | `fg` (ink) | `#14161a` | text, spent bar, primary button |
 | `muted` | `#5b616b` | secondary text |
-| `faint` | `#686e78` | printed meta (≥ 4.5:1 on paper) |
+| `faint` | `#62676f` | printed meta (≥ 4.5:1 on paper) |
 | `rule` | `#e2e4e8` | table rules |
 | `dots` | `#c9ccd2` | dashed/dotted receipt leaders (decorative) |
 | `accent` | `#1e4fd8` | money left, line being printed, focus |
