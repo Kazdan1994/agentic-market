@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agents · Agentic Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
+<!--
+  Direction C — Editorial (editorial-greeting, seed 632187160)
+  Move: the greeting is the h1, set in a serif, naming today's one fact from the data. Every figure below at regular weight on tonal panels.
+  Face: a stone surface (#f6f4f0) and the greeting written from the data, never "Welcome back".
+  Signature: each mandate as an envelope you can read at a glance — a big remaining figure over a bar with the cap tick.
+  Grid: centred 1100px column, 12 columns of 77px, gutters 16 (12×77 + 11×16 = 1100). Rows: 4×3 / 8+4 / 6+6.
+-->
+<style>
+:root{
+  --ground:#fff;--surface:#f4f4f2;--raised:#fff;--border:#e8e8e5;--rule:#ececea;--control:#d9d5cc;
+  --text:#1f201d;--muted:#625f58;--accent:#1b6e66;--accent-pale:#d7ebe8;
+  --pill-positive-bg:#dcfae5;--pill-positive-ink:#04250e;--pill-neutral-bg:#efece6;--pill-neutral-ink:#3d3d3a;
+  --r-card:22px;--r-control:999px;--gap:16px;--pad:20px;
+  --sans:"Albert Sans",system-ui,sans-serif;--serif:"Instrument Serif",Georgia,serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--text);font:14px/1.5 var(--sans)}
+.num{font-variant-numeric:tabular-nums}
+.app{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+aside{padding:24px 14px;display:flex;flex-direction:column;gap:2px}
+.ws{display:flex;align-items:center;gap:10px;padding:0 10px 22px;font-weight:600}
+aside a{display:flex;align-items:center;gap:10px;height:32px;padding:0 10px;border-radius:10px;color:var(--muted);text-decoration:none}
+aside a[aria-current]{background:#ededea;color:var(--text)}
+aside a:hover{color:var(--text)}
+aside .sp{flex:1}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{padding:36px 32px 56px}
+.col{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(12,1fr);gap:var(--gap);align-items:start}
+.head{grid-column:1/-1;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:12px}
+h1{font:400 32px/1.1 var(--serif);margin:0;letter-spacing:-.005em}
+.date{color:var(--muted);margin:10px 0 0}
+.btn{height:38px;padding:0 18px;border-radius:999px;border:0;background:var(--text);color:#fff;font:500 14px var(--sans);cursor:pointer;white-space:nowrap}
+.btn:hover{background:#3a3b37}
+.btn.sec{background:var(--raised);color:var(--text);border:1px solid var(--control)}
+.panel{background:var(--surface);border-radius:var(--r-card);padding:var(--pad)}
+.span3{grid-column:span 3}.span4{grid-column:span 4}.span6{grid-column:span 6}.span8{grid-column:span 8}
+.panel h2{font-size:14px;font-weight:500;margin:0 0 2px}
+.panel .sub{color:var(--muted);font-size:13px;margin:0}
+/* envelope cards */
+.env h2,.env .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.env .top>div{min-width:0}
+.env .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.pill{font-size:12px;line-height:22px;padding:0 9px;border-radius:999px;white-space:nowrap}
+.pill.ok{background:var(--pill-positive-bg);color:var(--pill-positive-ink)}
+.pill.live{background:var(--accent-pale);color:#0c3a35}
+.pill.n{background:var(--pill-neutral-bg);color:var(--pill-neutral-ink)}
+.big{font-size:32px;font-weight:400;letter-spacing:-.02em;margin:22px 0 2px}
+.env.off .big{color:var(--muted)}
+.of{color:var(--muted);font-size:13px}
+.bar{position:relative;height:6px;border-radius:3px;background:#e2e2de;margin:14px 0 10px}
+.bar .s{position:absolute;inset:0 auto 0 0;border-radius:3px;background:var(--text)}
+.bar .c{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--accent)}
+.foot{display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}
+.foot b{font-weight:500;color:var(--text)}
+.env button{margin-top:16px;width:100%}
+/* spending chart */
+.chart{background:var(--raised);border-radius:14px;margin-top:14px;padding:14px 14px 6px}
+.chart svg{display:block;width:100%;height:auto}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+/* lists */
+ul.rows{list-style:none;margin:14px 0 0;padding:0}
+ul.rows li{display:grid;grid-template-columns:1fr auto;gap:0 12px;padding:11px 0;border-top:1px solid var(--rule)}
+ul.rows li span{color:var(--muted);font-size:13px}
+ul.rows .amt{grid-row:span 2;align-self:center}
+.trace li.now{color:#0c3a35}
+.trace li.now .d{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;margin-right:8px;vertical-align:2px;}
+@keyframes p{50%{opacity:.3}}@media (prefers-reduced-motion:reduce){.trace li.now::before{animation:none}}
+@media (max-width:1100px){.span3{grid-column:span 6}.span8,.span4{grid-column:1/-1}}
+@media (max-width:720px){
+  .app{grid-template-columns:1fr}
+  aside{flex-direction:row;align-items:center;padding:0 16px;height:48px;border-bottom:1px solid var(--border)}
+  aside a:not(.ws){display:none}.ws{padding:0}aside .sp{display:block}
+  main{padding:24px 16px 48px}
+  .head{flex-direction:column;align-items:flex-start}
+  h1{font-size:24px}
+  .span3,.span6{grid-column:1/-1}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside aria-label="Main">
+    <span class="ws"><svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="13" fill="#1b6e66"/><path d="M7 9.5h12M7 13h12M7 16.5h7" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><circle cx="18" cy="16.5" r="1.6" fill="#fff"/></svg>Agentic Market</span>
+    <a href="#" aria-current="page"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Agents</a>
+    <a href="#"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 4h14v17l-3-2-2 2-2-2-2 2-2-2-3 2z"/></svg>Orders</a>
+    <span class="sp"></span>
+    <a href="#"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10"/></svg>Log out</a>
+  </aside>
+  <main>
+    <div class="col" id="col"></div>
+  </main>
+</div>
+<script>
+const TODAY=new Date("2026-10-26T15:20:00");
+const agents=[
+ {name:"Pantry restock",cats:"Groceries, household",cap:40,budget:200,orders:[22.90,34.60],ends:"2026-11-12T18:00",st:"live"},
+ {name:"Coffee beans, monthly",cats:"Groceries",cap:25,budget:75,orders:[24.20,24.20],ends:"2026-12-31T23:59",st:"ok"},
+ {name:"Birthday gift for Léa",cats:"Toys, books",cap:80,budget:80,orders:[],ends:"2026-10-31T20:00",st:"ok"},
+ {name:"Office supplies",cats:"Stationery",cap:30,budget:120,orders:[30,30,30,30],ends:"2026-11-30T09:00",st:"used"},
+];
+const c=n=>Math.round(n*100);
+const eur=x=>"€"+(x/100).toLocaleString("en-GB",{minimumFractionDigits:2,maximumFractionDigits:2});
+agents.forEach(a=>{a.spentC=a.orders.reduce((s,o)=>s+c(o),0);a.leftC=c(a.budget)-a.spentC;});
+const leftActive=agents.filter(a=>a.st!=="used").reduce((s,a)=>s+a.leftC,0);console.assert(leftActive===24910);
+const inDays=d=>Math.ceil((new Date(d)-TODAY)/864e5);
+const dd=d=>new Date(d).toLocaleDateString("en-GB",{day:"numeric",month:"short"});
+const pill={live:'<span class="pill live">Shopping now</span>',ok:'<span class="pill ok">Active</span>',used:'<span class="pill n">Budget used up</span>'};
+const cards=agents.map(a=>`<article class="panel env span3 ${a.st==="used"?"off":""}">
+<div class="top"><div><h2>${a.name}</h2><p class="sub">${a.cats}</p></div>${pill[a.st]}</div>
+<p class="big num">${eur(a.leftC)}</p><div class="of num">left of ${eur(c(a.budget))}</div>
+<div class="bar" role="img" aria-label="${eur(a.spentC)} spent of ${eur(c(a.budget))}, ${eur(c(a.cap))} per purchase"><span class="s" style="width:${a.spentC/c(a.budget)*100}%"></span>${c(a.cap)<c(a.budget)?`<span class="c" style="left:${c(a.cap)/c(a.budget)*100}%"></span>`:""}</div>
+<div class="foot"><span>Up to <b class="num">${eur(c(a.cap))}</b> a purchase</span><span>${inDays(a.ends)<=7?`Ends in ${inDays(a.ends)} days`:`Ends ${dd(a.ends)}`}</span></div>
+<button class="btn sec">${a.st==="live"?"Watch the run":a.st==="used"?"Top up budget":"Start a run"}</button></article>`).join("");
+// spend per day, 1–26 Oct, from the orders
+const spend={15:30,19:22.90,21:30,24:24.20,26:34.60,3:24.20,8:30,11:30};
+const W=700,H=150,max=40,bw=W/26;
+let bars="";for(let d=1;d<=26;d++){const v=spend[d]||0,h=v/max*(H-20);bars+=`<rect x="${(d-1)*bw+4}" y="${H-h}" width="${bw-8}" height="${Math.max(h,1)}" rx="2" fill="${d===26?"#1b6e66":v?"#1f201d":"#d9d5cc"}"/>`;}
+const total=Object.values(spend).reduce((s,v)=>s+c(v),0);console.assert(total===c(57.5+48.4+120));
+const chart=`<svg viewBox="0 0 ${W} ${H+18}" role="img" aria-label="Spending per day in October, ${eur(total)} in total"><line x1="0" x2="${W}" y1="${H-(40/max)*(H-20)}" y2="${H-(40/max)*(H-20)}" stroke="#d9d5cc" stroke-dasharray="3 4"/><text x="${W}" y="${H-(40/max)*(H-20)-6}" text-anchor="end" font-size="11" fill="#625f58">€40</text>${bars}<text x="0" y="${H+16}" font-size="11" fill="#625f58">1 Oct</text><text x="${W}" y="${H+16}" text-anchor="end" font-size="11" fill="#625f58">Today</text></svg>`;
+const orders=[["Oat milk, 6 × 1 L","Pantry restock · Today",34.60],["Ethiopia Guji, 1 kg","Coffee beans · 24 Oct",24.20],["A4 notebooks, 10 pack","Office supplies · 21 Oct",30],["Dishwasher tablets, 90","Pantry restock · 19 Oct",22.90]];
+const trace=[["15:12","Read the mandate"],["15:13","Searched 3 shops for basmati rice, 5 kg"],["15:15","Set aside a 10 kg bag at €43.90, over the cap"],["15:19","Choosing Ocado 5 kg at €9.85",1]];
+document.getElementById("col").innerHTML=`
+<div class="head"><div><h1>Afternoon, Camille. Pantry restock is buying rice.</h1><p class="date">Monday 26 October · <span class="num">${eur(leftActive)}</span> left across 3 active mandates</p></div><button class="btn">New agent</button></div>
+${cards}
+<section class="panel span8"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><h2>Spent this month</h2><p class="sub num">${eur(total)} in 8 orders, all within their caps</p></div><div class="legend"><span><i style="background:#1f201d"></i>Paid</span><span><i style="background:#1b6e66"></i>Today</span></div></div><div class="chart">${chart}</div></section>
+<section class="panel span4"><h2>Right now</h2><p class="sub">Pantry restock, started 15:12</p><ul class="rows trace" aria-live="polite">${trace.map(t=>`<li class="${t[2]?"now":""}"><div>${t[2]?'<span class="d"></span>':""}${t[1]}</div><span class="num">${t[0]}</span></li>`).join("")}</ul></section>
+<section class="panel span6"><h2>Latest orders</h2><ul class="rows">${orders.map(o=>`<li><div>${o[0]}</div><b class="amt num" style="font-weight:400">${eur(c(o[2]))}</b><span>${o[1]}</span></li>`).join("")}</ul></section>
+<section class="panel span6"><h2>Coming up</h2><ul class="rows">
+<li><div>Birthday gift for Léa ends</div><b class="amt num" style="font-weight:400">31 Oct</b><span>Still €80.00 unspent; it has never run</span></li>
+<li><div>Pantry restock ends</div><b class="amt num" style="font-weight:400">12 Nov</b><span>€142.50 left</span></li>
+<li><div>Coffee beans renews its order</div><b class="amt num" style="font-weight:400">~7 Nov</b><span>Every 14 days, last on 24 Oct</span></li></ul></section>`;
+</script>
+</body>
+</html>
