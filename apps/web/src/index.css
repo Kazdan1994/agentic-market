@@ -1,1 +1,75 @@
+@import "@fontsource-variable/familjen-grotesk/wght.css";
+@import "@fontsource/space-mono/400.css";
+@import "@fontsource/space-mono/700.css";
 @import "tailwindcss";
+
+/* Direction E, "Slips" (specs/002-ui-ux-polish/data-model.md). Keep in sync with src/lib/contrast.ts. */
+@theme {
+  --color-ground: #eef0f3;
+  --color-paper: #fcfcfa;
+  --color-fg: #14161a;
+  --color-muted: #5b616b;
+  --color-faint: #62676f;
+  --color-rule: #e2e4e8;
+  --color-dots: #c9ccd2;
+  --color-control: #c8ccd3;
+  --color-accent: #1e4fd8;
+  --color-accent-pale: #e3eafc;
+  --color-accent-ink: #123a9e;
+  --color-success: #1d6b3a;
+  --color-success-pale: #e0f2e6;
+  --color-success-ink: #0f3f20;
+  --color-danger: #b42318;
+  --color-stub: #f7f7f5;
+
+  --font-sans: "Familjen Grotesk Variable", "Familjen Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-print: "Space Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  body {
+    @apply bg-ground font-sans text-fg antialiased;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Torn paper edge on a slip or the till roll (research R17). */
+@utility slip-edge {
+  position: relative;
+  background-color: var(--color-paper);
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 8px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='8'%3E%3Cpath d='M0 8 8 0l8 8z' fill='%23fcfcfa'/%3E%3C/svg%3E") repeat-x;
+  }
+
+  &::before {
+    top: -8px;
+  }
+
+  &::after {
+    bottom: -8px;
+    transform: scaleY(-1);
+  }
+}

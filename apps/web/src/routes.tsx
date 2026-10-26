@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Navigate, NavLink, Outlet, type RouteObject } from "react-router";
+import { Link, Navigate, NavLink, Outlet, type RouteObject } from "react-router";
 import { api } from "@/api/client";
 import { Button } from "@/components/ui/button";
 import { AgentsPage } from "@/features/agents/AgentsPage";
@@ -10,24 +10,59 @@ import { OrdersPage } from "@/features/orders/OrdersPage";
 import { RunPage } from "@/features/runs/RunPage";
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-  isActive ? "font-medium text-neutral-900" : "text-neutral-500 hover:text-neutral-900";
+  isActive ? "font-medium text-fg" : "text-muted hover:text-fg";
 
-function NavBar() {
+function ReceiptMark() {
+  return (
+    <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
+      <path d="M4 2h18v22l-3-2-3 2-3-2-3 2-3-2-3 2z" className="fill-fg" />
+      <path d="M8 9h10M8 13h10M8 17h6" className="stroke-paper" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
+function initials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
+function NavBar({ displayName }: { displayName: string }) {
   const queryClient = useQueryClient();
   const logOut = async () => {
     await api.POST("/v1/auth/logout");
     queryClient.setQueryData(ME_QUERY_KEY, null);
   };
+
   return (
-    <header className="border-b border-neutral-200">
-      <nav aria-label="Main" className="mx-auto flex w-full max-w-4xl items-center gap-6 px-4 py-3 text-sm">
+    <header>
+      <nav
+        aria-label="Main"
+        className="mx-auto flex h-14 w-full max-w-[1200px] items-center gap-4 px-4 text-sm sm:h-[68px] sm:gap-7 sm:px-6"
+      >
+        <Link to="/agents" className="mr-1 flex items-center gap-2.5 whitespace-nowrap text-base font-semibold sm:mr-3">
+          <ReceiptMark />
+          Agentic Market
+        </Link>
         <NavLink to="/agents" className={navLinkClass}>
           Agents
         </NavLink>
         <NavLink to="/orders" className={navLinkClass}>
           Orders
         </NavLink>
-        <Button variant="ghost" className="ml-auto" onClick={logOut}>
+        <span className="ml-auto flex items-center gap-2.5 text-muted">
+          <span className="hidden sm:inline">{displayName}</span>
+          <span
+            aria-hidden="true"
+            className="grid size-[30px] place-items-center rounded-full bg-accent-pale text-xs font-semibold text-accent-ink"
+          >
+            {initials(displayName)}
+          </span>
+        </span>
+        <Button variant="ghost" className="px-3" onClick={logOut}>
           Log out
         </Button>
       </nav>
@@ -42,7 +77,7 @@ function ProtectedLayout() {
   if (!me.data) return <Navigate to="/login" replace />;
   return (
     <>
-      <NavBar />
+      <NavBar displayName={me.data.displayName} />
       <Outlet />
     </>
   );

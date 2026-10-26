@@ -13,7 +13,7 @@ export function SelectTrigger({
   return (
     <SelectPrimitive.Trigger
       className={cn(
-        "flex h-9 w-full items-center justify-between rounded-md border border-neutral-300 bg-white px-3 text-sm",
+        "flex h-10 w-full items-center justify-between rounded-md border border-control bg-paper px-3 text-sm",
         className,
       )}
       {...props}
@@ -33,7 +33,7 @@ export function SelectContent({
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         position="popper"
-        className={cn("z-50 rounded-md border border-neutral-200 bg-white shadow-md", className)}
+        className={cn("z-50 rounded-md border border-rule bg-paper shadow-md", className)}
         {...props}
       >
         <SelectPrimitive.Viewport className="p-1">{children}</SelectPrimitive.Viewport>
@@ -46,7 +46,7 @@ export function SelectItem({ className, children, ...props }: ComponentProps<typ
   return (
     <SelectPrimitive.Item
       className={cn(
-        "cursor-default rounded-sm px-2 py-1.5 text-sm outline-none data-[highlighted]:bg-neutral-100",
+        "cursor-default rounded-sm px-2 py-1.5 text-sm outline-none data-[highlighted]:bg-ground",
         className,
       )}
       {...props}

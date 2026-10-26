@@ -6,7 +6,7 @@ export function Checkbox({ className, ...props }: ComponentProps<typeof Checkbox
   return (
     <CheckboxPrimitive.Root
       className={cn(
-        "size-4 shrink-0 rounded-sm border border-neutral-400 data-[state=checked]:bg-neutral-900 data-[state=checked]:text-white",
+        "size-4 shrink-0 rounded-sm border border-control bg-paper data-[state=checked]:border-fg data-[state=checked]:bg-fg data-[state=checked]:text-white",
         className,
       )}
       {...props}

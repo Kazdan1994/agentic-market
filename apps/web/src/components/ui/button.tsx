@@ -3,9 +3,9 @@ import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
 const VARIANTS = {
-  default: "bg-neutral-900 text-white hover:bg-neutral-800",
-  outline: "border border-neutral-300 bg-white hover:bg-neutral-50",
-  ghost: "hover:bg-neutral-100",
+  default: "bg-fg text-white hover:bg-fg/90",
+  outline: "border border-control bg-transparent hover:bg-ground",
+  ghost: "text-muted hover:bg-ground hover:text-fg",
 } as const;
 
 type ButtonProps = ComponentProps<"button"> & {
@@ -18,7 +18,7 @@ export function Button({ className, variant = "default", asChild = false, ...pro
   return (
     <Comp
       className={cn(
-        "inline-flex h-9 items-center justify-center gap-2 rounded-md px-4 text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-full px-5 text-sm font-medium transition-[background-color,transform] duration-150 active:scale-[.97] disabled:pointer-events-none disabled:opacity-50",
         VARIANTS[variant],
         className,
       )}

@@ -15,6 +15,15 @@ describe("navigation bar", () => {
     expect(within(nav).getByRole("link", { name: "Orders" })).toHaveAttribute("aria-current", "page");
   });
 
+  it("shows the product wordmark and the signed-in principal", async () => {
+    stubApi((request) => (new URL(request.url).pathname === "/v1/orders" ? json(200, []) : undefined));
+    renderAt("/orders");
+
+    const nav = await screen.findByRole("navigation", { name: "Main" });
+    expect(within(nav).getByRole("link", { name: "Agentic Market" })).toHaveAttribute("href", "/agents");
+    expect(within(nav).getByText("Alice")).toBeInTheDocument();
+  });
+
   it("logs out and returns to the login page", async () => {
     const calls = stubApi((request) => {
       const path = new URL(request.url).pathname;

@@ -55,7 +55,7 @@ export function FormItem({ className, ...props }: ComponentProps<"div">) {
 
 export function FormLabel({ className, ...props }: ComponentProps<typeof Label>) {
   const { error, formItemId } = useFormField();
-  return <Label className={cn(error && "text-red-600", className)} htmlFor={formItemId} {...props} />;
+  return <Label className={cn(error && "text-danger", className)} htmlFor={formItemId} {...props} />;
 }
 
 export function FormControl(props: ComponentProps<typeof Slot>) {
@@ -74,7 +74,7 @@ export function FormMessage({ className, ...props }: ComponentProps<"p">) {
   const { error, formMessageId } = useFormField();
   if (!error?.message) return null;
   return (
-    <p id={formMessageId} className={cn("text-sm text-red-600", className)} {...props}>
+    <p id={formMessageId} className={cn("text-sm text-danger", className)} {...props}>
       {error.message}
     </p>
   );
