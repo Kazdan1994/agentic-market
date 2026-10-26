@@ -79,4 +79,30 @@ describe("LoginPage", () => {
     expect(await screen.findByRole("button", { name: "Sign in" })).toBeInTheDocument();
     await waitFor(() => expect(router.state.location.pathname).toBe("/login"));
   });
+
+  it("returns to the page that asked for sign-in", async () => {
+    const router = renderAt("/orders/o1");
+    await vi.waitFor(() => expect(router.state.location.pathname).toBe("/login"));
+    expect(router.state.location.search).toBe("?next=%2Forders%2Fo1");
+
+    await userEvent.type(screen.getByLabelText("Email"), "alice@demo.local");
+    await userEvent.type(screen.getByLabelText("Password"), "secret");
+    await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
+
+    await vi.waitFor(() => expect(router.state.location.pathname).toBe("/orders/o1"));
+  });
+
+  it.each(["//evil.com", "https://evil.com", "agents"])("ignores an unsafe next of %s", async (next) => {
+    const router = renderAt(`/login?next=${encodeURIComponent(next)}`);
+    await userEvent.type(screen.getByLabelText("Email"), "alice@demo.local");
+    await userEvent.type(screen.getByLabelText("Password"), "secret");
+    await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
+
+    await vi.waitFor(() => expect(router.state.location.pathname).toBe("/agents"));
+  });
+
+  it("titles the page", async () => {
+    renderAt("/login");
+    await vi.waitFor(() => expect(document.title).toBe("Sign in · Agentic Market"));
+  });
 });

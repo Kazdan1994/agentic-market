@@ -71,15 +71,15 @@ description: "Task list for UI/UX polish and rebrand (direction E, Slips) of the
 
 **Independent Test**: navigate agents → run → order → orders with on-page links only; `document.title` matches the contract on each route.
 
-- [ ] T028 [P] [US2] Failing tests in `apps/web/src/routes.test.tsx`: `document.title` per the contract table; "Orders" has `aria-current="page"` on `/orders/:id` and "Agents" on `/runs/:id`; the wordmark links to `/agents`; logout returning 500 shows the alert "Could not log out. Try again." and keeps the user signed in
-- [ ] T029 [P] [US2] Failing tests in `apps/web/src/features/auth/LoginPage.test.tsx`: an unauthenticated visit to `/orders/o1` redirects to `/login?next=%2Forders%2Fo1` and signing in lands on `/orders/o1`; `next=//evil.com` and `next=https://evil.com` fall back to `/agents`
-- [ ] T030 [P] [US2] Failing tests: "Back to Orders" in `apps/web/src/features/orders/OrderDetailPage.test.tsx`; "Back to Agents" in `apps/web/src/features/runs/RunPage.test.tsx`
-- [ ] T031 [US2] In `apps/web/src/routes.tsx`: mark "Agents" active on `/runs/*` (`useLocation`) with `aria-current`; catch a logout failure and render the alert; redirect from `ProtectedLayout` with `?next=<pathname+search>`
-- [ ] T032 [US2] Add `safeNext(raw: string | null): string` (accept only values starting with `/` and not `//`, else `/agents`) and use it after sign-in in `apps/web/src/features/auth/LoginPage.tsx`; restyle sign-in as one paper slip (`.slip-edge`) centred on the ground, with the receipt mark above "Sign in"
-- [ ] T033 [P] [US2] Add a native React 19 `<title>` per contract in `AgentsPage.tsx`, `OrdersPage.tsx`, `OrderDetailPage.tsx`, `RunPage.tsx` and `LoginPage.tsx` under `apps/web/src/features/`
-- [ ] T034 [P] [US2] Add the "Back to Orders" link above the heading in `apps/web/src/features/orders/OrderDetailPage.tsx`
-- [ ] T035 [P] [US2] Add the "Back to Agents" link above the heading in `apps/web/src/features/runs/RunPage.tsx`; render the run's DecisionLog as a till roll (see T042) when the run is running
-- [ ] T036 [US2] Run the slice gate
+- [X] T028 [P] [US2] Failing tests in `apps/web/src/routes.test.tsx`: `document.title` per the contract table; "Orders" has `aria-current="page"` on `/orders/:id` and "Agents" on `/runs/:id`; the wordmark links to `/agents`; logout returning 500 shows the alert "Could not log out. Try again." and keeps the user signed in
+- [X] T029 [P] [US2] Failing tests in `apps/web/src/features/auth/LoginPage.test.tsx`: an unauthenticated visit to `/orders/o1` redirects to `/login?next=%2Forders%2Fo1` and signing in lands on `/orders/o1`; `next=//evil.com` and `next=https://evil.com` fall back to `/agents`
+- [X] T030 [P] [US2] Failing tests: "Back to Orders" in `apps/web/src/features/orders/OrderDetailPage.test.tsx`; "Back to Agents" in `apps/web/src/features/runs/RunPage.test.tsx`
+- [X] T031 [US2] In `apps/web/src/routes.tsx`: mark "Agents" active on `/runs/*` (`useLocation`) with `aria-current`; catch a logout failure and render the alert; redirect from `ProtectedLayout` with `?next=<pathname+search>`
+- [X] T032 [US2] Add `safeNext(raw: string | null): string` (accept only values starting with `/` and not `//`, else `/agents`) and use it after sign-in in `apps/web/src/features/auth/LoginPage.tsx`; restyle sign-in as one paper slip (`.slip-edge`) centred on the ground, with the receipt mark above "Sign in"
+- [X] T033 [P] [US2] Add a native React 19 `<title>` per contract in `AgentsPage.tsx`, `OrdersPage.tsx`, `OrderDetailPage.tsx`, `RunPage.tsx` and `LoginPage.tsx` under `apps/web/src/features/`
+- [X] T034 [P] [US2] Add the "Back to Orders" link above the heading in `apps/web/src/features/orders/OrderDetailPage.tsx`
+- [X] T035 [P] [US2] Add the "Back to Agents" link above the heading in `apps/web/src/features/runs/RunPage.tsx`; render the run's DecisionLog as a till roll (see T042) when the run is running — back link done; the till roll on the run page moves to US3 with TillRoll (T042)
+- [X] T036 [US2] Run the slice gate
 
 ---
 

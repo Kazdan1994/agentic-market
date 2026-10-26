@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { act } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -53,8 +53,8 @@ describe("RunPage", () => {
   it("shows not found for an unknown run, with a way back", async () => {
     stubApi(() => undefined);
     renderAt(RUN_PATH);
-    expect(await screen.findByText("This run doesn't exist.")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Back to Agents" })).toHaveAttribute("href", "/agents");
+    const message = await screen.findByText("This run doesn't exist.");
+    expect(within(message.parentElement as HTMLElement).getByRole("link", { name: "Back to Agents" })).toHaveAttribute("href", "/agents");
   });
 
   it("retries the run in place after a failure", async () => {
@@ -84,6 +84,16 @@ describe("RunPage", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Order could not be loaded.");
     await userEvent.click(screen.getByRole("button", { name: "Try again" }));
     expect(await screen.findByText("RunBuds Pro Running Earbuds")).toBeInTheDocument();
+  });
+
+  it("links back to the agents", async () => {
+    stubApi((request) =>
+      new URL(request.url).pathname.startsWith("/v1/runs/")
+        ? json(200, makeRun({ status: "completed", outcome: "no_eligible_product" }))
+        : undefined,
+    );
+    renderAt(RUN_PATH);
+    expect(await screen.findByRole("link", { name: "Back to Agents" })).toHaveAttribute("href", "/agents");
   });
 
   it("shows the rules strategy with its fallback reason", async () => {

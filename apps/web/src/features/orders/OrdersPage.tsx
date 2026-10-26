@@ -10,6 +10,7 @@ export function OrdersPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-8">
+      <title>Orders · Agentic Market</title>
       <h1 className="text-2xl font-semibold">Orders</h1>
       <QueryState
         query={orders}

@@ -23,6 +23,7 @@ export function AgentsPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-8">
+      <title>Agents · Agentic Market</title>
       <h1 className="text-2xl font-semibold">Agents</h1>
       <Card>
         <CardHeader>

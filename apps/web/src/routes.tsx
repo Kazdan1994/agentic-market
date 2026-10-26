@@ -1,5 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Link, Navigate, NavLink, Outlet, type RouteObject } from "react-router";
+import { useState } from "react";
+import { Link, Navigate, NavLink, Outlet, type RouteObject, useLocation } from "react-router";
 import { api } from "@/api/client";
 import { Button } from "@/components/ui/button";
 import { AgentsPage } from "@/features/agents/AgentsPage";
@@ -12,7 +13,7 @@ import { RunPage } from "@/features/runs/RunPage";
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   isActive ? "font-medium text-fg" : "text-muted hover:text-fg";
 
-function ReceiptMark() {
+export function ReceiptMark() {
   return (
     <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
       <path d="M4 2h18v22l-3-2-3 2-3-2-3 2-3-2-3 2z" className="fill-fg" />
@@ -32,10 +33,20 @@ function initials(name: string): string {
 
 function NavBar({ displayName }: { displayName: string }) {
   const queryClient = useQueryClient();
+  const { pathname } = useLocation();
+  const [logoutFailed, setLogoutFailed] = useState(false);
   const logOut = async () => {
-    await api.POST("/v1/auth/logout");
-    queryClient.setQueryData(ME_QUERY_KEY, null);
+    setLogoutFailed(false);
+    try {
+      const { response } = await api.POST("/v1/auth/logout");
+      if (!response.ok) throw new Error(`logout failed with ${response.status}`);
+      queryClient.setQueryData(ME_QUERY_KEY, null);
+    } catch {
+      setLogoutFailed(true);
+    }
   };
+  // A run belongs to an agent, so the Agents link stays current on /runs/*.
+  const agentsActive = pathname === "/agents" || pathname.startsWith("/runs/");
 
   return (
     <header>
@@ -47,9 +58,9 @@ function NavBar({ displayName }: { displayName: string }) {
           <ReceiptMark />
           Agentic Market
         </Link>
-        <NavLink to="/agents" className={navLinkClass}>
+        <Link to="/agents" className={navLinkClass({ isActive: agentsActive })} aria-current={agentsActive ? "page" : undefined}>
           Agents
-        </NavLink>
+        </Link>
         <NavLink to="/orders" className={navLinkClass}>
           Orders
         </NavLink>
@@ -66,12 +77,18 @@ function NavBar({ displayName }: { displayName: string }) {
           Log out
         </Button>
       </nav>
+      {logoutFailed && (
+        <p role="alert" className="mx-auto w-full max-w-[1200px] px-4 text-sm text-danger sm:px-6">
+          Could not log out. Try again.
+        </p>
+      )}
     </header>
   );
 }
 
 function ProtectedLayout() {
   const me = useMe();
+  const location = useLocation();
   if (me.isPending) {
     return (
       <p role="status" className="grid min-h-screen place-items-center text-muted">
@@ -89,7 +106,7 @@ function ProtectedLayout() {
       </div>
     );
   }
-  if (!me.data) return <Navigate to="/login" replace />;
+  if (!me.data) return <Navigate to={`/login?next=${encodeURIComponent(location.pathname + location.search)}`} replace />;
   return (
     <>
       <NavBar displayName={me.data.displayName} />

@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { apiError, json, makeOrder, never, onceThen, renderAt, stubApi } from "@/test-utils";
@@ -20,6 +20,12 @@ describe("OrderDetailPage", () => {
     );
   });
 
+  it("links back to the orders list", async () => {
+    stubApi((request) => (new URL(request.url).pathname.startsWith("/v1/orders/") ? json(200, makeOrder()) : undefined));
+    renderAt(ORDER_PATH);
+    expect(await screen.findByRole("link", { name: "Back to Orders" })).toHaveAttribute("href", "/orders");
+  });
+
   it("has no run link for orders placed by an external agent", async () => {
     stubApi((request) =>
       new URL(request.url).pathname.startsWith("/v1/orders/")
@@ -35,8 +41,8 @@ describe("OrderDetailPage", () => {
   it("shows not found for an unknown order, with a way back", async () => {
     stubApi(() => undefined);
     renderAt(ORDER_PATH);
-    expect(await screen.findByText("This order doesn't exist.")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Back to Orders" })).toHaveAttribute("href", "/orders");
+    const message = await screen.findByText("This order doesn't exist.");
+    expect(within(message.parentElement as HTMLElement).getByRole("link", { name: "Back to Orders" })).toHaveAttribute("href", "/orders");
   });
 
   it("shows a placeholder while the order loads", async () => {
