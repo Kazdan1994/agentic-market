@@ -11,7 +11,6 @@ interface TillRollProps {
   entries: readonly LogEntry[];
 }
 
-/** A running agent's steps, printed like a till roll; the newest line is still printing. */
 export function TillRoll({ agentName, startedAt, entries }: TillRollProps) {
   const headingId = useId();
   if (entries.length === 0) return null;
@@ -22,11 +21,11 @@ export function TillRoll({ agentName, startedAt, entries }: TillRollProps) {
       <h2 id={headingId} className="flex justify-between font-bold text-fg">
         <span>
           <span className="sr-only">{agentName} live</span>
-          <span aria-hidden="true">{agentName.toUpperCase()} · LIVE</span>
+          <span aria-hidden="true">{agentName.toUpperCase()} - LIVE</span>
         </span>
       </h2>
       <p className="mb-2.5 text-faint uppercase">
-        {runDate.format(started)} · started {logTime(startedAt)}
+        {runDate.format(started)} - started {logTime(startedAt)}
       </p>
       <ol aria-live="polite" aria-relevant="additions">
         {entries.map((entry, index) => {

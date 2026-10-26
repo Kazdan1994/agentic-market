@@ -64,10 +64,10 @@ describe("DecisionLog", () => {
     render(<DecisionLog entries={entries} />);
     const kept = item("Kept RunBuds Pro.");
     expect(kept.getByText("Kept")).toBeInTheDocument();
-    expect(kept.getByText("TechCorner · 79.00 EUR")).toBeInTheDocument();
+    expect(kept.getByText("TechCorner - 79.00 EUR")).toBeInTheDocument();
     const discarded = item("Discarded Trail Buds: over the cap.");
     expect(discarded.getByText("Discarded")).toBeInTheDocument();
-    expect(discarded.getByText("SoundHub · 129.00 EUR")).toBeInTheDocument();
+    expect(discarded.getByText("SoundHub - 129.00 EUR")).toBeInTheDocument();
   });
 
   it("marks products the AI did not evaluate as a rule-based verdict", () => {

@@ -5,9 +5,7 @@ import type { Run } from "@/features/runs/useRun";
 import { type Agent, toApiError } from "./useAgents";
 
 export interface AgentActivity {
-  /** Each mandate's orders, oldest first: the lines printed on its slip. */
   ordersByMandate: ReadonlyMap<string, Order[]>;
-  /** The run in progress for a mandate; absent when its agent is idle. */
   runningByMandate: ReadonlyMap<string, Run>;
   isPending: boolean;
   isError: boolean;
@@ -16,7 +14,7 @@ export interface AgentActivity {
 
 /**
  * What the agents are doing: their orders, grouped by mandate, and any run in progress.
- * Runs are listed per active mandate (research R15); ended mandates cannot run.
+ * Runs are listed per active mandate, ended mandates cannot run.
  */
 export function useAgentActivity(agents: readonly Agent[]): AgentActivity {
   const orders = useOrders();

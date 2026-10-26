@@ -3,7 +3,6 @@
 @import "@fontsource/space-mono/700.css";
 @import "tailwindcss";
 
-/* Direction E, "Slips" (specs/002-ui-ux-polish/data-model.md). Keep in sync with src/lib/contrast.ts. */
 @theme {
   --color-ground: #eef0f3;
   --color-paper: #fcfcfa;
@@ -92,14 +91,12 @@
   }
 }
 
-/* The caret on the line a till roll is still printing. */
 @keyframes blink {
   50% {
     opacity: 0;
   }
 }
 
-/* Torn paper edge on a slip or the till roll (research R17). */
 @utility slip-edge {
   position: relative;
   background-color: var(--color-paper);

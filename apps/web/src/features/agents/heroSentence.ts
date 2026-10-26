@@ -18,7 +18,7 @@ export function leftToSpend(agents: readonly Agent[]): string {
 }
 
 /**
- * The Agents page's opening sentence, written from the data only (research R18):
+ * The Agents page's opening sentence, written from the data only:
  * what is left across active mandates, then who is shopping, then what ends soon.
  */
 export function heroSentence(agents: readonly Agent[], runningByMandate: ReadonlyMap<string, Run>, now: Date): string {

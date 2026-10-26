@@ -6,11 +6,11 @@ The API contract is unchanged. This page defines the user-facing contract that t
 
 | Route | Title | Nav current | Back link | Not-found |
 |-------|-------|-------------|-----------|-----------|
-| `/login` | Sign in · Agentic Market | – | – | – |
-| `/agents` | Agents · Agentic Market | Agents | – | – |
-| `/runs/:runId` | Run · Agentic Market | Agents | ← Agents | yes |
-| `/orders` | Orders · Agentic Market | Orders | – | – |
-| `/orders/:orderId` | Order · Agentic Market | Orders | ← Orders | yes |
+| `/login` | Sign in - Agentic Market | – | – | – |
+| `/agents` | Agents - Agentic Market | Agents | – | – |
+| `/runs/:runId` | Run - Agentic Market | Agents | ← Agents | yes |
+| `/orders` | Orders - Agentic Market | Orders | – | – |
+| `/orders/:orderId` | Order - Agentic Market | Orders | ← Orders | yes |
 
 ## Query parameters
 

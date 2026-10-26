@@ -32,10 +32,10 @@ describe("navigation bar", () => {
   });
 
   it.each([
-    ["/agents", "Agents · Agentic Market"],
-    ["/orders", "Orders · Agentic Market"],
-    ["/orders/01900000-0000-7000-8000-0000000a0d01", "Order · Agentic Market"],
-    ["/runs/01900000-0000-7000-8000-0000000a7001", "Run · Agentic Market"],
+    ["/agents", "Agents - Agentic Market"],
+    ["/orders", "Orders - Agentic Market"],
+    ["/orders/01900000-0000-7000-8000-0000000a0d01", "Order - Agentic Market"],
+    ["/runs/01900000-0000-7000-8000-0000000a7001", "Run - Agentic Market"],
   ])("titles %s as %s", async (path, title) => {
     stubApi((request) => {
       const p = new URL(request.url).pathname;

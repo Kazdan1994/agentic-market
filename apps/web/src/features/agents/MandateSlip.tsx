@@ -14,13 +14,11 @@ const endDate = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short
 
 interface MandateSlipProps {
   agent: Agent;
-  /** The mandate's orders, oldest first. */
   orders: readonly Order[];
   run?: Run;
   now: Date;
 }
 
-/** One active mandate, printed as a receipt that fills with its purchases (direction E). */
 export function MandateSlip({ agent, orders, run, now }: MandateSlipProps) {
   const headingId = useId();
   const { mandate } = agent;
@@ -66,7 +64,7 @@ export function MandateSlip({ agent, orders, run, now }: MandateSlipProps) {
       </div>
       <div className="mt-2 flex justify-between gap-3 text-print text-muted">
         <span>
-          <span className="tabular-nums">{money(budget)}</span> budget ·{" "}
+          <span className="tabular-nums">{money(budget)}</span> budget -{" "}
           <span className="tabular-nums">{money(mandate.perPurchaseCap.amountMinor)}</span> a purchase
         </span>
         <span className="whitespace-nowrap">

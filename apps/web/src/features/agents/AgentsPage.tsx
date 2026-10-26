@@ -29,7 +29,7 @@ export function AgentsPage() {
 
   return (
     <main className="mx-auto w-full max-w-page px-4 pb-20 sm:px-6">
-      <title>Agents · Agentic Market</title>
+      <title>Agents - Agentic Market</title>
       <h1 className="pt-10 text-body font-medium text-muted">Agents</h1>
       <QueryState
         query={agents}
@@ -69,7 +69,6 @@ function AgentsDesk({ agents }: { agents: Agent[] }) {
   const shoppingRun = shopping && activity.runningByMandate.get(shopping.mandate.id);
   const latestOrder = [...activity.ordersByMandate.values()].flat().sort((a, b) => b.placedAt.localeCompare(a.placedAt))[0];
   const amount = leftToSpend(agents);
-  // The sentence opens with the amount; the hero sets the amount large, then the rest of the sentence.
   const rest = heroSentence(agents, activity.runningByMandate, now).slice(amount.length);
   const [units = amount, fraction = ""] = amount.split(".");
 
@@ -112,7 +111,7 @@ function AgentsDesk({ agents }: { agents: Agent[] }) {
                 {latestOrder.product.name}
               </Link>
               <p className="mt-1 text-muted">
-                {latestOrder.merchant.name} · {placedAt.format(new Date(latestOrder.placedAt))}
+                {latestOrder.merchant.name} - {placedAt.format(new Date(latestOrder.placedAt))}
               </p>
               <p className="mt-4 text-stat leading-none font-medium tabular-nums">
                 {formatMoney(latestOrder.total.amountMinor, latestOrder.total.currency)}

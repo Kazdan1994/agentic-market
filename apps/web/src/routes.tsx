@@ -45,7 +45,6 @@ function NavBar({ displayName }: { displayName: string }) {
       setLogoutFailed(true);
     }
   };
-  // A run belongs to an agent, so the Agents link stays current on /runs/*.
   const agentsActive = pathname === "/agents" || pathname.startsWith("/runs/");
 
   return (

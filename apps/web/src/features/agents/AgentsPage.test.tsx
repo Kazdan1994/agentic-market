@@ -8,7 +8,6 @@ type Overrides = Partial<Record<"agents" | "categories" | "orders", () => Respon
   runs?: (mandateId: string) => Response;
 };
 
-/** Agents page API: agents, categories, orders and each mandate's runs, overridable per test. */
 function stubAgentsApi(o: Overrides) {
   return stubApi((request) => {
     const path = new URL(request.url).pathname;

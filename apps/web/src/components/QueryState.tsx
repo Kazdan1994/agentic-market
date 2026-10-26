@@ -14,7 +14,6 @@ export interface QueryLike<T> {
 
 interface QueryStateProps<T> {
   query: QueryLike<T>;
-  /** What is being loaded, as a sentence subject: "Orders", "Order", "Run". */
   resource: string;
   skeleton: ReactNode;
   empty?: ReactNode;
@@ -23,7 +22,6 @@ interface QueryStateProps<T> {
   children: (data: T) => ReactNode;
 }
 
-/** Loading, error-with-retry, not-found and empty states for one query (spec US1). */
 export function QueryState<T>({ query, resource, skeleton, empty, isEmpty, notFound, children }: QueryStateProps<T>) {
   if (query.isPending) return <div aria-busy="true">{skeleton}</div>;
 

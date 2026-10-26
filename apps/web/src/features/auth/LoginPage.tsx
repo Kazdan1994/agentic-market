@@ -36,7 +36,6 @@ export function LoginPage() {
         setError("Sign-in failed. Please try again.");
         return;
       }
-      // Reset, not invalidate: the session query is inactive here, so it would keep its stale null.
       await queryClient.resetQueries({ queryKey: ME_QUERY_KEY });
       await navigate(safeNext(searchParams.get("next")));
     } catch {
@@ -48,7 +47,7 @@ export function LoginPage() {
 
   return (
     <main className="grid min-h-screen place-items-center px-4 py-12">
-      <title>Sign in · Agentic Market</title>
+      <title>Sign in - Agentic Market</title>
       <div className="slip-edge w-full max-w-sm px-6 py-8">
         <div className="mb-6 flex items-center gap-2.5 font-semibold">
           <ReceiptMark />

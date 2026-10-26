@@ -9,7 +9,7 @@ describe("TillRoll", () => {
     render(<TillRoll agentName="Pantry restock" startedAt="2026-10-23T10:00:00.000Z" entries={entries} />);
 
     expect(screen.getByRole("region", { name: "Pantry restock live" })).toBeInTheDocument();
-    expect(screen.getByText("PANTRY RESTOCK · LIVE")).toBeInTheDocument();
+    expect(screen.getByText("PANTRY RESTOCK - LIVE")).toBeInTheDocument();
     const list = screen.getByRole("list");
     expect(list).toHaveAttribute("aria-live", "polite");
     const items = screen.getAllByRole("listitem");

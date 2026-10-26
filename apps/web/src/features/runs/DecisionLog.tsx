@@ -62,7 +62,7 @@ function Evaluation({ data, ruleBased }: { data: EvaluationData; ruleBased: bool
       <Badge variant={kept ? "success" : "secondary"}>{kept ? "Kept" : "Discarded"}</Badge>
       {data.merchant && data.priceMinor !== undefined && (
         <span className="text-xs text-neutral-600">
-          {data.merchant} · {formatMoney(data.priceMinor, "EUR")}
+          {data.merchant} - {formatMoney(data.priceMinor, "EUR")}
         </span>
       )}
       {ruleBased && <span className="text-xs text-neutral-500 italic">rule-based verdict</span>}

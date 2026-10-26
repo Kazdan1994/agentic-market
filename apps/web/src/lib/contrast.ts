@@ -1,4 +1,4 @@
-// WCAG 2.x contrast for the brand tokens declared in index.css (research R5).
+// WCAG 2.x contrast for the brand tokens declared in index.css.
 
 function channel(value: number): number {
   const c = value / 255;

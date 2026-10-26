@@ -104,6 +104,6 @@ describe("LoginPage", () => {
 
   it("titles the page", async () => {
     renderAt("/login");
-    await waitFor(() => expect(document.title).toBe("Sign in · Agentic Market"));
+    await waitFor(() => expect(document.title).toBe("Sign in - Agentic Market"));
   });
 });

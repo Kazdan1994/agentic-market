@@ -11,7 +11,7 @@ export function OrderDetailPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8">
-      <title>Order · Agentic Market</title>
+      <title>Order - Agentic Market</title>
       <Link to="/orders" className="inline-flex items-center gap-1.5 self-start text-sm text-muted hover:text-fg">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
           <path d="M15 6l-6 6 6 6" />
