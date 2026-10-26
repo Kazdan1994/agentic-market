@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import type { AgentsSummaryView, EndingSoonView, RunningRunView } from "../../application/agents-summary-view";
 import type { AgentView, MandateView, MoneyView } from "../../application/mandate-view";
 import type { MandateStatus } from "../../domain/mandate-status";
 
@@ -50,4 +51,35 @@ export class AgentResponse implements AgentView {
   mandate!: MandateResponse;
   @ApiProperty({ format: "date-time" })
   createdAt!: string;
+}
+
+export class EndingSoonResponse implements EndingSoonView {
+  @ApiProperty({ format: "uuid" })
+  agentId!: string;
+  @ApiProperty()
+  agentName!: string;
+  @ApiProperty({ format: "date-time" })
+  expiresAt!: string;
+  @ApiProperty({ minimum: 1 })
+  days!: number;
+}
+
+export class RunningRunResponse implements RunningRunView {
+  @ApiProperty({ format: "uuid" })
+  mandateId!: string;
+  @ApiProperty({ format: "uuid" })
+  runId!: string;
+  @ApiProperty()
+  agentName!: string;
+}
+
+export class AgentsSummaryResponse implements AgentsSummaryView {
+  @ApiProperty({ type: MoneyResponse })
+  remaining!: MoneyResponse;
+  @ApiProperty({ minimum: 0 })
+  activeCount!: number;
+  @ApiProperty({ type: EndingSoonResponse, nullable: true })
+  endingSoon!: EndingSoonResponse | null;
+  @ApiProperty({ type: [RunningRunResponse] })
+  running!: RunningRunResponse[];
 }
