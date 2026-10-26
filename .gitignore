@@ -2,3 +2,14 @@
 .claude/*
 !.claude/skills/
 .claude/settings.local.json
+node_modules/
+dist/
+coverage/
+*.log
+.env.local
+.env*.local
+.DS_Store
+apps/api/openapi.json
+.yarn/*
+!.yarn/releases
+.pnp.*

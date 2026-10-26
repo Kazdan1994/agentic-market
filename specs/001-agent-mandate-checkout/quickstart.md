@@ -5,7 +5,7 @@ A validation guide that proves the feature works end to end. Endpoint shapes are
 
 ## Prerequisites
 
-- Node 26 (`.nvmrc`), yarn 1.22, Docker running
+- Node 26 (`.nvmrc`), Yarn 4 (`packageManager` in `package.json`), Docker running
 - Optional, for AI selection: Ollama running locally with the model pulled
   (`ollama pull gemma4:e2b`). Without it, every run uses rule-based selection (FR-009a).
 - Keep the model in memory during a demo. A cold load takes 40–50 s on a 16 GB M3, longer
@@ -18,6 +18,8 @@ A validation guide that proves the feature works end to end. Endpoint shapes are
 ```bash
 cp .env.example .env.local
 # edit .env.local:
+#   POSTGRES_PASSWORD=<choose one>       # also put it in DATABASE_URL
+#   POSTGRES_PORT=5432                   # change if the port is taken; match DATABASE_URL
 #   SEED_DEMO_PASSWORD=<choose one>      # password for the seeded demo users
 #   JWT_SECRET=<random 32+ chars>
 #   OLLAMA_BASE_URL=http://localhost:11434   # leave unset to disable AI
@@ -26,8 +28,7 @@ cp .env.example .env.local
 #   SIMULATED_DECLINE_CENTS=13           # prices ending in ,13 € are declined (R13)
 
 yarn install
-docker compose up -d db
-yarn dev            # migrate + seed (idempotent) + API on :3000 + web on :5173
+yarn dev            # db container + migrate + seed (idempotent) + API on :3000 + web on :5173
 ```
 
 Seeded users: `alice@demo.local` and `bob@demo.local`, both with `SEED_DEMO_PASSWORD`.

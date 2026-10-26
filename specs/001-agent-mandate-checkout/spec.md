@@ -18,6 +18,8 @@
 - Q: How long should the agent wait for the AI to choose before it falls back to the rule-based choice? → A: 10 seconds.
 - Q: What outcome does a run get when a system restart cuts it off? → A: Interrupted (added to FR-007, raised during planning).
 - Q: Does a declined payment create an order? → A: No; only approved payments create orders (Assumptions reworded, raised during planning).
+- Q: Is an invalid shopping request a run outcome or a refusal before the run? → A: A refusal; no run is created (FR-006a; "Invalid request" removed from FR-007, raised during analysis).
+- Q: How does a run end when the price or stock changes at checkout? → A: No eligible product, with the reason in the log (raised during analysis).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -163,7 +165,8 @@ repeat with a product over the per-purchase cap and check it is refused.
 
 - The chosen product's price changes or it goes out of stock between selection and
   checkout: the checkout re-checks price, stock and mandate; if any check fails, no order is
-  created and the log records why.
+  created, the log records why, and the run ends as No eligible product (price or stock) or
+  Refused by mandate (mandate).
 - The mandate expires while a run is in progress: checkout is refused after the expiry
   instant, even if the product was already selected.
 - The same checkout is submitted twice (retry, double click, network replay): at most one
@@ -223,10 +226,15 @@ repeat with a product over the per-purchase cap and check it is refused.
 
 - **FR-006**: Users MUST be able to start a run for an active mandate by giving a
   plain-language shopping request.
+- **FR-006a**: A shopping request MUST be 3 to 500 characters after trimming and contain at
+  least one word that is not a common filler word; otherwise no run starts and the user is
+  asked for a clearer request.
 - **FR-007**: Once started, a run MUST complete without any further human input, ending in
   one of these outcomes: Order placed, No eligible product, Refused by mandate, Payment
-  declined, Invalid request, Interrupted (the run was cut off by a system restart; no
-  checkout is left half-done).
+  declined, Interrupted (the run was cut off by a system restart; no checkout is left
+  half-done). A checkout that fails because the price changed or the product went out of
+  stock ends as No eligible product, with the reason in the log. Requests refused before
+  starting (FR-006a, inactive mandate, run already in progress) create no run.
 - **FR-008**: The agent MUST search the demo catalog across all merchants and consider only
   products that are in stock, in an allowed category and priced at or below the lower of
   the per-purchase cap and the remaining total budget.

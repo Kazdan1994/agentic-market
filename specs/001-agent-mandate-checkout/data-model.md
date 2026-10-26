@@ -173,9 +173,9 @@ are explained in run logs.
 | id | uuid | PK |
 | mandate_id | uuid | FK → Mandate |
 | user_id | uuid | FK → User |
-| request | text | 3–500 chars after trim; refused with `Invalid request` otherwise |
+| request | text | 3–500 chars after trim, with at least one non-stop-word token (FR-006a); otherwise the start is refused with `INVALID_REQUEST` and no row is created |
 | status | enum `running` \| `completed` | |
-| outcome | enum null | `order_placed` \| `no_eligible_product` \| `refused_by_mandate` \| `payment_declined` \| `invalid_request` \| `interrupted` (FR-007; `interrupted` from R7) |
+| outcome | enum null | `order_placed` \| `no_eligible_product` \| `refused_by_mandate` \| `payment_declined` \| `interrupted` (FR-007). `PRICE_CHANGED` / `OUT_OF_STOCK` at checkout end as `no_eligible_product` |
 | strategy | enum null `ai` \| `rules` | the strategy that actually chose (FR-009b) |
 | fallback_reason | enum null | `not_configured` \| `forced_rules` \| `unavailable` \| `timeout` \| `api_error` \| `unusable_answer` \| `ineligible_choice` (research R5) |
 | order_id | uuid null | set when `outcome = order_placed` |
@@ -206,11 +206,11 @@ are explained in run logs.
 | step | enum | `search` \| `evaluation` \| `selection` \| `mandate_check` \| `payment` \| `outcome` (FR-018) |
 | message | text | plain-language explanation |
 | product_id | uuid null | the product concerned, if any |
-| data | jsonb | structured detail for software clients (FR-021), e.g. `{verdict, reason_code, merchant, price_minor, strategy}` |
+| data | jsonb | structured detail for software clients (FR-021), e.g. `{verdict, reasonCode, merchant, priceMinor, strategy, fallbackReason, orderId}` (camelCase, as in contracts/run-events.md) |
 
 - Append-only (R14).
 - `evaluation` entries carry `verdict ∈ {kept, discarded}` and
-  `reason_code ∈ {over_budget, category_not_allowed, out_of_stock, weaker_match,
+  `reasonCode ∈ {over_budget, category_not_allowed, out_of_stock, weaker_match,
   cheaper_offer_elsewhere}` (FR-019).
 
 ## Context: checkout

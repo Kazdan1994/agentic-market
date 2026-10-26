@@ -1,0 +1,9 @@
+node_modules/
+dist/
+build/
+coverage/
+yarn.lock
+apps/web/src/api/schema.d.ts
+specs/
+.specify/
+.claude/
