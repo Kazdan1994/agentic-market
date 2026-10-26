@@ -1,6 +1,7 @@
 import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { json, makeOrder, renderAt, stubApi } from "@/test-utils";
+import { apiError, json, makeOrder, never, onceThen, renderAt, stubApi } from "@/test-utils";
 
 const ORDER_PATH = "/orders/01900000-0000-7000-8000-0000000a0d01";
 
@@ -31,9 +32,26 @@ describe("OrderDetailPage", () => {
     expect(screen.queryByRole("link", { name: "Decision log" })).not.toBeInTheDocument();
   });
 
-  it("shows not found for an unknown order", async () => {
+  it("shows not found for an unknown order, with a way back", async () => {
     stubApi(() => undefined);
     renderAt(ORDER_PATH);
-    expect(await screen.findByRole("alert")).toHaveTextContent("This order could not be found.");
+    expect(await screen.findByText("This order doesn't exist.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Back to Orders" })).toHaveAttribute("href", "/orders");
+  });
+
+  it("shows a placeholder while the order loads", async () => {
+    stubApi((request) => (new URL(request.url).pathname.startsWith("/v1/orders/") ? never() : undefined));
+    renderAt(ORDER_PATH);
+    await vi.waitFor(() => expect(document.querySelector("main [aria-busy='true']")).not.toBeNull());
+  });
+
+  it("retries the order in place after a failure", async () => {
+    const order = onceThen(() => apiError(500, "INTERNAL_ERROR", "Boom"), () => json(200, makeOrder()));
+    stubApi((request) => (new URL(request.url).pathname.startsWith("/v1/orders/") ? order() : undefined));
+    renderAt(ORDER_PATH);
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Order could not be loaded.");
+    await userEvent.click(screen.getByRole("button", { name: "Try again" }));
+    expect(await screen.findByText("RunBuds Pro Running Earbuds")).toBeInTheDocument();
   });
 });

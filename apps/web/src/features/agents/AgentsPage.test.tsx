@@ -1,6 +1,7 @@
 import { screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { json, makeAgent, renderAt, stubApi } from "@/test-utils";
+import { apiError, json, makeAgent, never, onceThen, renderAt, stubApi } from "@/test-utils";
 
 describe("AgentsPage", () => {
   afterEach(() => vi.unstubAllGlobals());
@@ -34,6 +35,54 @@ describe("AgentsPage", () => {
     expect(screen.getByText("Budget used up")).toBeInTheDocument();
     expect(screen.getByText("Expired")).toBeInTheDocument();
     expect(screen.getByText("Revoked")).toBeInTheDocument();
+  });
+
+  it("shows a placeholder while the agents load", async () => {
+    stubApi((request) => {
+      const path = new URL(request.url).pathname;
+      if (path === "/v1/agents") return never();
+      if (path === "/v1/categories") return json(200, []);
+      return undefined;
+    });
+    renderAt("/agents");
+    await vi.waitFor(() => expect(document.querySelector("main [aria-busy='true']")).not.toBeNull());
+  });
+
+  it("retries the agents in place after a failure", async () => {
+    const agents = onceThen(
+      () => apiError(500, "INTERNAL_ERROR", "Boom"),
+      () => json(200, [makeAgent({ name: "Headphones buyer" })]),
+    );
+    const calls = stubApi((request) => {
+      const path = new URL(request.url).pathname;
+      if (path === "/v1/agents") return agents();
+      if (path === "/v1/categories") return json(200, []);
+      return undefined;
+    });
+    renderAt("/agents");
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Agents could not be loaded.");
+    await userEvent.click(screen.getByRole("button", { name: "Try again" }));
+    expect(await screen.findByRole("heading", { name: "Headphones buyer" })).toBeInTheDocument();
+    expect(calls.filter((call) => call.path === "/v1/agents")).toHaveLength(2);
+  });
+
+  it("retries the categories in place after a failure", async () => {
+    const categories = onceThen(
+      () => apiError(500, "INTERNAL_ERROR", "Boom"),
+      () => json(200, [{ slug: "audio", name: "Audio" }]),
+    );
+    stubApi((request) => {
+      const path = new URL(request.url).pathname;
+      if (path === "/v1/agents") return json(200, []);
+      if (path === "/v1/categories") return categories();
+      return undefined;
+    });
+    renderAt("/agents");
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Categories could not be loaded.");
+    await userEvent.click(screen.getByRole("button", { name: "Try again" }));
+    await vi.waitFor(() => expect(screen.queryByRole("alert")).toBeNull());
   });
 
   it("says so when there is no agent yet", async () => {

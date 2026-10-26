@@ -1,7 +1,7 @@
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { json, renderAt, stubApi } from "@/test-utils";
+import { json, never, renderAt, stubApi } from "@/test-utils";
 
 describe("navigation bar", () => {
   afterEach(() => vi.unstubAllGlobals());
@@ -22,6 +22,12 @@ describe("navigation bar", () => {
     const nav = await screen.findByRole("navigation", { name: "Main" });
     expect(within(nav).getByRole("link", { name: "Agentic Market" })).toHaveAttribute("href", "/agents");
     expect(within(nav).getByText("Alice")).toBeInTheDocument();
+  });
+
+  it("shows a loading indicator while the session is checked", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => never()));
+    renderAt("/orders");
+    expect(await screen.findByRole("status")).toHaveTextContent("Loading…");
   });
 
   it("logs out and returns to the login page", async () => {

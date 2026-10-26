@@ -1,3 +1,4 @@
+import { QueryState } from "@/components/QueryState";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StartRunForm } from "@/features/runs/StartRunForm";
@@ -28,19 +29,30 @@ export function AgentsPage() {
           <CardTitle>New agent</CardTitle>
         </CardHeader>
         <CardContent>
-          {categories.data && <CreateAgentForm categories={categories.data} />}
-          {categories.isError && <p role="alert">Categories could not be loaded. Please reload.</p>}
+          <QueryState query={categories} resource="Categories" skeleton={<div className="h-40 animate-pulse bg-ground" />}>
+            {(data) => <CreateAgentForm categories={data} />}
+          </QueryState>
         </CardContent>
       </Card>
-      <AgentList agents={agents.data} isError={agents.isError} />
+      <QueryState
+        query={agents}
+        resource="Agents"
+        skeleton={
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="h-56 animate-pulse bg-paper" />
+            <div className="h-56 animate-pulse bg-paper" />
+          </div>
+        }
+        isEmpty={(list) => list.length === 0}
+        empty={<p className="text-muted">No agent yet. Create one above.</p>}
+      >
+        {(list) => <AgentList agents={list} />}
+      </QueryState>
     </main>
   );
 }
 
-function AgentList({ agents, isError }: { agents: Agent[] | undefined; isError: boolean }) {
-  if (isError) return <p role="alert">Agents could not be loaded. Please reload.</p>;
-  if (!agents) return null;
-  if (agents.length === 0) return <p className="text-neutral-600">No agent yet. Create one above.</p>;
+function AgentList({ agents }: { agents: Agent[] }) {
   return (
     <section className="grid gap-4 sm:grid-cols-2">
       {agents.map((agent) => (
@@ -85,7 +97,7 @@ function AgentCard({ agent }: { agent: Agent }) {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <>
-      <dt className="text-neutral-500">{label}</dt>
+      <dt className="text-muted">{label}</dt>
       <dd>{value}</dd>
     </>
   );

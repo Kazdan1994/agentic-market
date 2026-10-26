@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { Badge } from "@/components/ui/badge";
+import { QueryState } from "@/components/QueryState";
 import { Card } from "@/components/ui/card";
 import { formatMoney } from "@/features/agents/money";
 import { ORDER_STATUS_LABEL, PLACED_BY_LABELS, placedAt, useOrders } from "./useOrders";
@@ -10,12 +11,24 @@ export function OrdersPage() {
   return (
     <main className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-8">
       <h1 className="text-2xl font-semibold">Orders</h1>
-      {orders.isError && <p role="alert">Orders could not be loaded. Please reload.</p>}
-      {orders.data?.length === 0 && <p className="text-neutral-600">No order yet.</p>}
-      {orders.data && orders.data.length > 0 && (
+      <QueryState
+        query={orders}
+        resource="Orders"
+        skeleton={<div className="h-48 animate-pulse bg-paper" />}
+        isEmpty={(rows) => rows.length === 0}
+        empty={
+          <div className="flex flex-col items-start gap-2">
+            <p>Orders appear once an agent buys something.</p>
+            <Link to="/agents" className="font-medium underline underline-offset-4">
+              Go to Agents
+            </Link>
+          </div>
+        }
+      >
+        {(rows) => (
         <Card className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="text-neutral-500">
+            <thead className="text-muted">
               <tr>
                 <th className="p-3">Product</th>
                 <th className="p-3">Merchant</th>
@@ -26,8 +39,8 @@ export function OrdersPage() {
               </tr>
             </thead>
             <tbody>
-              {orders.data.map((order) => (
-                <tr key={order.id} className="border-t border-neutral-200">
+              {rows.map((order) => (
+                <tr key={order.id} className="border-t border-rule">
                   <td className="p-3">
                     <Link to={`/orders/${order.id}`} className="underline">
                       {order.product.name}
@@ -45,7 +58,8 @@ export function OrdersPage() {
             </tbody>
           </table>
         </Card>
-      )}
+        )}
+      </QueryState>
     </main>
   );
 }

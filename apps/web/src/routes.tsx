@@ -72,8 +72,23 @@ function NavBar({ displayName }: { displayName: string }) {
 
 function ProtectedLayout() {
   const me = useMe();
-  if (me.isPending) return null;
-  if (me.isError) return <p role="alert">Something went wrong. Please reload.</p>;
+  if (me.isPending) {
+    return (
+      <p role="status" className="grid min-h-screen place-items-center text-muted">
+        Loading…
+      </p>
+    );
+  }
+  if (me.isError) {
+    return (
+      <div role="alert" className="mx-auto mt-24 flex max-w-sm flex-col items-start gap-3 px-4">
+        <p>Your session could not be checked.</p>
+        <Button variant="outline" onClick={() => me.refetch()}>
+          Try again
+        </Button>
+      </div>
+    );
+  }
   if (!me.data) return <Navigate to="/login" replace />;
   return (
     <>

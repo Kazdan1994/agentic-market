@@ -53,17 +53,17 @@ description: "Task list for UI/UX polish and rebrand (direction E, Slips) of the
 
 **Independent Test**: stub each endpoint as pending, failing or empty, then assert the skeleton, the alert with "Try again" refetching, and the empty-state link on each screen.
 
-- [ ] T017 [P] [US1] Failing tests in `apps/web/src/features/agents/AgentsPage.test.tsx`: skeleton while `/v1/agents` is pending; an error shows an alert and "Try again" re-requests `/v1/agents`, then the list renders; a categories error is retryable
-- [ ] T018 [P] [US1] Failing tests in `apps/web/src/features/orders/OrdersPage.test.tsx`: skeleton while pending; error + retry; empty state "Orders appear once an agent buys something." with link "Go to Agents" → `/agents`
-- [ ] T019 [P] [US1] Failing tests in `apps/web/src/features/orders/OrderDetailPage.test.tsx`: skeleton while pending; `NOT_FOUND` → "This order doesn't exist." + link to `/orders`; other errors → alert + retry
-- [ ] T020 [P] [US1] Failing tests in `apps/web/src/features/runs/RunPage.test.tsx`: skeleton while pending; `NOT_FOUND` → "This run doesn't exist." + link to `/agents`; other error → alert + retry; the nested order error is retryable
-- [ ] T021 [P] [US1] Failing test in `apps/web/src/routes.test.tsx`: while `/v1/me` is pending, `role="status"` "Loading…" shows instead of an empty page
-- [ ] T022 [US1] Wrap the agents and categories queries in `QueryState` with paper-slip skeletons (`animate-pulse` blocks inside `.slip-edge` paper) in `apps/web/src/features/agents/AgentsPage.tsx`
-- [ ] T023 [P] [US1] Wrap the orders query in `QueryState` with a row skeleton and the empty state in `apps/web/src/features/orders/OrdersPage.tsx`
-- [ ] T024 [P] [US1] Wrap the order query with `notFound={{to:"/orders",label:"Back to Orders"}}` in `apps/web/src/features/orders/OrderDetailPage.tsx`
-- [ ] T025 [P] [US1] Wrap the run query and its nested order with `notFound={{to:"/agents",label:"Back to Agents"}}` in `apps/web/src/features/runs/RunPage.tsx`
-- [ ] T026 [US1] Replace `if (me.isPending) return null` with a centred `role="status"` "Loading…" and make the session error retryable in `apps/web/src/routes.tsx`
-- [ ] T027 [US1] Run the slice gate
+- [X] T017 [P] [US1] Failing tests in `apps/web/src/features/agents/AgentsPage.test.tsx`: skeleton while `/v1/agents` is pending; an error shows an alert and "Try again" re-requests `/v1/agents`, then the list renders; a categories error is retryable
+- [X] T018 [P] [US1] Failing tests in `apps/web/src/features/orders/OrdersPage.test.tsx`: skeleton while pending; error + retry; empty state "Orders appear once an agent buys something." with link "Go to Agents" → `/agents`
+- [X] T019 [P] [US1] Failing tests in `apps/web/src/features/orders/OrderDetailPage.test.tsx`: skeleton while pending; `NOT_FOUND` → "This order doesn't exist." + link to `/orders`; other errors → alert + retry
+- [X] T020 [P] [US1] Failing tests in `apps/web/src/features/runs/RunPage.test.tsx`: skeleton while pending; `NOT_FOUND` → "This run doesn't exist." + link to `/agents`; other error → alert + retry; the nested order error is retryable
+- [X] T021 [P] [US1] Failing test in `apps/web/src/routes.test.tsx`: while `/v1/me` is pending, `role="status"` "Loading…" shows instead of an empty page
+- [X] T022 [US1] Wrap the agents and categories queries in `QueryState` with paper-slip skeletons (`animate-pulse` blocks inside `.slip-edge` paper) in `apps/web/src/features/agents/AgentsPage.tsx`
+- [X] T023 [P] [US1] Wrap the orders query in `QueryState` with a row skeleton and the empty state in `apps/web/src/features/orders/OrdersPage.tsx`
+- [X] T024 [P] [US1] Wrap the order query with `notFound={{to:"/orders",label:"Back to Orders"}}` in `apps/web/src/features/orders/OrderDetailPage.tsx`
+- [X] T025 [P] [US1] Wrap the run query and its nested order with `notFound={{to:"/agents",label:"Back to Agents"}}` in `apps/web/src/features/runs/RunPage.tsx`
+- [X] T026 [US1] Replace `if (me.isPending) return null` with a centred `role="status"` "Loading…" and make the session error retryable in `apps/web/src/routes.tsx`
+- [X] T027 [US1] Run the slice gate
 
 ---
 
