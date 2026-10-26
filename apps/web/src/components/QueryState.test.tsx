@@ -42,6 +42,12 @@ describe("QueryState", () => {
     expect(refetch).toHaveBeenCalledOnce();
   });
 
+  it("keeps showing cached data when a refetch fails", () => {
+    renderState({ ...base, isError: true, error: new Error("boom"), data: ["a", "b"] });
+    expect(screen.getByText("a, b")).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
   it("shows not-found with a link to the parent list", () => {
     renderState(
       { ...base, isError: true, error: new ApiError("NOT_FOUND", "Not found") },

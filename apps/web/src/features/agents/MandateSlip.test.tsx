@@ -15,8 +15,10 @@ function order(id: string, cents: number, product = `Item ${id}`): Order {
   return { ...base, product: { ...base.product, name: product }, total: { amountMinor: cents, currency: "EUR" } } as Order;
 }
 
-function renderSlip(agent: Agent, orders: Order[], run?: Run) {
-  const router = createMemoryRouter([{ path: "/", element: <MandateSlip agent={agent} orders={orders} run={run} now={NOW} /> }]);
+function renderSlip(agent: Agent, orders: Order[], run?: Run, activity?: "pending" | "error" | "ready") {
+  const router = createMemoryRouter([
+    { path: "/", element: <MandateSlip agent={agent} orders={orders} run={run} now={NOW} activity={activity} /> },
+  ]);
   render(
     <QueryClientProvider client={new QueryClient()}>
       <RouterProvider router={router} />
@@ -64,6 +66,13 @@ describe("MandateSlip", () => {
     const slip = renderSlip(agent, orders, makeRun() as Run);
     expect(slip.getByText("Shopping now")).toBeInTheDocument();
     expect(slip.getByRole("link", { name: "Watch run" })).toHaveAttribute("href", "/runs/01900000-0000-7000-8000-0000000a7001");
+    expect(slip.queryByRole("button", { name: "Start run" })).toBeNull();
+  });
+
+  it("claims neither purchases nor a free run when activity failed to load", () => {
+    const slip = renderSlip(agent, [], undefined, "error");
+    expect(slip.getByText("Purchases unavailable")).toBeInTheDocument();
+    expect(slip.queryByText("No purchase yet")).toBeNull();
     expect(slip.queryByRole("button", { name: "Start run" })).toBeNull();
   });
 });

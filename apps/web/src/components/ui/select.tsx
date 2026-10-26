@@ -13,7 +13,7 @@ export function SelectTrigger({
   return (
     <SelectPrimitive.Trigger
       className={cn(
-        "flex h-10 w-full items-center justify-between rounded-md border border-control bg-paper px-3 text-sm",
+        "flex h-10 w-full cursor-pointer items-center justify-between rounded-md border border-control bg-paper px-3 text-sm disabled:cursor-not-allowed",
         className,
       )}
       {...props}
@@ -46,7 +46,7 @@ export function SelectItem({ className, children, ...props }: ComponentProps<typ
   return (
     <SelectPrimitive.Item
       className={cn(
-        "cursor-default rounded-sm px-2 py-1.5 text-sm outline-none data-[highlighted]:bg-ground",
+        "cursor-pointer rounded-sm data-[disabled]:cursor-not-allowed px-2 py-1.5 text-sm outline-none data-[highlighted]:bg-ground",
         className,
       )}
       {...props}

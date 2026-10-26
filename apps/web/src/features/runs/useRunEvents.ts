@@ -29,7 +29,9 @@ export function useRunEvents(runId: string) {
       );
     });
     source.addEventListener("run.completed", (event: MessageEvent<string>) => {
-      queryClient.setQueryData<Run>(["runs", runId], JSON.parse(event.data) as Run);
+      const run = JSON.parse(event.data) as Run;
+      queryClient.setQueryData<Run>(["runs", runId], run);
+      void queryClient.invalidateQueries({ queryKey: ["mandates", run.mandateId, "runs"] });
       setState((current) => ({ ...(current.runId === runId ? current : { runId, entries: [] }), completed: true }));
       source.close();
     });

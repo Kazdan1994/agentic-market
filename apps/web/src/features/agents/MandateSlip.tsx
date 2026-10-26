@@ -17,9 +17,13 @@ interface MandateSlipProps {
   orders: readonly Order[];
   run?: Run;
   now: Date;
+  /** Whether orders and runs have loaded; until then the slip claims neither. */
+  activity?: "pending" | "error" | "ready";
 }
 
-export function MandateSlip({ agent, orders, run, now }: MandateSlipProps) {
+const UNKNOWN_ACTIVITY = { pending: "Loading purchases", error: "Purchases unavailable" } as const;
+
+export function MandateSlip({ agent, orders, run, now, activity = "ready" }: MandateSlipProps) {
   const headingId = useId();
   const { mandate } = agent;
   const money = (amountMinor: number) => formatMoney(amountMinor, mandate.totalBudget.currency);
@@ -73,7 +77,9 @@ export function MandateSlip({ agent, orders, run, now }: MandateSlipProps) {
       </div>
 
       <div className="mt-4.5 border-t border-dashed border-dots pt-3.5 font-print text-print leading-receipt">
-        {lines.length === 0 ? (
+        {activity !== "ready" ? (
+          <ReceiptLine label={UNKNOWN_ACTIVITY[activity]} amount="-" muted />
+        ) : lines.length === 0 ? (
           <ReceiptLine label="No purchase yet" amount={money(0)} muted />
         ) : (
           lines.map((order) => (
@@ -94,7 +100,7 @@ export function MandateSlip({ agent, orders, run, now }: MandateSlipProps) {
             <Link to={`/runs/${run.id}`}>Watch run</Link>
           </Button>
         ) : (
-          <StartRunForm mandateId={mandate.id} />
+          activity === "ready" && <StartRunForm mandateId={mandate.id} />
         )}
       </div>
     </article>

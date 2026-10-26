@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { Link } from "react-router";
 import { QueryState } from "@/components/QueryState";
 import { Badge } from "@/components/ui/badge";
@@ -56,7 +56,9 @@ function AgentsDesk({ agents }: { agents: Agent[] }) {
   const [formOpen, setFormOpen] = useState(agents.length === 0);
   const [created, setCreated] = useState<string | null>(null);
   const formId = useId();
+  const newAgentButton = useRef<HTMLButtonElement>(null);
   const now = new Date();
+  const activityStatus = activity.isError ? "error" : activity.isPending ? "pending" : "ready";
 
   const active = agents
     .filter((agent) => agent.mandate.status === "active")
@@ -79,6 +81,8 @@ function AgentsDesk({ agents }: { agents: Agent[] }) {
   const onCreated = (name: string) => {
     setCreated(name);
     setFormOpen(false);
+    // The form unmounts with focus inside it; hand focus back to the button that opened it.
+    newAgentButton.current?.focus();
   };
 
   return (
@@ -93,7 +97,7 @@ function AgentsDesk({ agents }: { agents: Agent[] }) {
             <span className="mt-4.5 block max-w-measure text-lead leading-lead sm:text-lead-lg">{rest.trim()}</span>
           </p>
           <div className="mt-7 flex gap-2.5">
-            <Button aria-expanded={formOpen} aria-controls={formId} onClick={toggleForm}>
+            <Button ref={newAgentButton} aria-expanded={formOpen} aria-controls={formId} onClick={toggleForm}>
               New agent
             </Button>
             <Button variant="outline" asChild>
@@ -141,12 +145,12 @@ function AgentsDesk({ agents }: { agents: Agent[] }) {
       {agents.length === 0 ? (
         <p className="text-muted">No agent yet. Create one above.</p>
       ) : (
-        <ActiveMandates agents={active} activity={activity} now={now} />
+        <ActiveMandates agents={active} activity={activity} activityStatus={activityStatus} now={now} />
       )}
 
       <div className="mt-18">
         {ended.length > 0 && <EndedStubs agents={ended} />}
-        <LatestOrders orders={[...activity.ordersByMandate.values()].flat()} />
+        {activityStatus === "ready" && <LatestOrders orders={[...activity.ordersByMandate.values()].flat()} />}
       </div>
     </>
   );
@@ -169,7 +173,14 @@ function NewAgentPanel({ id, onCreated }: { id: string; onCreated: (name: string
   );
 }
 
-function ActiveMandates({ agents, activity, now }: { agents: Agent[]; activity: ReturnType<typeof useAgentActivity>; now: Date }) {
+interface ActiveMandatesProps {
+  agents: Agent[];
+  activity: ReturnType<typeof useAgentActivity>;
+  activityStatus: "pending" | "error" | "ready";
+  now: Date;
+}
+
+function ActiveMandates({ agents, activity, activityStatus, now }: ActiveMandatesProps) {
   const spent = agents.reduce((sum, agent) => sum + agent.mandate.spent.amountMinor, 0);
   const budget = agents.reduce((sum, agent) => sum + agent.mandate.totalBudget.amountMinor, 0);
   const currency = agents[0]?.mandate.totalBudget.currency ?? "EUR";
@@ -196,6 +207,7 @@ function ActiveMandates({ agents, activity, now }: { agents: Agent[]; activity: 
               orders={activity.ordersByMandate.get(agent.mandate.id) ?? []}
               run={activity.runningByMandate.get(agent.mandate.id)}
               now={now}
+              activity={activityStatus}
             />
           ))}
         </div>

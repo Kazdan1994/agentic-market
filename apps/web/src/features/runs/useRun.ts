@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/api/client";
 import type { components } from "@/api/schema";
 import { toApiError } from "@/features/agents/useAgents";
@@ -17,6 +17,7 @@ export function useRun(runId: string) {
 }
 
 export function useStartRun(mandateId: string) {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (request: string): Promise<Run> => {
       const { data, error } = await api.POST("/v1/mandates/{mandateId}/runs", {
@@ -26,5 +27,6 @@ export function useStartRun(mandateId: string) {
       if (!data) throw toApiError(error);
       return data;
     },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["mandates", mandateId, "runs"] }),
   });
 }
