@@ -24,6 +24,44 @@
 
   --font-sans: "Familjen Grotesk Variable", "Familjen Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-print: "Space Mono", ui-monospace, monospace;
+
+  --text-2xs: 10px;
+  --text-label: 11.5px;
+  --text-print: 12.5px;
+  --text-small: 13px;
+  --text-body: 15px;
+  --text-lead: 17px;
+  --text-lead-lg: 19px;
+  --text-heading: 22px;
+  --text-stat: 28px;
+  --text-figure: 34px;
+  --text-hero: 56px;
+  --text-hero-lg: 84px;
+
+  --tracking-display: -0.03em;
+  --tracking-hero: -0.04em;
+
+  --leading-lead: 1.45;
+  --leading-roll: 1.7;
+  --leading-receipt: 1.75;
+
+  --container-page: 1200px;
+  --container-measure: 32ch;
+  --container-slip-label: 62%;
+
+  --animate-blink: blink 1s steps(1) infinite;
+}
+
+@utility grid-cols-hero {
+  grid-template-columns: 7fr 5fr;
+}
+
+@utility grid-cols-row {
+  grid-template-columns: 1fr auto;
+}
+
+@utility grid-cols-roll {
+  grid-template-columns: 48px 1fr;
 }
 
 @layer base {
@@ -31,6 +69,11 @@
     @apply bg-ground font-sans text-fg antialiased;
     font-size: 15px;
     line-height: 1.5;
+  }
+
+  button,
+  [role="button"] {
+    cursor: pointer;
   }
 
   :focus-visible {
@@ -46,6 +89,13 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
+  }
+}
+
+/* The caret on the line a till roll is still printing. */
+@keyframes blink {
+  50% {
+    opacity: 0;
   }
 }
 

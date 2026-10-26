@@ -52,7 +52,7 @@ function NavBar({ displayName }: { displayName: string }) {
     <header>
       <nav
         aria-label="Main"
-        className="mx-auto flex h-14 w-full max-w-[1200px] items-center gap-4 px-4 text-sm sm:h-[68px] sm:gap-7 sm:px-6"
+        className="mx-auto flex h-14 w-full max-w-page items-center gap-4 px-4 text-sm sm:h-17 sm:gap-7 sm:px-6"
       >
         <Link to="/agents" className="mr-1 flex items-center gap-2.5 whitespace-nowrap text-base font-semibold sm:mr-3">
           <ReceiptMark />
@@ -68,7 +68,7 @@ function NavBar({ displayName }: { displayName: string }) {
           <span className="hidden sm:inline">{displayName}</span>
           <span
             aria-hidden="true"
-            className="grid size-[30px] place-items-center rounded-full bg-accent-pale text-xs font-semibold text-accent-ink"
+            className="grid size-7.5 place-items-center rounded-full bg-accent-pale text-xs font-semibold text-accent-ink"
           >
             {initials(displayName)}
           </span>
@@ -78,7 +78,7 @@ function NavBar({ displayName }: { displayName: string }) {
         </Button>
       </nav>
       {logoutFailed && (
-        <p role="alert" className="mx-auto w-full max-w-[1200px] px-4 text-sm text-danger sm:px-6">
+        <p role="alert" className="mx-auto w-full max-w-page px-4 text-sm text-danger sm:px-6">
           Could not log out. Try again.
         </p>
       )}

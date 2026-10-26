@@ -18,7 +18,7 @@ export function Button({ className, variant = "default", asChild = false, ...pro
   return (
     <Comp
       className={cn(
-        "inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-full px-5 text-sm font-medium transition-[background-color,transform] duration-150 active:scale-[.97] disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-full px-5 text-sm font-medium cursor-pointer transition duration-150 active:scale-97 disabled:pointer-events-none disabled:opacity-50",
         VARIANTS[variant],
         className,
       )}

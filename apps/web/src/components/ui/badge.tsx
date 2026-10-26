@@ -15,7 +15,7 @@ export function Badge({ className, variant = "default", ...props }: BadgeProps) 
   return (
     <span
       className={cn(
-        "inline-flex items-center whitespace-nowrap rounded-full px-2.5 text-xs leading-[22px]",
+        "inline-flex items-center whitespace-nowrap rounded-full px-2.5 text-xs leading-5.5",
         VARIANTS[variant],
         className,
       )}

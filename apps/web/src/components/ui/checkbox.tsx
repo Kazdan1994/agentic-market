@@ -11,7 +11,7 @@ export function Checkbox({ className, ...props }: ComponentProps<typeof Checkbox
       )}
       {...props}
     >
-      <CheckboxPrimitive.Indicator className="flex items-center justify-center text-[10px]">
+      <CheckboxPrimitive.Indicator className="flex items-center justify-center text-2xs">
         ✓
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>

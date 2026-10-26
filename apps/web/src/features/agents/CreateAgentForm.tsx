@@ -17,7 +17,12 @@ const SERVER_FIELDS: Record<string, keyof AgentFormInput> = {
 
 const EMPTY: AgentFormInput = { name: "", perPurchaseCap: "", totalBudget: "", categorySlugs: [], expiresAt: "" };
 
-export function CreateAgentForm({ categories }: { categories: Category[] }) {
+interface CreateAgentFormProps {
+  categories: Category[];
+  onCreated?: (name: string) => void;
+}
+
+export function CreateAgentForm({ categories, onCreated }: CreateAgentFormProps) {
   const form = useForm<AgentFormInput, unknown, AgentFormOutput>({
     resolver: zodResolver(agentFormSchema),
     defaultValues: EMPTY,
@@ -34,6 +39,7 @@ export function CreateAgentForm({ categories }: { categories: Category[] }) {
         expiresAt: new Date(values.expiresAt).toISOString(),
       });
       form.reset(EMPTY);
+      onCreated?.(values.name);
     } catch (error) {
       showServerError(error);
     }
@@ -94,7 +100,7 @@ export function CreateAgentForm({ categories }: { categories: Category[] }) {
           )}
         />
         {form.formState.errors.root && (
-          <p role="alert" className="text-sm text-red-600 sm:col-span-2">
+          <p role="alert" className="text-sm text-danger sm:col-span-2">
             {form.formState.errors.root.message}
           </p>
         )}

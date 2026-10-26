@@ -36,7 +36,8 @@ export function LoginPage() {
         setError("Sign-in failed. Please try again.");
         return;
       }
-      await queryClient.invalidateQueries({ queryKey: ME_QUERY_KEY });
+      // Reset, not invalidate: the session query is inactive here, so it would keep its stale null.
+      await queryClient.resetQueries({ queryKey: ME_QUERY_KEY });
       await navigate(safeNext(searchParams.get("next")));
     } catch {
       setError("Cannot reach the server. Please try again.");

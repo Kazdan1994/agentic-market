@@ -26,6 +26,7 @@ const handler: Handler = async (request) => {
     signedIn = true;
     return new Response(null, { status: 204 });
   }
+  if (path === "/v1/agents" || path === "/v1/orders") return json(200, []);
   return json(404, { error: { code: "NOT_FOUND", message: "Not found" } });
 };
 
@@ -82,14 +83,14 @@ describe("LoginPage", () => {
 
   it("returns to the page that asked for sign-in", async () => {
     const router = renderAt("/orders/o1");
-    await vi.waitFor(() => expect(router.state.location.pathname).toBe("/login"));
+    await waitFor(() => expect(router.state.location.pathname).toBe("/login"));
     expect(router.state.location.search).toBe("?next=%2Forders%2Fo1");
 
     await userEvent.type(screen.getByLabelText("Email"), "alice@demo.local");
     await userEvent.type(screen.getByLabelText("Password"), "secret");
     await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
 
-    await vi.waitFor(() => expect(router.state.location.pathname).toBe("/orders/o1"));
+    await waitFor(() => expect(router.state.location.pathname).toBe("/orders/o1"));
   });
 
   it.each(["//evil.com", "https://evil.com", "agents"])("ignores an unsafe next of %s", async (next) => {
@@ -98,11 +99,11 @@ describe("LoginPage", () => {
     await userEvent.type(screen.getByLabelText("Password"), "secret");
     await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
 
-    await vi.waitFor(() => expect(router.state.location.pathname).toBe("/agents"));
+    await waitFor(() => expect(router.state.location.pathname).toBe("/agents"));
   });
 
   it("titles the page", async () => {
     renderAt("/login");
-    await vi.waitFor(() => expect(document.title).toBe("Sign in · Agentic Market"));
+    await waitFor(() => expect(document.title).toBe("Sign in · Agentic Market"));
   });
 });

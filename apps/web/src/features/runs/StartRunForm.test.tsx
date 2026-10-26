@@ -22,6 +22,7 @@ describe("StartRunForm", () => {
       if (path === "/v1/agents") return json(200, [makeAgent()]);
       if (path === "/v1/categories") return json(200, []);
       if (path.endsWith("/runs") && request.method === "POST") return startResponse();
+      if (path.endsWith("/runs") || path === "/v1/orders") return json(200, []);
       if (path.startsWith("/v1/runs/")) return json(200, makeRun());
       return undefined;
     });
