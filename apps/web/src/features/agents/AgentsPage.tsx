@@ -81,7 +81,6 @@ function AgentsDesk({ agents }: { agents: Agent[] }) {
   const onCreated = (name: string) => {
     setCreated(name);
     setFormOpen(false);
-    // The form unmounts with focus inside it; hand focus back to the button that opened it.
     newAgentButton.current?.focus();
   };
 

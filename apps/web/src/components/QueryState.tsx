@@ -25,7 +25,6 @@ interface QueryStateProps<T> {
 export function QueryState<T>({ query, resource, skeleton, empty, isEmpty, notFound, children }: QueryStateProps<T>) {
   if (query.isPending) return <div aria-busy="true">{skeleton}</div>;
 
-  // A failed background refetch keeps the cached data: show it rather than the error.
   if (query.isError && query.data === undefined) {
     if (notFound && query.error instanceof ApiError && query.error.code === "NOT_FOUND") {
       return (

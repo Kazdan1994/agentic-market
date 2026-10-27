@@ -17,7 +17,6 @@ interface MandateSlipProps {
   orders: readonly Order[];
   run?: Run;
   now: Date;
-  /** Whether orders and runs have loaded; until then the slip claims neither. */
   activity?: "pending" | "error" | "ready";
 }
 

@@ -45,7 +45,6 @@ export class AgentsController {
     return this.queries.execute<ListAgentsQuery, AgentView[]>(new ListAgentsQuery(user.userId));
   }
 
-  // Declared before `:agentId` so "summary" is not parsed as an id.
   @Get("summary")
   @ApiOperation({ operationId: "getAgentsSummary" })
   @ApiOkResponse({ type: AgentsSummaryResponse })

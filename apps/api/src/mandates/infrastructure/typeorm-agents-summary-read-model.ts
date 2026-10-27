@@ -18,7 +18,6 @@ interface Row {
   running: RunningRunView[];
 }
 
-// `active` mirrors Mandate.status(now): not revoked, not expired, budget left.
 const SUMMARY = `
   WITH active AS (
     SELECT m.id, m.agent_id, a.name, m.total_budget_minor - m.spent_minor AS remaining_minor, m.expires_at,
