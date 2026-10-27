@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router";
 import { QueryState } from "@/components/QueryState";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/Badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { formatMoney } from "@/features/agents/money";
 import { type Order, useOrder } from "@/features/orders/useOrders";
 import { DecisionLog } from "./DecisionLog";

@@ -2,8 +2,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { type FormEvent, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { api } from "@/api/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { ReceiptMark } from "@/routes";
 import { ME_QUERY_KEY } from "./useMe";
 

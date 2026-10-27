@@ -1,7 +1,7 @@
 import { Link } from "react-router";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/Badge";
 import { QueryState } from "@/components/QueryState";
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui/Card";
 import { formatMoney } from "@/features/agents/money";
 import { ORDER_STATUS_LABEL, PLACED_BY_LABELS, placedAt, useOrders } from "./useOrders";
 

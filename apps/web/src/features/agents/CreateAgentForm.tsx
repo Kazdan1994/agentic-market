@@ -1,9 +1,9 @@
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/Button";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/Form";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
 import { type AgentFormInput, type AgentFormOutput, agentFormSchema, zodResolver } from "./agent-form.schema";
 import { ApiError, type Category, useCreateAgent } from "./useAgents";
 

@@ -1,8 +1,8 @@
 import { useId, useRef, useState } from "react";
 import { Link } from "react-router";
 import { QueryState } from "@/components/QueryState";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
 import { type Order, placedAt } from "@/features/orders/useOrders";
 import { TillRoll } from "@/features/runs/TillRoll";
 import type { Run } from "@/features/runs/useRun";

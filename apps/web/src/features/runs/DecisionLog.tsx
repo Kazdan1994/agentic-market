@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/Badge";
 import { formatMoney } from "@/features/agents/money";
 import type { LogEntry } from "./useRunEvents";
 

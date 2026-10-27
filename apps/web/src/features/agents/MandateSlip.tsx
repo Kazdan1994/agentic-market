@@ -1,7 +1,7 @@
 import { useId } from "react";
 import { Link } from "react-router";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
 import type { Order } from "@/features/orders/useOrders";
 import { StartRunForm } from "@/features/runs/StartRunForm";
 import type { Run } from "@/features/runs/useRun";

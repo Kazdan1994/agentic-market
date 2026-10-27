@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link, Navigate, NavLink, Outlet, type RouteObject, useLocation } from "react-router";
 import { api } from "@/api/client";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { AgentsPage } from "@/features/agents/AgentsPage";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { ME_QUERY_KEY, useMe } from "@/features/auth/useMe";
