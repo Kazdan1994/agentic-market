@@ -28,7 +28,8 @@ in a live log.
 
 ## Getting started
 
-Requirements: Node 26 (see `.nvmrc`), Yarn 4 and Docker. Ollama is optional.
+Requirements for local development: Node 26 (see `.nvmrc`), Yarn 4 and Docker. Ollama is
+optional. To run without Node, see [Run everything in Docker](#run-everything-in-docker).
 
 ```bash
 cp .env.example .env.local   # set POSTGRES_PASSWORD, SEED_DEMO_PASSWORD, JWT_SECRET, ...
@@ -41,6 +42,47 @@ serves the API on http://localhost:3000 and the web app on http://localhost:5173
 
 The seed creates two users, `alice@demo.local` and `bob@demo.local`. Both log in with
 `SEED_DEMO_PASSWORD`.
+
+### Run everything in Docker
+
+Docker alone is enough to run the whole stack, with no Node or Yarn on the host. Fill in
+`.env.local` as above, then:
+
+```bash
+docker compose --env-file .env.local up --build
+```
+
+| Service | What it does | Host port |
+| --- | --- | --- |
+| `db` | PostgreSQL 18 | `POSTGRES_PORT` (5432) |
+| `migrate` | One-shot: runs migrations and the seed, then exits | none |
+| `api` | NestJS API (also serves `/docs`) | `API_PORT` (3000) |
+| `web` | nginx serving the built app and proxying `/v1`, `/mcp` and `/health` to the API | `WEB_PORT` (8080) |
+| `ollama`, `ollama-pull` | Local LLM on CPU, only with `--profile ai` | `OLLAMA_PORT` (11434) |
+
+Open http://localhost:8080. Secrets are read from `.env.local` at startup and are never
+written into `docker-compose.yml`.
+
+To add the local model, set `DOCKER_OLLAMA_BASE_URL=http://ollama:11434` in `.env.local`
+and start with the `ai` profile:
+
+```bash
+docker compose --env-file .env.local --profile ai up --build
+```
+
+`ollama-pull` downloads `AI_MODEL` into the `ollama-data` volume on first start, so expect a
+wait. Until it finishes, runs fall back to the rule-based selector. With
+`DOCKER_OLLAMA_BASE_URL` empty, the API always uses rules. To reach an Ollama running on the
+host instead, use `http://host.docker.internal:11434`.
+
+Notes:
+
+- `yarn dev` and the Docker stack share the same `db` container and volume, so data carries
+  over. Both serve the API on `API_PORT`, so don't run them together.
+- If `POSTGRES_PASSWORD` contains URL-reserved characters (`@`, `/`, `:`), the `DATABASE_URL`
+  built by Compose breaks. Stick to letters and digits.
+- Stop with `docker compose --env-file .env.local down`; add `-v` to also wipe the database
+  and model volumes.
 
 ### AI selection
 

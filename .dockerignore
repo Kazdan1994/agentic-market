@@ -1,0 +1,12 @@
+**/node_modules
+**/dist
+.git
+.idea
+.claude
+.specify
+.impeccable
+.taste-skill
+specs
+.env*
+!.env.example
+**/*.log

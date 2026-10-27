@@ -1,3 +1,23 @@
+# docker compose --env-file .env.local --profile ai up --build
+
+x-api: &api
+  image: agentic-market-api
+  build:
+    context: .
+    dockerfile: apps/api/Dockerfile
+  environment:
+    DATABASE_URL: postgres://agentic:${POSTGRES_PASSWORD}@db:5432/agentic_market
+    API_PORT: 3000
+    API_INTERNAL_BASE_URL: http://localhost:3000
+    JWT_SECRET: ${JWT_SECRET}
+    BUILTIN_KEY_SECRET: ${BUILTIN_KEY_SECRET}
+    SEED_DEMO_PASSWORD: ${SEED_DEMO_PASSWORD}
+    OLLAMA_BASE_URL: ${DOCKER_OLLAMA_BASE_URL:-}
+    AI_MODEL: ${AI_MODEL:-gemma4:e2b}
+    AGENT_SELECTION_MODE: ${AGENT_SELECTION_MODE:-auto}
+    AI_TIMEOUT_MS: ${AI_TIMEOUT_MS:-10000}
+    SIMULATED_DECLINE_CENTS: ${SIMULATED_DECLINE_CENTS:-13}
+
 services:
   db:
     image: postgres:18
@@ -15,5 +35,61 @@ services:
       timeout: 3s
       retries: 30
 
+  migrate:
+    <<: *api
+    command: ["sh", "-c", "node dist/src/database/run-migrations.js && node dist/src/database/seed/run-seed.js"]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    <<: *api
+    ports:
+      - "${API_PORT:-3000}:3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
+  ollama:
+    profiles: ["ai"]
+    image: ollama/ollama
+    ports:
+      - "${OLLAMA_PORT:-11434}:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  ollama-pull:
+    profiles: ["ai"]
+    image: ollama/ollama
+    entrypoint: ["ollama", "pull", "${AI_MODEL:-gemma4:e2b}"]
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: "no"
+
 volumes:
   db-data:
+  ollama-data:
