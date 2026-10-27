@@ -6,7 +6,7 @@ import type { Order } from "@/features/orders/useOrders";
 import type { Run } from "@/features/runs/useRun";
 import { makeAgent, makeOrder, makeRun } from "@/test-utils";
 import { MandateSlip } from "./MandateSlip";
-import type { Agent } from "./useAgents";
+import type { Agent } from "../useAgents";
 
 const NOW = new Date("2026-10-26T15:20:00.000Z");
 

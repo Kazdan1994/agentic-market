@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/Button";
 import type { Order } from "@/features/orders/useOrders";
 import { StartRunForm } from "@/features/runs/StartRunForm";
 import type { Run } from "@/features/runs/useRun";
-import { daysUntil } from "./heroSentence";
-import { formatMoney } from "./money";
-import type { Agent } from "./useAgents";
+import { daysUntil } from "../heroSentence";
+import { formatMoney } from "../money";
+import type { Agent } from "../useAgents";
 
 const MAX_LINES = 5;
 const endDate = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });

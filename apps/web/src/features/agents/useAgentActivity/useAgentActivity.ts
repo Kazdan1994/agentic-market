@@ -2,7 +2,7 @@ import { useQueries } from "@tanstack/react-query";
 import { api } from "@/api/client";
 import { type Order, useOrders } from "@/features/orders/useOrders";
 import type { Run } from "@/features/runs/useRun";
-import { type Agent, toApiError } from "./useAgents";
+import { type Agent, toApiError } from "../useAgents";
 
 export interface AgentActivity {
   ordersByMandate: ReadonlyMap<string, Order[]>;

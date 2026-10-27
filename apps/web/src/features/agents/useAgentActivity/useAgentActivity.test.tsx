@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { json, makeAgent, makeOrder, makeRun, stubApi } from "@/test-utils";
 import { useAgentActivity } from "./useAgentActivity";
-import type { Agent } from "./useAgents";
+import type { Agent } from "../useAgents";
 
 function wrapper({ children }: { children: ReactNode }) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });

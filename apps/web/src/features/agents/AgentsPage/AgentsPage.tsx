@@ -7,12 +7,12 @@ import { type Order, placedAt } from "@/features/orders/useOrders";
 import { TillRoll } from "@/features/runs/TillRoll";
 import type { Run } from "@/features/runs/useRun";
 import { useRunEvents } from "@/features/runs/useRunEvents";
-import { CreateAgentForm } from "./CreateAgentForm";
-import { heroSentence, leftToSpend } from "./heroSentence";
-import { MandateSlip } from "./MandateSlip";
-import { formatMoney } from "./money";
-import { type Agent, useAgents, useCategories } from "./useAgents";
-import { useAgentActivity } from "./useAgentActivity";
+import { CreateAgentForm } from "../CreateAgentForm";
+import { heroSentence, leftToSpend } from "../heroSentence";
+import { MandateSlip } from "../MandateSlip";
+import { formatMoney } from "../money";
+import { type Agent, useAgents, useCategories } from "../useAgents";
+import { useAgentActivity } from "../useAgentActivity";
 
 type MandateStatus = Agent["mandate"]["status"];
 

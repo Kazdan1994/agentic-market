@@ -4,8 +4,8 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { type AgentFormInput, type AgentFormOutput, agentFormSchema, zodResolver } from "./agent-form.schema";
-import { ApiError, type Category, useCreateAgent } from "./useAgents";
+import { type AgentFormInput, type AgentFormOutput, agentFormSchema, zodResolver } from "../agent-form.schema";
+import { ApiError, type Category, useCreateAgent } from "../useAgents";
 
 const SERVER_FIELDS: Record<string, keyof AgentFormInput> = {
   name: "name",

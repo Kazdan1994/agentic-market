@@ -5,7 +5,7 @@ import { api } from "@/api/client";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ReceiptMark } from "@/routes";
-import { ME_QUERY_KEY } from "./useMe";
+import { ME_QUERY_KEY } from "../useMe";
 
 /** Where to go after sign-in: a same-site path only, never another origin (open-redirect guard). */
 export function safeNext(raw: string | null): string {
