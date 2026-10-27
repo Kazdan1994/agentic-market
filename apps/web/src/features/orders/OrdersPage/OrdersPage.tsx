@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/Badge";
 import { QueryState } from "@/components/QueryState";
 import { Card } from "@/components/ui/Card";
 import { formatMoney } from "@/features/agents/money";
-import { ORDER_STATUS_LABEL, PLACED_BY_LABELS, placedAt, useOrders } from "./useOrders";
+import { ORDER_STATUS_LABEL, PLACED_BY_LABELS, placedAt, useOrders } from "../useOrders";
 
 export function OrdersPage() {
   const orders = useOrders();

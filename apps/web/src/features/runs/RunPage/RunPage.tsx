@@ -4,10 +4,10 @@ import { Badge } from "@/components/ui/Badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { formatMoney } from "@/features/agents/money";
 import { type Order, useOrder } from "@/features/orders/useOrders";
-import { DecisionLog } from "./DecisionLog";
-import { OUTCOME_LABELS, strategyLabel } from "./run-labels";
-import { type Run, useRun } from "./useRun";
-import { useRunEvents } from "./useRunEvents";
+import { DecisionLog } from "../DecisionLog";
+import { OUTCOME_LABELS, strategyLabel } from "../run-labels";
+import { type Run, useRun } from "../useRun";
+import { useRunEvents } from "../useRunEvents";
 
 export function RunPage() {
   const { runId = "" } = useParams();

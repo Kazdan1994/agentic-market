@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { ApiError } from "@/features/agents/useAgents";
-import { useStartRun } from "./useRun";
+import { useStartRun } from "../useRun";
 
 const MESSAGES: Record<string, string> = {
   RUN_ALREADY_IN_PROGRESS: "This agent is already shopping. Wait for its run to finish.",

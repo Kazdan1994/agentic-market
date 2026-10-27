@@ -1,7 +1,7 @@
 import { useId } from "react";
 import { cn } from "@/lib/utils";
-import { logTime } from "./DecisionLog";
-import type { LogEntry } from "./useRunEvents";
+import { logTime } from "../DecisionLog";
+import type { LogEntry } from "../useRunEvents";
 
 const runDate = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
 

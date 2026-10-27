@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/Badge";
 import { formatMoney } from "@/features/agents/money";
-import type { LogEntry } from "./useRunEvents";
+import type { LogEntry } from "../useRunEvents";
 
 const STEP_LABELS: Record<LogEntry["step"], string> = {
   search: "Search",
