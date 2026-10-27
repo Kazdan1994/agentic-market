@@ -59,6 +59,14 @@
   grid-template-columns: 1fr auto;
 }
 
+@utility grid-cols-steps {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+@utility grid-cols-log {
+  grid-template-columns: 64px 1fr;
+}
+
 @utility grid-cols-roll {
   grid-template-columns: 48px 1fr;
 }

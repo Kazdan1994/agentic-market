@@ -44,6 +44,42 @@ describe("RunPage", () => {
     expect(calls.filter((call) => call.path === `/v1/runs/${RUN_ID}`)).toHaveLength(1);
   });
 
+  it("heads the run with its request, short ids, step count and duration, and links to the order", async () => {
+    stubApi((request) => {
+      const path = new URL(request.url).pathname;
+      if (path.startsWith("/v1/runs/"))
+        return json(
+          200,
+          makeRun({ status: "completed", outcome: "order_placed", strategy: "ai", orderId: "01900000-0000-7000-8000-0000000a0d01" }),
+        );
+      if (path.startsWith("/v1/orders/")) return json(200, makeOrder());
+      return undefined;
+    });
+    renderAt(RUN_PATH);
+
+    expect(await screen.findByRole("heading", { name: "“wireless headphones for running”" })).toBeInTheDocument();
+    expect(screen.getByText("RUN Nº 7001 · MANDATE Nº AA01")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "View order" })).toHaveAttribute("href", "/orders/01900000-0000-7000-8000-0000000a0d01");
+  });
+
+  it("lays the steps reached so far in a strip, each with what it found", async () => {
+    stubApi((request) => (new URL(request.url).pathname.startsWith("/v1/runs/") ? json(200, makeRun()) : undefined));
+    renderAt(RUN_PATH);
+    await screen.findByText("Shopping…");
+
+    act(() => {
+      FakeEventSource.last().emit("log", makeLogEntry(1, { step: "search", data: { count: 6 } }), "1");
+      FakeEventSource.last().emit("log", makeLogEntry(2, { step: "evaluation", data: { verdict: "kept" } }), "2");
+    });
+
+    const strip = await screen.findByRole("list", { name: "Run steps" });
+    const steps = within(strip).getAllByRole("listitem");
+    expect(steps).toHaveLength(2);
+    expect(steps[0]).toHaveTextContent("01");
+    expect(steps[0]).toHaveTextContent("6 offers found");
+    expect(steps[1]).toHaveTextContent("1 kept, 0 discarded");
+  });
+
   it("shows a placeholder while the run loads", async () => {
     stubApi((request) => (new URL(request.url).pathname.startsWith("/v1/runs/") ? never() : undefined));
     renderAt(RUN_PATH);

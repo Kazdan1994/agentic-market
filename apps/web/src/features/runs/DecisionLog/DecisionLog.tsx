@@ -1,15 +1,7 @@
 import { Badge } from "@/components/ui/Badge";
 import { formatMoney } from "@/features/agents/money";
+import { LOG_CURRENCY, STEP_LABELS } from "../run-labels";
 import type { LogEntry } from "../useRunEvents";
-
-const STEP_LABELS: Record<LogEntry["step"], string> = {
-  search: "Search",
-  evaluation: "Evaluation",
-  selection: "Selection",
-  mandate_check: "Mandate check",
-  payment: "Payment",
-  outcome: "Outcome",
-};
 
 const timeFormat = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 
@@ -35,20 +27,22 @@ function notEvaluatedByAi(entries: LogEntry[]): Set<string> {
 }
 
 export function DecisionLog({ entries }: { entries: LogEntry[] }) {
-  if (entries.length === 0) return <p className="text-sm text-neutral-500">Waiting for the agent's first step…</p>;
+  if (entries.length === 0) return <p className="text-small text-muted">Waiting for the agent's first step…</p>;
   const ruleBased = notEvaluatedByAi(entries);
   return (
-    <ol className="flex flex-col gap-3">
+    <ol>
       {entries.map((entry) => (
-        <li key={entry.seq} className="flex flex-col gap-1 border-l-2 border-neutral-200 pl-3 text-sm">
-          <div className="flex items-center gap-2 text-xs text-neutral-500">
-            <time dateTime={entry.at}>{logTime(entry.at)}</time>
-            <span className="font-medium text-neutral-700">{STEP_LABELS[entry.step]}</span>
+        <li key={entry.seq} className="grid grid-cols-log gap-2 border-t border-dashed border-dots py-1">
+          <time dateTime={entry.at} className="text-faint">
+            {logTime(entry.at)}
+          </time>
+          <div>
+            <b className="text-fg uppercase">{STEP_LABELS[entry.step]}</b>
+            <span className="block">{entry.message}</span>
+            {entry.step === "evaluation" && (
+              <Evaluation data={entry.data as EvaluationData} ruleBased={entry.productId !== null && ruleBased.has(entry.productId)} />
+            )}
           </div>
-          <p>{entry.message}</p>
-          {entry.step === "evaluation" && (
-            <Evaluation data={entry.data as EvaluationData} ruleBased={entry.productId !== null && ruleBased.has(entry.productId)} />
-          )}
         </li>
       ))}
     </ol>
@@ -58,14 +52,14 @@ export function DecisionLog({ entries }: { entries: LogEntry[] }) {
 function Evaluation({ data, ruleBased }: { data: EvaluationData; ruleBased: boolean }) {
   const kept = data.verdict === "kept";
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="mt-0.5 flex flex-wrap items-center gap-2">
       <Badge variant={kept ? "success" : "secondary"}>{kept ? "Kept" : "Discarded"}</Badge>
       {data.merchant && data.priceMinor !== undefined && (
-        <span className="text-xs text-neutral-600">
-          {data.merchant} - {formatMoney(data.priceMinor, "EUR")}
+        <span className="text-faint">
+          {data.merchant} - {formatMoney(data.priceMinor, LOG_CURRENCY)}
         </span>
       )}
-      {ruleBased && <span className="text-xs text-neutral-500 italic">rule-based verdict</span>}
+      {ruleBased && <span className="text-faint italic">rule-based verdict</span>}
     </div>
   );
 }

@@ -31,7 +31,7 @@ describe("StartRunForm", () => {
 
   it("starts a run and opens its page", async () => {
     await startRun("wireless headphones for running");
-    expect(await screen.findByRole("heading", { name: "Run" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "“wireless headphones for running”" })).toBeInTheDocument();
   });
 
   it("asks for at least 3 characters", async () => {

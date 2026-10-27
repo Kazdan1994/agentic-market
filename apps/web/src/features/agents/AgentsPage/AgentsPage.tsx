@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { QueryState } from "@/components/QueryState";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { sumMinor } from "@/features/orders/groupOrdersByMonth";
 import { type Order, placedAt } from "@/features/orders/useOrders";
 import { TillRoll } from "@/features/runs/TillRoll";
 import type { Run } from "@/features/runs/useRun";
@@ -69,7 +70,8 @@ function AgentsDesk({ agents }: { agents: Agent[] }) {
   const ended = agents.filter((agent) => agent.mandate.status !== "active");
   const shopping = active.find((agent) => activity.runningByMandate.has(agent.mandate.id));
   const shoppingRun = shopping && activity.runningByMandate.get(shopping.mandate.id);
-  const latestOrder = [...activity.ordersByMandate.values()].flat().sort((a, b) => b.placedAt.localeCompare(a.placedAt))[0];
+  const allOrders = [...activity.ordersByMandate.values()].flat();
+  const latestOrder = allOrders.toSorted((a, b) => b.placedAt.localeCompare(a.placedAt))[0];
   const amount = leftToSpend(agents);
   const rest = heroSentence(agents, activity.runningByMandate, now).slice(amount.length);
   const [units = amount, fraction = ""] = amount.split(".");
@@ -103,6 +105,7 @@ function AgentsDesk({ agents }: { agents: Agent[] }) {
               <Link to="/orders">View orders</Link>
             </Button>
           </div>
+          {activityStatus === "ready" && <OrderStats orders={allOrders} now={now} />}
         </div>
         {shopping && shoppingRun ? (
           <LiveRoll agentName={shopping.name} run={shoppingRun} />
@@ -149,7 +152,7 @@ function AgentsDesk({ agents }: { agents: Agent[] }) {
 
       <div className="mt-18">
         {ended.length > 0 && <EndedStubs agents={ended} />}
-        {activityStatus === "ready" && <LatestOrders orders={[...activity.ordersByMandate.values()].flat()} />}
+        {activityStatus === "ready" && <LatestOrders orders={allOrders} />}
       </div>
     </>
   );
@@ -238,6 +241,31 @@ function EndedStubs({ agents }: { agents: Agent[] }) {
         ))}
       </ul>
     </section>
+  );
+}
+
+function OrderStats({ orders, now }: { orders: Order[]; now: Date }) {
+  const [first] = orders;
+  if (!first) return null;
+
+  const thisMonth = orders.filter((order) => {
+    const placed = new Date(order.placedAt);
+    return placed.getFullYear() === now.getFullYear() && placed.getMonth() === now.getMonth();
+  });
+  const stats = [
+    { label: "Spent this month", value: formatMoney(sumMinor(thisMonth), first.total.currency) },
+    { label: "Orders placed", value: String(orders.length) },
+  ];
+
+  return (
+    <dl className="mt-10 flex flex-wrap border-t border-dots">
+      {stats.map(({ label, value }) => (
+        <div key={label} className="flex-1 basis-35 pt-3.5 pr-5">
+          <dt className="text-small text-muted">{label}</dt>
+          <dd className="mt-0.5 text-heading font-medium tabular-nums">{value}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 

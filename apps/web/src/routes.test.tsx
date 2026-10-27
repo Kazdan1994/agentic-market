@@ -41,6 +41,7 @@ describe("navigation bar", () => {
       const p = new URL(request.url).pathname;
       if (p === "/v1/agents" || p === "/v1/categories" || p === "/v1/orders") return json(200, []);
       if (p.startsWith("/v1/orders/")) return json(200, makeOrder());
+      if (p.endsWith("/log")) return json(200, []);
       if (p.startsWith("/v1/runs/")) return json(200, makeRun({ status: "completed", outcome: "no_eligible_product" }));
       return undefined;
     });
@@ -52,6 +53,7 @@ describe("navigation bar", () => {
     stubApi((request) => {
       const p = new URL(request.url).pathname;
       if (p.startsWith("/v1/orders/")) return json(200, makeOrder());
+      if (p.endsWith("/log")) return json(200, []);
       if (p.startsWith("/v1/runs/")) return json(200, makeRun({ status: "completed", outcome: "no_eligible_product" }));
       return undefined;
     });
