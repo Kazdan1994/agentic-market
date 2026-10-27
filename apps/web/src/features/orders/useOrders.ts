@@ -5,8 +5,6 @@ import { toApiError } from "@/features/agents/useAgents";
 
 export type Order = components["schemas"]["OrderResponse"];
 
-export const ORDER_STATUS_LABEL = "Paid (simulated)";
-
 export const PLACED_BY_LABELS: Record<Order["placedBy"], string> = {
   builtin_agent: "Built-in agent",
   third_party_agent: "External agent",
