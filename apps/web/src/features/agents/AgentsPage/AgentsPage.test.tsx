@@ -173,4 +173,42 @@ describe("AgentsPage", () => {
     expect(screen.getByRole("button", { name: "New agent" })).toHaveAttribute("aria-expanded", "false");
     expect(calls.filter((c) => c.method === "POST" && c.path === "/v1/agents")).toHaveLength(1);
   });
+
+  describe("order stats", () => {
+    afterEach(() => vi.useRealTimers());
+
+    const placedOn = (id: string, placedAt: string, amountMinor: number) => ({
+      ...makeOrder({ id }),
+      mandateId: "m1",
+      placedAt,
+      total: { amountMinor, currency: "EUR" },
+    });
+
+    it("sums what was spent this month and counts every order placed", async () => {
+      vi.useFakeTimers({ toFake: ["Date"] });
+      vi.setSystemTime(new Date("2026-10-27T10:00:00Z"));
+      stubAgentsApi({
+        agents: () => json(200, [withMandate("m1", "Pantry restock")]),
+        orders: () =>
+          json(200, [
+            placedOn("o1", "2026-10-23T10:00:00Z", 7900),
+            placedOn("o2", "2026-10-21T10:00:00Z", 3900),
+            placedOn("o3", "2026-09-12T10:00:00Z", 2200),
+          ]),
+      });
+      renderAt("/agents");
+
+      const spent = (await screen.findByText("Spent this month")).closest("div");
+      expect(spent).toHaveTextContent("118.00 EUR");
+      expect(screen.getByText("Orders placed").closest("div")).toHaveTextContent("3");
+    });
+
+    it("shows no stats before the first order", async () => {
+      stubAgentsApi({ agents: () => json(200, [withMandate("m1", "Pantry restock")]) });
+      renderAt("/agents");
+
+      await screen.findByRole("heading", { name: "Pantry restock" });
+      expect(screen.queryByText("Spent this month")).toBeNull();
+    });
+  });
 });
