@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, Navigate, NavLink, Outlet, type RouteObject, useLocation } from "react-router";
 import { api } from "@/api/client";
 import { Button } from "@/components/ui/Button";
+import { ReceiptMark } from "@/components/ReceiptMark";
 import { AgentsPage } from "@/features/agents/AgentsPage";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { ME_QUERY_KEY, useMe } from "@/features/auth/useMe";
@@ -12,15 +13,6 @@ import { RunPage } from "@/features/runs/RunPage";
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   isActive ? "font-medium text-fg" : "text-muted hover:text-fg";
-
-export function ReceiptMark() {
-  return (
-    <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
-      <path d="M4 2h18v22l-3-2-3 2-3-2-3 2-3-2-3 2z" className="fill-fg" />
-      <path d="M8 9h10M8 13h10M8 17h6" className="stroke-paper" strokeWidth="1.8" />
-    </svg>
-  );
-}
 
 function initials(name: string): string {
   return name

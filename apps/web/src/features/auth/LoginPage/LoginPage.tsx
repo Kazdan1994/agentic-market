@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from "react-router";
 import { api } from "@/api/client";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { ReceiptMark } from "@/routes";
+import { ReceiptMark } from "@/components/ReceiptMark";
 import { ME_QUERY_KEY } from "../useMe";
 
 /** Where to go after sign-in: a same-site path only, never another origin (open-redirect guard). */

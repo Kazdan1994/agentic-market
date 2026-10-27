@@ -21,3 +21,7 @@ Button/
 - Plain helpers and untested hooks (`money.ts`, `useAgents.ts`) stay flat in the feature folder.
 - Each component has a test file. Other files are created only when needed.
 - Inside a component folder, sibling imports go through the parent (`../useAgents`).
+
+## shadcn
+
+`components.json` cannot express this layout: `shadcn add <x>` always writes a lowercase `ui/<x>.tsx`. After running it, move the file to `ui/<X>/<X>.tsx`, add an `index.ts`, and fix the import paths.
