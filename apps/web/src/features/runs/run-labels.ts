@@ -1,4 +1,17 @@
 import type { Run } from "./useRun";
+import type { LogEntry } from "./useRunEvents";
+
+/** Log entries carry integer minor units without a currency; every merchant prices in euros. */
+export const LOG_CURRENCY = "EUR";
+
+export const STEP_LABELS: Record<LogEntry["step"], string> = {
+  search: "Search",
+  evaluation: "Evaluation",
+  selection: "Selection",
+  mandate_check: "Mandate check",
+  payment: "Payment",
+  outcome: "Outcome",
+};
 
 export const OUTCOME_LABELS: Record<NonNullable<Run["outcome"]>, string> = {
   order_placed: "Order placed",
