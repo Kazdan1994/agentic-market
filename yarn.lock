@@ -562,6 +562,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fontsource-variable/familjen-grotesk@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@fontsource-variable/familjen-grotesk@npm:5.3.0"
+  checksum: 10c0/c6399d3a179ba6da89fc58c92f1419747f1bee924129a8114a18be460671fd3a63a390d2a3d7c23f032b3c6f118d7f73c47da1fb4b4a7f384c053a736dddab98
+  languageName: node
+  linkType: hard
+
+"@fontsource/space-mono@npm:5.3.0":
+  version: 5.3.0
+  resolution: "@fontsource/space-mono@npm:5.3.0"
+  checksum: 10c0/07e6c40108245ed551f81e24e3557336e34942bc0f1b3ab50001043779717f2b3941514bef6c4ac0d6b7781102fee681dabee75eaf7291b60931a1da56f85469
+  languageName: node
+  linkType: hard
+
 "@grpc/grpc-js@npm:^1.11.1":
   version: 1.14.6
   resolution: "@grpc/grpc-js@npm:1.14.6"
@@ -8953,6 +8967,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "web@workspace:apps/web"
   dependencies:
+    "@fontsource-variable/familjen-grotesk": "npm:5.3.0"
+    "@fontsource/space-mono": "npm:5.3.0"
     "@radix-ui/react-checkbox": "npm:1.3.12"
     "@radix-ui/react-label": "npm:2.1.16"
     "@radix-ui/react-select": "npm:2.3.8"

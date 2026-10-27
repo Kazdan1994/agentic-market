@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agents · Agentic Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<!--
+  Direction E — Slips
+  Idea: what an agent produces is a receipt. Each mandate is a printed slip that fills with its purchases;
+  the live run prints like a till roll. Polish taken from Stripe / Mercury: quiet cool ground, generous space, precise type.
+  Faces: Familjen Grotesk (interface), Space Mono (only what is "printed" on a slip or the roll).
+  One hue: ink-blue #1e4fd8 on money left and the line being printed. Slips are paper (#fcfcfa) on a cool ground (#eef0f3).
+  Grid: 1200 centred column, 12 cols, gutter 24. Hero 7/5. Slips 4/4/4.
+-->
+<style>
+:root{
+  --ground:#eef0f3;--paper:#fcfcfa;--ink:#14161a;--muted:#5b616b;--faint:#62676f;--rule:#e2e4e8;--dots:#c9ccd2;
+  --hue:#1e4fd8;--hue-pale:#e3eafc;--ok:#1d6b3a;--ok-pale:#e0f2e6;
+  --sans:"Familjen Grotesk",system-ui,sans-serif;--mono:"Space Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font:15px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+.num{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--hue);outline-offset:3px}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+/* nav: wordmark, three links, one action */
+nav{display:flex;align-items:center;gap:28px;height:68px}
+.wm{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px;color:var(--ink);text-decoration:none;margin-right:12px}
+nav a.l{color:var(--muted);text-decoration:none;font-size:14px}
+nav a.l[aria-current]{color:var(--ink);font-weight:500}
+nav a.l:hover{color:var(--ink)}
+nav .sp{flex:1}
+.who{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted)}
+.who span{width:30px;height:30px;border-radius:50%;background:#dfe6f7;color:#1c3570;display:grid;place-items:center;font-size:12px;font-weight:600}
+/* hero */
+.hero{display:grid;grid-template-columns:7fr 5fr;gap:24px;align-items:end;padding:40px 0 48px}
+h1{font-size:15px;font-weight:500;color:var(--muted);margin:0 0 6px}
+.amount{font-size:84px;line-height:1;letter-spacing:-.04em;font-weight:500;margin:0}
+.amount .c{color:var(--faint)}
+.say{font-size:19px;line-height:1.45;margin:18px 0 28px;max-width:30ch}
+.say b{font-weight:500}
+.btn{height:42px;padding:0 20px;border-radius:999px;border:0;background:var(--ink);color:#fff;font:500 15px var(--sans);cursor:pointer;white-space:nowrap;transition:transform .12s ease,background .12s ease}
+.btn:hover{background:#2a2e36}.btn:active{transform:scale(.97)}
+.btn.sec{background:transparent;color:var(--ink);border:1px solid #c8ccd3}
+.btn.sec:hover{background:#e6e8ec}
+.actions{display:flex;gap:10px}
+/* till roll */
+.roll{background:var(--paper);padding:22px 22px 26px;position:relative;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:#2b2e33}
+.roll::before,.slip::before,.slip::after,.roll::after{content:"";position:absolute;left:0;right:0;height:8px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='8'%3E%3Cpath d='M0 8 8 0l8 8z' fill='%23fcfcfa'/%3E%3C/svg%3E") repeat-x}
+.roll::before,.slip::before{top:-8px}
+.roll::after,.slip::after{bottom:-8px;transform:scaleY(-1)}
+.roll h2{font:700 12.5px var(--mono);margin:0 0 2px;display:flex;justify-content:space-between}
+.roll .meta{color:var(--faint);margin-bottom:10px}
+.roll ol{list-style:none;margin:0;padding:0}
+.roll li{display:grid;grid-template-columns:48px 1fr;gap:8px;padding:3px 0;border-top:1px dashed var(--dots)}
+.roll li time{color:var(--faint)}
+.roll li.now{color:var(--hue)}
+.roll li.now span::after{content:"▌";margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.roll li.now span::after{animation:none}}
+/* slips */
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 22px}
+h2.t{font-size:22px;font-weight:500;letter-spacing:-.01em;margin:0}
+.sec-head p{margin:0;color:var(--muted);font-size:14px}
+.slips{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:start;margin-bottom:72px}
+.slip{background:var(--paper);position:relative;padding:22px 22px 24px;transition:transform .18s ease}
+.slip:hover{transform:translateY(-2px)}
+.slip header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.slip h3{font-size:18px;font-weight:500;margin:0;letter-spacing:-.01em}
+.slip .no{font:400 11.5px var(--mono);color:var(--faint);margin-top:2px}
+.tag{font-size:12px;line-height:22px;padding:0 9px;border-radius:999px;white-space:nowrap}
+.tag.live{background:var(--hue-pale);color:#123a9e}.tag.ok{background:var(--ok-pale);color:#0f3f20}
+.left{display:flex;align-items:baseline;justify-content:space-between;margin:22px 0 10px}
+.left span{font-size:13px;color:var(--muted)}
+.left b{font-size:34px;font-weight:500;letter-spacing:-.03em;color:var(--hue)}
+.meter{position:relative;height:6px;background:var(--hue-pale);border-radius:3px}
+.meter i{position:absolute;inset:0 auto 0 0;background:var(--ink);border-radius:3px 0 0 3px}
+.meter s{position:absolute;top:-5px;bottom:-5px;width:2px;background:var(--ink);text-decoration:none}
+.meter+small{display:flex;justify-content:space-between;color:var(--muted);font-size:12.5px;margin-top:8px}
+.lines{font:400 12.5px/1.75 var(--mono);color:#2b2e33;margin:18px 0 0;padding:14px 0 0;border-top:1px dashed var(--dots)}
+.ln{display:flex;gap:6px}
+.ln span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:62%}
+.ln i{flex:1;border-bottom:1px dotted var(--dots);margin-bottom:6px}
+.ln.tot{font-weight:700;border-top:1px dashed var(--dots);margin-top:6px;padding-top:6px}
+.ln.dim{color:var(--faint)}
+.slip .actions{margin-top:20px}
+.slip .btn{height:36px;font-size:14px;padding:0 16px}
+/* ended stubs + orders: 4 / 8 */
+.lower{display:grid;grid-template-columns:4fr 8fr;gap:24px;margin-bottom:80px;align-items:start}
+.stub{background:#f7f7f5;padding:16px 18px;margin-bottom:12px;display:grid;grid-template-columns:1fr auto;gap:2px 12px;color:var(--muted)}
+.stub b{color:var(--ink);font-weight:500}
+.stub .s{font-size:13px}
+table{width:100%;border-collapse:collapse;background:var(--paper)}
+th{font-weight:400;font-size:13px;color:var(--muted);text-align:left;padding:14px 18px}
+td{padding:14px 18px;border-top:1px solid var(--rule)}
+td.r,th.r{text-align:right}
+tbody tr:hover td{background:#fafaf8}
+td .sub{display:block;color:var(--muted);font-size:13px}
+footer{color:var(--faint);font-size:13px;padding:0 0 40px}
+@media (max-width:960px){
+  .hero{grid-template-columns:1fr}.slips{grid-template-columns:1fr 1fr}.lower{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  nav{gap:16px;height:56px}nav .who b,nav a.l:last-child{display:none}.wm{white-space:nowrap;margin-right:0}
+  .amount{font-size:56px}.say{font-size:17px}
+  .hero{padding:24px 0 40px}
+  .slips{grid-template-columns:1fr}
+  th:nth-child(2),td:nth-child(2),th:nth-child(4),td:nth-child(4){display:none}
+  td,th{padding:12px 14px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav aria-label="Main">
+    <a class="wm" href="#"><svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><path d="M4 2h18v22l-3-2-3 2-3-2-3 2-3-2-3 2z" fill="#14161a"/><path d="M8 9h10M8 13h10M8 17h6" stroke="#fcfcfa" stroke-width="1.8"/></svg>Agentic Market</a>
+    <a class="l" href="#" aria-current="page">Agents</a>
+    <a class="l" href="#">Orders</a>
+    <span class="sp"></span>
+    <span class="who"><b style="font-weight:400">Camille Durand</b><span aria-hidden="true">CD</span></span>
+    <a class="l" href="#">Log out</a>
+  </nav>
+
+  <main>
+    <section class="hero" aria-labelledby="h-agents">
+      <div>
+        <h1 id="h-agents">Agents</h1>
+        <p class="amount num" id="amount"></p>
+        <p class="say" id="say"></p>
+        <div class="actions"><button class="btn">New agent</button><button class="btn sec">View orders</button></div>
+      </div>
+      <aside class="roll" aria-labelledby="h-roll">
+        <h2 id="h-roll"><span>PANTRY RESTOCK · LIVE</span><span>RUN 0418</span></h2>
+        <div class="meta">MON 26 OCT 2026 · STARTED 15:12</div>
+        <ol id="roll" aria-live="polite"></ol>
+      </aside>
+    </section>
+
+    <section aria-labelledby="h-slips">
+      <div class="sec-head"><h2 class="t" id="h-slips">Active mandates</h2><p id="slipsum"></p></div>
+      <div class="slips" id="slips"></div>
+    </section>
+
+    <div class="lower">
+      <section aria-labelledby="h-ended">
+        <div class="sec-head"><h2 class="t" id="h-ended">Ended</h2></div>
+        <div id="stubs"></div>
+      </section>
+      <section aria-labelledby="h-orders">
+        <div class="sec-head"><h2 class="t" id="h-orders">Latest orders</h2><p><a href="#" style="color:var(--ink)">All 8 orders</a></p></div>
+        <table><thead><tr><th>Item</th><th>Agent</th><th class="r">Total</th><th>Merchant</th><th>Placed</th></tr></thead><tbody id="orders"></tbody></table>
+      </section>
+    </div>
+  </main>
+  <footer>Payments are simulated. Every purchase stays within the mandate that allowed it.</footer>
+</div>
+
+<script>
+const TODAY=new Date("2026-10-26T15:20:00");
+const c=n=>Math.round(n*100);
+const eur=x=>"€"+(x/100).toLocaleString("en-GB",{minimumFractionDigits:2,maximumFractionDigits:2});
+const dd=d=>new Date(d).toLocaleDateString("en-GB",{day:"numeric",month:"short"});
+const inDays=d=>Math.ceil((new Date(d)-TODAY)/864e5);
+const agents=[
+ {no:"0412",name:"Pantry restock",cap:40,budget:200,ends:"2026-11-12T18:00",live:true,buys:[["Dishwasher tablets, 90","19 Oct",22.90],["Oat milk, 6 × 1 L","26 Oct",34.60]]},
+ {no:"0409",name:"Coffee beans, monthly",cap:25,budget:75,ends:"2026-12-31T23:59",buys:[["Ethiopia Guji, 1 kg","3 Oct",24.20],["Ethiopia Guji, 1 kg","24 Oct",24.20]]},
+ {no:"0415",name:"Birthday gift for Léa",cap:80,budget:80,ends:"2026-10-31T20:00",buys:[]},
+];
+const ended=[{name:"Office supplies",why:"Budget used up",spent:120,budget:120,orders:4,when:"21 Oct"},{name:"Running shoes",why:"Expired unspent",spent:0,budget:140,orders:0,when:"20 Oct"}];
+agents.forEach(a=>{a.spentC=a.buys.reduce((s,b)=>s+c(b[2]),0);a.leftC=c(a.budget)-a.spentC;});
+const left=agents.reduce((s,a)=>s+a.leftC,0);
+console.assert(left===24910,"left");
+console.assert(agents.reduce((s,a)=>s+a.buys.length,0)+ended.reduce((s,e)=>s+e.orders,0)===8,"orders");
+const [whole,cts]=eur(left).split(".");
+document.getElementById("amount").innerHTML=`${whole}<span class="c">.${cts}</span>`;
+document.getElementById("say").innerHTML=`left to spend across <b>3 mandates</b>. Pantry restock is shopping now; Léa's gift mandate ends in <b>${inDays("2026-10-31T20:00")} days</b> and has never run.`;
+document.getElementById("slipsum").textContent=`${eur(agents.reduce((s,a)=>s+a.spentC,0))} spent of ${eur(agents.reduce((s,a)=>s+c(a.budget),0))}`;
+const roll=[["15:12","READ MANDATE 0412"],["15:12","GROCERIES, HOUSEHOLD · CAP €40.00"],["15:13","SEARCH \"BASMATI RICE 5 KG\""],["15:13","OCADO · CARREFOUR · MONOPRIX"],["15:15","4 OFFERS · 1 OVER CAP, SET ASIDE"],["15:17","TILDA 5 KG ............ €11.40"],["15:17","OCADO 5 KG ............. €9.85"],["15:19","CHOOSING OCADO 5 KG €9.85",1]];
+document.getElementById("roll").innerHTML=roll.map(r=>`<li class="${r[2]?"now":""}"><time>${r[0]}</time><span>${r[1]}</span></li>`).join("");
+document.getElementById("slips").innerHTML=agents.map(a=>{
+ const sp=a.spentC/c(a.budget)*100,cp=c(a.cap)/c(a.budget)*100;
+ const lines=a.buys.length?a.buys.map(b=>`<div class="ln"><span>${b[0]}</span><i></i><span>${eur(c(b[2]))}</span></div>`).join(""):`<div class="ln dim"><span>No purchase yet</span><i></i><span>€0.00</span></div>`;
+ return `<article class="slip" aria-labelledby="s-${a.no}">
+ <header><div><h3 id="s-${a.no}">${a.name}</h3><div class="no">MANDATE Nº ${a.no}</div></div><span class="tag ${a.live?"live":"ok"}">${a.live?"Shopping now":"Active"}</span></header>
+ <div class="left"><span>Left</span><b class="num">${eur(a.leftC)}</b></div>
+ <div class="meter" role="img" aria-label="${eur(a.spentC)} of ${eur(c(a.budget))} spent, cap ${eur(c(a.cap))} per purchase"><i style="width:${sp}%"></i>${cp<100?`<s style="left:${cp}%"></s>`:""}</div>
+ <small><span>${eur(c(a.budget))} budget · ${eur(c(a.cap))} a purchase</span><span>${inDays(a.ends)<=7?`ends in ${inDays(a.ends)} days`:`ends ${dd(a.ends)}`}</span></small>
+ <div class="lines">${lines}<div class="ln tot"><span>SPENT</span><i></i><span>${eur(a.spentC)}</span></div></div>
+ <div class="actions">${a.live?`<button class="btn">Watch run</button>`:`<button class="btn">Start run</button>`}<button class="btn sec">Edit</button></div></article>`;}).join("");
+document.getElementById("stubs").innerHTML=ended.map(e=>`<div class="stub"><b>${e.name}</b><span class="num">${eur(c(e.spent))}</span><span class="s">${e.why} · ${e.when}</span><span class="s num">of ${eur(c(e.budget))}</span></div>`).join("");
+const orders=[["Oat milk, 6 × 1 L","Pantry restock",34.60,"Ocado","Today, 14:02"],["Ethiopia Guji, 1 kg","Coffee beans, monthly",24.20,"Origin","24 Oct"],["A4 notebooks, 10 pack","Office supplies",30,"Viking","21 Oct"],["Dishwasher tablets, 90","Pantry restock",22.90,"Ocado","19 Oct"],["Gel pens, 24 pack","Office supplies",30,"Viking","15 Oct"]];
+document.getElementById("orders").innerHTML=orders.map(o=>`<tr><td>${o[0]}</td><td style="color:var(--muted)">${o[1]}</td><td class="r num">${eur(c(o[2]))}</td><td style="color:var(--muted)">${o[3]}</td><td style="color:var(--muted)">${o[4]}</td></tr>`).join("");
+</script>
+</body>
+</html>

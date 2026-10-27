@@ -48,6 +48,15 @@ export function renderAt(path: string) {
   return router;
 }
 
+/** A response that never arrives, to hold a query in its pending state. */
+export const never = () => new Promise<Response>(() => {}) as unknown as Response;
+
+/** Answers with `first` on the first call, then with `then` (to prove a retry). */
+export function onceThen(first: () => Response, then: () => Response): () => Response {
+  let calls = 0;
+  return () => (calls++ === 0 ? first() : then());
+}
+
 const eur = (amountMinor: number) => ({ amountMinor, currency: "EUR" });
 
 export function makeAgent(overrides: { id?: string; name?: string; status?: string; spent?: number } = {}) {

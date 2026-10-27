@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agents · Agentic Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!--
+  Direction B — Framed sheet (framed-sheet, seed 1940957176)
+  Move: one tinted L-frame (sidebar + 48px top bar, no rule between), the work on a white sheet inset 8px, 16px corners, no shadow.
+  Face: the frame tinted a pine-grey (#f1f5f2) and the brand's pine (#1f6b4f) on the main data and the one selected state.
+  Signature: list + inspector. Selecting a mandate opens its envelope and the agent's live reasoning trace beside the table.
+  Grid: sidebar 228 | sheet (inset 8 right/bottom). Inside the sheet: table 1fr | inspector 360, gap 24.
+-->
+<style>
+:root{
+  --frame:#f1f5f2;--surface:#fff;--raised:#f3f6f4;--active:#e6ece8;--border:#e4e9e6;--rule:#eff2f0;--control:#cbd3ce;
+  --text:#121614;--muted:#5a625e;--hue:#1f6b4f;--hue-pale:#dcebe3;--hue-ink:#0f3a2a;
+  --pill-positive-bg:#dcfae5;--pill-positive-ink:#04250e;--pill-neutral-bg:#ebeeec;--pill-neutral-ink:#353736;
+  --r-card:8px;--r-control:6px;--r-sheet:16px;--gap:24px;
+  --sans:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--frame);color:var(--text);font:14px/1.5 var(--sans)}
+.num{font-variant-numeric:tabular-nums}
+.mono{font-family:var(--mono);font-size:13px}
+.shell{display:grid;grid-template-columns:228px 1fr;grid-template-rows:48px 1fr;height:100vh}
+.brand{display:flex;align-items:center;gap:10px;padding:0 16px;font-weight:600}
+.top{display:flex;align-items:center;gap:12px;padding:0 16px 0 0}
+.search{margin:0 auto;width:min(420px,60%);height:32px;border-radius:var(--r-control);border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;gap:8px;padding:0 10px;color:var(--muted)}
+.search kbd{margin-left:auto;font:12px var(--mono);color:var(--muted)}
+.who{width:28px;height:28px;border-radius:50%;background:#dfe7f3;color:#1d3b66;display:grid;place-items:center;font-size:12px;font-weight:600}
+aside{padding:8px 12px}
+aside a{display:flex;align-items:center;gap:10px;height:32px;padding:0 10px;border-radius:var(--r-control);color:var(--muted);text-decoration:none}
+aside a[aria-current]{background:var(--active);color:var(--text);font-weight:500}
+aside a:hover{color:var(--text)}
+aside a .count{margin-left:auto;font-size:12px}
+aside .group{color:var(--muted);font-size:12px;margin:24px 10px 6px}
+.sheet{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sheet);margin:0 8px 8px 0;overflow:auto;display:grid;grid-template-columns:1fr 340px;align-items:start}
+.orders{margin-top:32px}.orders h2{font-size:16px;font-weight:600;margin:0 0 4px}
+.work{padding:24px;min-width:0}
+.title{display:flex;justify-content:space-between;align-items:center;gap:16px}
+h1{font-size:22px;font-weight:600;margin:0}
+.btn{height:36px;padding:0 14px;border-radius:var(--r-control);border:0;background:var(--text);color:#fff;font:500 14px var(--sans);cursor:pointer;white-space:nowrap}
+.btn:hover{background:#2a302d}
+.btn.sec{background:var(--surface);color:var(--text);border:1px solid var(--control)}
+:focus-visible{outline:2px solid var(--hue);outline-offset:2px}
+.tabs{display:flex;gap:24px;border-bottom:1px solid var(--border);margin-top:16px}
+.tabs button{background:none;border:0;padding:10px 0;font:500 14px var(--sans);color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected=true]{color:var(--text);border-color:var(--text)}
+.tabs .n{color:var(--muted);font-weight:400;margin-left:4px}
+.tool{display:flex;justify-content:space-between;align-items:center;margin:20px 0 4px;color:var(--muted);font-size:13px}
+.tool input{height:32px;width:280px;border:1px solid var(--control);border-radius:var(--r-control);padding:0 10px;font:14px var(--sans)}
+table{width:100%;border-collapse:collapse}
+th{font-weight:400;color:var(--muted);font-size:12px;text-align:left;padding:10px 12px}
+td{padding:0 12px;height:56px;border-top:1px solid var(--rule);white-space:nowrap}
+th{white-space:nowrap}
+th:first-child,td:first-child{padding-left:0}
+.r{text-align:right}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:#fafcfb}
+tbody tr[aria-selected=true] td{background:var(--raised)}
+tbody tr[aria-selected=true] td:first-child{box-shadow:inset 2px 0 var(--hue)}
+td b{font-weight:500}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;vertical-align:0}
+.dot.live{background:var(--hue);}.dot.ok{background:#8fb8a5}
+@keyframes p{50%{opacity:.3}}@media (prefers-reduced-motion:reduce){.dot.live{animation:none}}
+.mini{width:80px;height:6px;background:var(--hue-pale);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle}
+.mini i{display:block;height:100%;background:var(--text)}
+.muted{color:var(--muted)}
+/* inspector */
+.insp{border-left:1px solid var(--border);padding:24px;display:flex;flex-direction:column;gap:20px}
+.insp h2{font-size:16px;font-weight:600;margin:0}
+.insp .sub{color:var(--muted);font-size:13px;margin:2px 0 0}
+.left{font-size:28px;font-weight:400;letter-spacing:-.01em;color:var(--hue)}
+.left small{font-size:14px;color:var(--muted);margin-left:6px}
+.env{position:relative;height:28px;background:var(--hue-pale);border-radius:4px;margin-top:10px}
+.env .s{position:absolute;inset:0 auto 0 0;background:var(--text);border-radius:4px 0 0 4px}
+.env .c{position:absolute;top:-6px;bottom:-6px;border-left:2px dashed var(--text)}
+.envlab{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:8px}
+dl.facts{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:0;font-size:13px}
+dl.facts dt{color:var(--muted)}dl.facts dd{margin:0;text-align:right}
+.trace{list-style:none;margin:0;padding:0;font-size:13px}
+.trace li{display:grid;grid-template-columns:44px 1fr;gap:10px;padding:8px 0;border-top:1px solid var(--rule)}
+.trace li.now span{color:var(--hue-ink);font-weight:500}
+.trace .t{color:var(--muted)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chips span{font-size:12px;padding:2px 8px;border-radius:999px;background:var(--raised)}
+@media (max-width:1100px){.sheet{grid-template-columns:1fr}.insp{border-left:0;border-top:1px solid var(--border)}}
+@media (max-width:760px){
+  .shell{grid-template-columns:1fr;grid-template-rows:48px 1fr;height:auto}
+  aside{display:none}.search{display:none}.top{justify-content:flex-end;padding-right:16px}
+  .sheet{margin:0;border-radius:0;border-width:1px 0 0}
+  .work,.insp{padding:16px}
+  .tool input{width:100%}.tool span{display:none}
+  thead{display:none}
+  tbody tr{display:grid;grid-template-columns:1fr auto;padding:12px 0;border-top:1px solid var(--rule)}
+  td{height:auto;border:0;padding:0}
+  td.c-cap,td.c-bar,td.c-end{display:none}
+  td.c-st{grid-row:2;color:var(--muted);font-size:13px}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="brand">
+    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#1f6b4f"/><path d="M6 17l4-10h4l4 10" stroke="#fff" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="M8.5 13h7" stroke="#fff" stroke-width="2"/></svg>
+    Agentic Market
+  </div>
+  <div class="top">
+    <label class="search"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Search agents and orders<kbd>⌘K</kbd></label>
+    <span class="who" aria-label="Camille Durand">CD</span>
+  </div>
+  <aside aria-label="Main">
+    <a href="#" aria-current="page"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Agents<span class="count num">5</span></a>
+    <a href="#"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 4h14v17l-3-2-2 2-2-2-2 2-2-2-3 2z"/></svg>Orders<span class="count num">8</span></a>
+    <div class="group">Account</div>
+    <a href="#"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10"/></svg>Log out</a>
+  </aside>
+
+  <div class="sheet">
+    <main class="work">
+      <div class="title"><h1>Agents</h1><button class="btn">New agent</button></div>
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true">Active<span class="n num">3</span></button>
+        <button role="tab" aria-selected="false">Ended<span class="n num">2</span></button>
+      </div>
+      <div class="tool"><input type="search" placeholder="Filter by name or category" aria-label="Filter agents"><span id="sum"></span></div>
+      <table>
+        <thead><tr><th>Agent</th><th class="c-st">State</th><th class="c-bar">Spent of budget</th><th class="r">Left</th><th class="r c-cap">Cap</th><th class="c-end">Ends</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <section class="orders" aria-labelledby="h-o"><h2 id="h-o">Latest orders</h2><table><thead><tr><th>Item</th><th>Agent</th><th>Merchant</th><th class="r">Total</th><th class="c-end">Placed</th></tr></thead><tbody id="ord"></tbody></table></section>
+    </main>
+    <aside class="insp" aria-labelledby="i-name" id="insp"></aside>
+  </div>
+</div>
+<script>
+const TODAY=new Date("2026-10-26T15:20:00");
+const agents=[
+ {id:"agt_7Q2m",name:"Pantry restock",cats:["Groceries","Household"],cap:40,budget:200,orders:[22.90,34.60],ends:"2026-11-12T18:00",state:"Shopping now",live:true,merchants:"Ocado, Carrefour, Monoprix"},
+ {id:"agt_3Kd9",name:"Coffee beans, monthly",cats:["Groceries"],cap:25,budget:75,orders:[24.20,24.20],ends:"2026-12-31T23:59",state:"Last run 24 Oct"},
+ {id:"agt_9Zt1",name:"Birthday gift for Léa",cats:["Toys","Books"],cap:80,budget:80,orders:[],ends:"2026-10-31T20:00",state:"Never run"},
+];
+const c=n=>Math.round(n*100);
+const eur=x=>"€"+(x/100).toLocaleString("en-GB",{minimumFractionDigits:2,maximumFractionDigits:2});
+agents.forEach(a=>{a.spentC=a.orders.reduce((s,o)=>s+c(o),0);a.leftC=c(a.budget)-a.spentC;});
+const left=agents.reduce((s,a)=>s+a.leftC,0);console.assert(left===24910);
+const dd=d=>new Date(d).toLocaleDateString("en-GB",{day:"numeric",month:"short"});
+const inDays=d=>Math.ceil((new Date(d)-TODAY)/864e5);
+document.getElementById("sum").innerHTML=`3 agents · <span class="num">${eur(left)}</span> left`;
+document.getElementById("rows").innerHTML=agents.map((a,i)=>`<tr tabindex="0" aria-selected="${i===0}">
+<td><b>${a.name}</b></td>
+<td class="c-st"><span class="dot ${a.live?"live":"ok"}"></span>${a.state}</td>
+<td class="c-bar"><span class="mini"><i style="width:${a.spentC/c(a.budget)*100}%"></i></span> <span class="num muted" style="margin-left:8px">${eur(a.spentC)} / ${eur(c(a.budget))}</span></td>
+<td class="r num" style="color:var(--hue);font-weight:500">${eur(a.leftC)}</td>
+<td class="r num c-cap">${eur(c(a.cap))}</td>
+<td class="c-end">${inDays(a.ends)<=7?`In ${inDays(a.ends)} days`:dd(a.ends)}</td></tr>`).join("");
+const ord=[["Oat milk, 6 × 1 L","Pantry restock","Ocado",34.60,"Today, 14:02"],["Ethiopia Guji, 1 kg","Coffee beans, monthly","Origin",24.20,"24 Oct"],["A4 notebooks, 10 pack","Office supplies","Viking",30,"21 Oct"],["Dishwasher tablets, 90","Pantry restock","Ocado",22.90,"19 Oct"],["Gel pens, 24 pack","Office supplies","Viking",30,"15 Oct"]];
+document.getElementById("ord").innerHTML=ord.map(o=>`<tr><td><b>${o[0]}</b></td><td class="muted">${o[1]}</td><td class="muted">${o[2]}</td><td class="r num">${eur(c(o[3]))}</td><td class="c-end muted">${o[4]}</td></tr>`).join("");
+const a=agents[0];
+const trace=[["15:12","Read the mandate: groceries and household, up to €40.00 a purchase"],["15:13","Searched Ocado, Carrefour and Monoprix for “basmati rice 5 kg”"],["15:15","4 offers found; Tilda 10 kg at €43.90 is over the cap, set aside"],["15:19","Choosing Ocado 5 kg at €9.85 over Tilda 5 kg at €11.40",1]];
+document.getElementById("insp").innerHTML=`
+<div><h2 id="i-name">${a.name}</h2><p class="sub mono">${a.id}</p></div>
+<div><div class="left num">${eur(a.leftC)}<small>left of ${eur(c(a.budget))}</small></div>
+<div class="env" role="img" aria-label="${eur(a.spentC)} spent, ${eur(a.leftC)} left, cap ${eur(c(a.cap))} per purchase"><span class="s" style="width:${a.spentC/c(a.budget)*100}%"></span><span class="c" style="left:${c(a.cap)/c(a.budget)*100}%"></span></div>
+<div class="envlab"><span class="num">${eur(a.spentC)} spent in ${a.orders.length} orders</span><span class="num">cap ${eur(c(a.cap))}</span></div></div>
+<dl class="facts"><dt>Ends</dt><dd>${dd(a.ends)}, 18:00 · in ${inDays(a.ends)} days</dd><dt>Merchants</dt><dd>${a.merchants}</dd><dt>Categories</dt><dd><span class="chips" style="justify-content:flex-end">${a.cats.map(x=>`<span>${x}</span>`).join("")}</span></dd></dl>
+<div><h2 style="font-size:14px">Live run</h2><ol class="trace" aria-live="polite">${trace.map(t=>`<li class="${t[2]?"now":""}"><span class="t num">${t[0]}</span><span>${t[1]}</span></li>`).join("")}</ol></div>
+<div style="display:flex;gap:8px"><button class="btn sec">Open run</button><button class="btn sec">Revoke mandate</button></div>`;
+</script>
+</body>
+</html>

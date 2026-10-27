@@ -141,6 +141,32 @@ components:
         mandate: { $ref: "#/components/schemas/Mandate" }
         createdAt: { type: string, format: date-time }
 
+    AgentsSummary:
+      type: object
+      required: [remaining, activeCount, endingSoon, running]
+      properties:
+        remaining: { $ref: "#/components/schemas/Money" }
+        activeCount: { type: integer, minimum: 0 }
+        endingSoon:
+          oneOf:
+            - type: "null"
+            - type: object
+              required: [agentId, agentName, expiresAt, days]
+              properties:
+                agentId: { type: string, format: uuid }
+                agentName: { type: string }
+                expiresAt: { type: string, format: date-time }
+                days: { type: integer, minimum: 1 }
+        running:
+          type: array
+          items:
+            type: object
+            required: [mandateId, runId, agentName]
+            properties:
+              mandateId: { type: string, format: uuid }
+              runId: { type: string, format: uuid }
+              agentName: { type: string }
+
     CreateAgentRequest:
       type: object
       required: [name, perPurchaseCapMinor, totalBudgetMinor, categorySlugs, expiresAt]
@@ -358,6 +384,16 @@ paths:
           description: Agent and active mandate created (FR-001)
           content: { application/json: { schema: { $ref: "#/components/schemas/Agent" } } }
         "400": { $ref: "#/components/responses/ValidationFailed" }
+
+  /v1/agents/summary:
+    get:
+      tags: [user]
+      operationId: getAgentsSummary
+      security: [{ session: [] }]
+      responses:
+        "200":
+          description: What the caller's active mandates add up to, computed server-side
+          content: { application/json: { schema: { $ref: "#/components/schemas/AgentsSummary" } } }
 
   /v1/agents/{agentId}:
     get:

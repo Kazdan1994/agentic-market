@@ -13,3 +13,5 @@ apps/api/openapi.json
 .yarn/*
 !.yarn/releases
 .pnp.*
+.taste-skill
+.impeccable
